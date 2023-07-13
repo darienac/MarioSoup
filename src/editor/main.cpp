@@ -24,7 +24,19 @@ int main() {
         "edit"
     };
 
-	MenuBar menuBar = MenuBar(menuItems, 2);
+	MenuListButton buttons1[] = {
+		MenuListButton("open", UIButtonType::BUTTON, nullptr),
+		MenuListButton("save", UIButtonType::BUTTON, nullptr)
+	};
+	MenuListButton buttons2[] = {
+		MenuListButton("edit 1", UIButtonType::BUTTON, nullptr),
+		MenuListButton("toggle", UIButtonType::RADIO, nullptr)
+	};
+	MenuList lists[] = {
+		MenuList(buttons1, 2, 8),
+		MenuList(buttons2, 2, 8)
+	};
+	MenuBar menuBar = MenuBar(menuItems, 2, lists);
 
 	int windowWidth = 0;
 	int windowHeight = 0;

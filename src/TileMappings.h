@@ -83,7 +83,7 @@ namespace Tiles {
         LA, LB, LC, LD, LE, LF, LG, LH, LI, LJ, LK, LL, LM, LN, LO, LP, LQ, LR, LS, LT, LU, LV, LW, LX, LY, LZ,
         DA, XX, EX, DO, CO,
 
-        MENU_OFF, MENU_ON, MENULIST_OFF, MENULIST_ON, SELECT_BLOCK, BUTTON_LEFT, BUTTON_MID, BUTTON_RIGHT, UIBOX_BL, UIBOX_L, UIBOX_TL, UIBOX_T, UIBOX_TR, UIBOX_R, UIBOX_BR, UIBOX_B, UIBOX_C,
+        MENU_OFF, MENU_ON, MENULIST_OFF, MENULIST_ON, MENULIST_TOP, MENULIST_BOTTOM, RADIO_OFF, RADIO_ON, SELECT_BLOCK, BUTTON_LEFT, BUTTON_MID, BUTTON_RIGHT, UIBOX_BL, UIBOX_L, UIBOX_TL, UIBOX_T, UIBOX_TR, UIBOX_R, UIBOX_BR, UIBOX_B, UIBOX_C,
 
         COIN_ICO, TITLE,
 
@@ -152,6 +152,10 @@ namespace Tiles {
         tiles[MENU_ON] = Tile(UI, 8, 0, 8, 16);
         tiles[MENULIST_OFF] = Tile(UI, 0, 0, 8, 8);
         tiles[MENULIST_ON] = Tile(UI, 8, 0, 8, 8);
+        tiles[MENULIST_TOP] = Tile(UI, 0, 24, 8, 4);
+        tiles[MENULIST_BOTTOM] = Tile(UI, 0, 28, 8, 4);
+        tiles[RADIO_OFF] = Tile(UI, 0, 16, 8, 8);
+        tiles[RADIO_ON] = Tile(UI, 8, 16, 8, 8);
         tiles[SELECT_BLOCK] = Tile(UI, 16, 0, 16, 16);
         tiles[BUTTON_LEFT] = Tile(UI, 32, 0, 8, 16);
         tiles[BUTTON_MID] = Tile(UI, 36, 0, 8, 16);

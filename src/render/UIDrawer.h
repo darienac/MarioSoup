@@ -38,14 +38,57 @@ class UIDrawer {
 
     void drawMenuBar(MenuBar& menuBar) {
         const char** labels = menuBar.getLabels();
+        MenuList* lists = menuBar.getLists();
         int numLabels = menuBar.getNumLabels();
-        drawer->setPalleteSwap(OVERWORLD_2, true);
+        // drawer->setPalleteSwap(OVERWORLD_2, true);
         int x = 0;
         for (int i = 0; i < numLabels; i++) {
             bool isHover = (i == menuBar.getNumHovered());
             bool isSelected = (i == menuBar.getNumSelected());
             drawMenuItem(labels[i], x, isHover || isSelected);
+            if (isSelected) {
+                drawMenuList(lists[i], x, vOffset - 8);
+            }
             x += strlen(labels[i]) * 8 + 8;
+        }
+    }
+
+    void drawMenuList(MenuList& menuList, int x, int y) {
+        MenuListButton* buttons = menuList.getButtons();
+        int numButtons = menuList.getNumButtons();
+        int width = menuList.getWidth();
+
+        for (int i = 0; i < width; i++) {
+            drawer->drawTile(MENULIST_TOP, x + i * 8, y + 4);
+            drawer->drawTile(MENULIST_BOTTOM, x + i * 8, y - numButtons * 8);
+        }
+        for (int i = 0; i < numButtons; i++) {
+            bool isHover = (i == menuList.getNumHovered());
+            drawMenuListButton(buttons[i], x, y - 4 - i * 8, width, isHover);
+        }
+    }
+
+    void drawMenuListButton(MenuListButton& button, int x, int y, int width, bool isHover) {
+        drawer->setPalleteSwap(OVERWORLD_2, true);
+
+        int tile;
+        if (isHover) {
+            tile = MENULIST_ON;
+        } else {
+            tile = MENULIST_OFF;
+        }
+        for (int i = 0; i < width; i++) {
+            drawer->drawTile(tile, x + i * 8, y);
+        }
+        drawText(button.getLabel(), x + 12, y);
+        if (button.getType() == UIButtonType::RADIO) {
+            int tile;
+            if (button.getValue().toggle) {
+                tile = RADIO_ON;
+            } else {
+                tile = RADIO_OFF;
+            }
+            drawer->drawTile(tile, x + 4, y);
         }
     }
 
