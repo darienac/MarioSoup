@@ -48,7 +48,6 @@ class MenuBar : public IUIElement {
                 xMax = xMin + 8 * (strlen(labels[i]) + 1);
             }
             lists[numSelected].hover(x - xMin, y - gameHeight + 16, gameHeight);
-            std::printf("list hover x: %d, y: %d\n", x - xMin, y - gameHeight + 16);
         }
         if (y >= gameHeight - 16 && y < gameHeight) {
             int xMin = 0;
@@ -67,6 +66,9 @@ class MenuBar : public IUIElement {
     void click() {
         if (numSelected != -1) {
             lists[numSelected].click();
+            if (!lists[numSelected].isAllowCloseList()) {
+                return;
+            }
         }
         numSelected = numHovered;
     }
