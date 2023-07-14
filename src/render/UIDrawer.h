@@ -92,11 +92,73 @@ class UIDrawer {
         }
     }
 
+    void drawPopupWindow(PopupWindow& popup, int gameWidth, int gameHeight) {
+        drawer->setPalleteSwap(OVERWORLD_2, true);
+
+        int w = popup.getWidth();
+        int h = popup.getHeight();
+        int x0 = (gameWidth - w * 8) / 2;
+        int y0 = (gameHeight - h * 8) / 2;
+        int x1 = x0 + w * 8 - 8;
+        int y1 = y0 + h * 8 - 8;
+
+        // Draw Box
+        drawer->drawTile(UIBOX_BL, x0, y0);
+        drawer->drawTile(UIBOX_BR, x1, y0);
+        drawer->drawTile(UIBOX_TL, x0, y1);
+        drawer->drawTile(UIBOX_TR, x1, y1);
+        for (int i = 1; i < w - 1; i++) {
+            drawer->drawTile(UIBOX_B, x0 + i * 8, y0);
+            drawer->drawTile(UIBOX_T, x0 + i * 8, y1);
+        }
+        for (int i = 1; i < h - 1; i++) {
+            drawer->drawTile(UIBOX_L, x0, y0 + i * 8);
+            drawer->drawTile(UIBOX_R, x1, y0 + i * 8);
+        }
+        for (int i = 1; i < w - 1; i++) {
+            for (int j = 1; j < h - 1; j++) {
+                drawer->drawTile(UIBOX_C, x0 + i * 8, y0 + j * 8);
+            }
+        }
+
+        // Draw Label
+        int t0 = (w - strlen(popup.getLabel())) / 2;
+        drawText(popup.getLabel(), x0 + t0 * 8, y1 - 8);
+
+        // Draw Elements
+        IUIElement** elements = popup.getElements();
+        for (int i = 0; i < popup.getNumElements(); i++) {
+            drawElement(elements[i], x0, y0);
+        }
+    }
+
+    void drawButton(Button& button, int x, int y) {
+        int w = button.getWidth();
+        drawer->drawTile(BUTTON_LEFT, x, y);
+        drawer->drawTile(BUTTON_RIGHT, x + w * 8 - 8, y);
+        for (int i = 1; i < w - 1; i++) {
+            drawer->drawTile(BUTTON_MID, x + i * 8, y);
+        }
+        int xOff = (w - strlen(button.getLabel())) * 4;
+        drawText(button.getLabel(), x + xOff, y + 4);
+    }
+
     void drawText(std::string text, int x, int y) {
         drawer->setPalleteSwap(OVERWORLD_2, true);
         for (int i = 0; i < text.length(); i++) {
             int tile = AIR + textEncoding.find(text.at(i));
             drawer->drawTile(tile, x + i * 8, y);
+        }
+    }
+
+    void drawElement(IUIElement* element, int xOff, int yOff) {
+        int ex;
+        int ey;
+        element->getPosition(ex, ey);
+        switch(element->getElementType()) {
+            case UIElementType::BUTTON:
+                drawButton(*((Button*) element), xOff + ex, yOff + ey);
+                break;
         }
     }
 };

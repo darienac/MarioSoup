@@ -38,6 +38,13 @@ int main() {
 	};
 	MenuBar menuBar = MenuBar(menuItems, 2, lists);
 
+	Button button1 = Button("yes", 8, nullptr);
+	button1.setPosition(8, 8);
+	Button button2 = Button("no", 8, nullptr);
+	button2.setPosition(80, 8);
+	IUIElement* buttons[] = {&button1, &button2};
+	PopupWindow popup = PopupWindow("rival rush. accept", 20, 12, buttons, 2);
+
 	int windowWidth = 0;
 	int windowHeight = 0;
 	while (!glfwWindowShouldClose(window.window)) {
@@ -60,7 +67,7 @@ int main() {
 		double mouseY;
 		window.getCursorPosLetterboxed(mouseX, mouseY);
 		// std::printf("Mouse pos x: %f, y: %f\n", mouseX, mouseY);
-		menuBar.hover(mouseX, mouseY, window.getGameHeight());
+		menuBar.hover(mouseX, mouseY, window.getGameWidth(), window.getGameHeight());
 		if (window.pollMouseLeftClicked()) {
 			menuBar.click();
 		}
@@ -73,6 +80,7 @@ int main() {
 		window.stageDrawer->drawScoreboard(7654321, 54, 5, 4, -1, fps);
 		window.stageDrawer->drawTitle(0, 7654321);
         window.uiDrawer->drawMenuBar(menuBar);
+		window.uiDrawer->drawPopupWindow(popup, window.getGameWidth(), window.getGameHeight());
 
 		window.windowFramebuffer->bind();
 		glClearColor(0.0, 0.0, 0.0, 1.0);

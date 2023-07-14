@@ -17,7 +17,7 @@ class MenuList : public IUIElement {
     public:
     MenuList(MenuListButton* buttons, int numButtons, int width): buttons(buttons), numButtons(numButtons), width(width) {}
 
-    void hover(int x, int y, int gameHeight) {
+    void hover(int x, int y, int gameWidth, int gameHeight) {
         if (x < 0 || x >= (width * 8)) {
             numHovered = -1;
             allowCloseList = true;
@@ -31,7 +31,7 @@ class MenuList : public IUIElement {
 
         numHovered = -((y + 5) / 8);
 
-        allowCloseList = (buttons[numHovered].getType() != RADIO);
+        allowCloseList = (buttons[numHovered].getType() != UIButtonType::RADIO);
     }
     
     void click() {

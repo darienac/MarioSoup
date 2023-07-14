@@ -39,7 +39,7 @@ class MenuBar : public IUIElement {
         return numSelected;
     }
 
-    void hover(int x, int y, int gameHeight) {
+    void hover(int x, int y, int gameWidth, int gameHeight) {
         if (numSelected != -1) {
             int xMax = 0;
             int xMin;
@@ -47,7 +47,7 @@ class MenuBar : public IUIElement {
                 xMin = xMax;
                 xMax = xMin + 8 * (strlen(labels[i]) + 1);
             }
-            lists[numSelected].hover(x - xMin, y - gameHeight + 16, gameHeight);
+            lists[numSelected].hover(x - xMin, y - gameHeight + 16, gameWidth, gameHeight);
         }
         if (y >= gameHeight - 16 && y < gameHeight) {
             int xMin = 0;

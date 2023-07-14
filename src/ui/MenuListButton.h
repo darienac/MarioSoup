@@ -8,11 +8,11 @@ class MenuListButton {
     private:
     const char* name;
     UIButtonType type;
-    void (*callback)(MenuListButton* button, UIButtonValue value);
+    void (*callback)(MenuListButton* button, UIButtonValue& value);
     UIButtonValue value = {};
 
     public:
-    MenuListButton(const char* name, UIButtonType type, void (*callback)(MenuListButton* button, UIButtonValue value)): name(name), type(type), callback(callback) {}
+    MenuListButton(const char* name, UIButtonType type, void (*callback)(MenuListButton* button, UIButtonValue& value)): name(name), type(type), callback(callback) {}
 
     void setToggle(UIButtonValue value) {
         this->value = value;

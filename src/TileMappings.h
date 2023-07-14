@@ -2,13 +2,6 @@
 
 #include "render/Texture.h"
 
-enum TextureName {
-    MARIO,
-    TILESET,
-    HUD,
-    UI
-};
-
 namespace Tiles {
     const std::string textEncoding = " 0123456789abcdefghijklmnopqrstuvwxyz-X!.C";
     Texture* textures[64];
@@ -48,6 +41,15 @@ namespace Palletes {
         255, 255, 255, 255,
         99, 173, 255, 255,
         0, 0, 0, 255
+    };
+};
+
+namespace {
+    enum TextureName {
+        MARIO,
+        TILESET,
+        HUD,
+        UI
     };
 };
 

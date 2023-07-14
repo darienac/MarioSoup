@@ -1,6 +1,6 @@
 #pragma once
 
-enum UIButtonType {
+enum class UIButtonType {
     BUTTON,
     RADIO
 };
@@ -14,3 +14,5 @@ union UIButtonValue {
 #include "ui/MenuListButton.h"
 #include "ui/MenuList.h"
 #include "ui/MenuBar.h"
+#include "ui/PopupWindow.h"
+#include "ui/Button.h"
