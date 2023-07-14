@@ -38,9 +38,13 @@ int main() {
 	};
 	MenuBar menuBar = MenuBar(menuItems, 2, lists);
 
-	Button button1 = Button("yes", 8, nullptr);
+	Button button1 = Button("yes", 8, [](Button* button, UIButtonValue& value) {
+		std::cout << "Button 1 pressed\n";
+	});
 	button1.setPosition(8, 8);
-	Button button2 = Button("no", 8, nullptr);
+	Button button2 = Button("no", 8, [](Button* button, UIButtonValue& value) {
+		std::cout << "Button 2 pressed\n";
+	});
 	button2.setPosition(80, 8);
 	IUIElement* buttons[] = {&button1, &button2};
 	PopupWindow popup = PopupWindow("rival rush. accept", 20, 12, buttons, 2);
@@ -68,8 +72,10 @@ int main() {
 		window.getCursorPosLetterboxed(mouseX, mouseY);
 		// std::printf("Mouse pos x: %f, y: %f\n", mouseX, mouseY);
 		menuBar.hover(mouseX, mouseY, window.getGameWidth(), window.getGameHeight());
+		popup.hover(mouseX, mouseY, window.getGameWidth(), window.getGameHeight());
 		if (window.pollMouseLeftClicked()) {
 			menuBar.click();
+			popup.click();
 		}
 
 		// Render

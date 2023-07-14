@@ -134,10 +134,20 @@ class UIDrawer {
 
     void drawButton(Button& button, int x, int y) {
         int w = button.getWidth();
-        drawer->drawTile(BUTTON_LEFT, x, y);
-        drawer->drawTile(BUTTON_RIGHT, x + w * 8 - 8, y);
+        bool hover = button.isHovered();
+        if (hover) {
+            drawer->drawTile(BUTTON_ON_LEFT, x, y);
+            drawer->drawTile(BUTTON_ON_RIGHT, x + w * 8 - 8, y);
+        } else {
+            drawer->drawTile(BUTTON_LEFT, x, y);
+            drawer->drawTile(BUTTON_RIGHT, x + w * 8 - 8, y);
+        }
         for (int i = 1; i < w - 1; i++) {
-            drawer->drawTile(BUTTON_MID, x + i * 8, y);
+            if (hover) {
+                drawer->drawTile(BUTTON_ON_MID, x + i * 8, y);
+            } else {
+                drawer->drawTile(BUTTON_MID, x + i * 8, y);
+            }
         }
         int xOff = (w - strlen(button.getLabel())) * 4;
         drawText(button.getLabel(), x + xOff, y + 4);
