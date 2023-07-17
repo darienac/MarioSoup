@@ -8,6 +8,13 @@ namespace Tiles {
 };
 
 namespace Palletes {
+    unsigned char BLACK[16] = {
+        0, 0, 0, 0,
+        0, 0, 0, 255,
+        0, 0, 0, 255,
+        0, 0, 0, 255
+    };
+
     unsigned char MARIO[16] = {
         0, 0, 0, 0,
         181, 49, 33, 255,
@@ -85,7 +92,12 @@ namespace Tiles {
         LA, LB, LC, LD, LE, LF, LG, LH, LI, LJ, LK, LL, LM, LN, LO, LP, LQ, LR, LS, LT, LU, LV, LW, LX, LY, LZ,
         DA, XX, EX, DO, CO,
 
-        MENU_OFF, MENU_ON, MENULIST_OFF, MENULIST_ON, MENULIST_TOP, MENULIST_BOTTOM, RADIO_OFF, RADIO_ON, SELECT_BLOCK, BUTTON_LEFT, BUTTON_MID, BUTTON_RIGHT, BUTTON_ON_LEFT, BUTTON_ON_MID, BUTTON_ON_RIGHT, UIBOX_BL, UIBOX_L, UIBOX_TL, UIBOX_T, UIBOX_TR, UIBOX_R, UIBOX_BR, UIBOX_B, UIBOX_C,
+        TEXT_CURSOR,
+        MENU_OFF, MENU_ON, MENULIST_OFF, MENULIST_ON, MENULIST_TOP, MENULIST_BOTTOM, RADIO_OFF, RADIO_ON,
+        SELECT_BLOCK,
+        BUTTON_LEFT, BUTTON_MID, BUTTON_RIGHT, BUTTON_ON_LEFT, BUTTON_ON_MID, BUTTON_ON_RIGHT,
+        TEXTINPUT_LEFT, TEXTINPUT_MID, TEXTINPUT_RIGHT,
+        UIBOX_BL, UIBOX_L, UIBOX_TL, UIBOX_T, UIBOX_TR, UIBOX_R, UIBOX_BR, UIBOX_B, UIBOX_C,
 
         COIN_ICO, TITLE,
 
@@ -150,6 +162,7 @@ namespace Tiles {
         tiles[DO] = Tile(HUD, 327, 26, 8, 8);
         tiles[CO] = Tile(HUD, 336, 26, 8, 8);
 
+        tiles[TEXT_CURSOR] = Tile(UI, 8, 24, 8, 8);
         tiles[MENU_OFF] = Tile(UI, 0, 0, 8, 16);
         tiles[MENU_ON] = Tile(UI, 8, 0, 8, 16);
         tiles[MENULIST_OFF] = Tile(UI, 0, 0, 8, 8);
@@ -165,6 +178,9 @@ namespace Tiles {
         tiles[BUTTON_ON_LEFT] = Tile(UI, 32, 16, 8, 16);
         tiles[BUTTON_ON_MID] = Tile(UI, 36, 16, 8, 16);
         tiles[BUTTON_ON_RIGHT] = Tile(UI, 40, 16, 8, 16);
+        tiles[TEXTINPUT_LEFT] = Tile(UI, 16, 16, 8, 16);
+        tiles[TEXTINPUT_MID] = Tile(UI, 20, 16, 8, 16);
+        tiles[TEXTINPUT_RIGHT] = Tile(UI, 24, 16, 8, 16);
         tiles[UIBOX_BL] = Tile(UI, 48, 8, 8, 8);
         tiles[UIBOX_L] = Tile(UI, 48, 4, 8, 8);
         tiles[UIBOX_TL] = Tile(UI, 48, 0, 8, 8);

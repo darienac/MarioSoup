@@ -11,6 +11,7 @@
 
 #include "render/Texture.h"
 #include "render/shader/ImageShader.h"
+#include "render/GlFramebuffer.h"
 
 #include "TileMappings.h"
 
@@ -63,6 +64,11 @@ class ImageDrawer {
 
     void resize(int width, int height) {
         projection = glm::ortho(0.0f, (float) width, 0.0f, (float) height);
+    }
+
+    void resizeToFramebuffer() {
+        Texture* texture = GlFramebuffer::getCurrentFramebuffer()->getTextures();
+        resize(texture->getWidth(), texture->getHeight());
     }
 
     void bind() {

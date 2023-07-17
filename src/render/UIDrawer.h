@@ -3,6 +3,7 @@
 #include "render/ImageDrawer.h"
 #include "TileMappings.h"
 #include "ui/ui.h"
+#include "render/GlFramebuffer.h"
 
 using namespace Tiles;
 using namespace Palletes;
@@ -133,6 +134,8 @@ class UIDrawer {
     }
 
     void drawButton(Button& button, int x, int y) {
+        drawer->setPalleteSwap(OVERWORLD_2, true);
+        
         int w = button.getWidth();
         bool hover = button.isHovered();
         if (hover) {
@@ -153,8 +156,47 @@ class UIDrawer {
         drawText(button.getLabel(), x + xOff, y + 4);
     }
 
-    void drawText(std::string text, int x, int y) {
+    void drawTextInput(TextInput& textInput, int x, int y) {
         drawer->setPalleteSwap(OVERWORLD_2, true);
+        
+        int w = textInput.getWidth();
+        drawer->drawTile(TEXTINPUT_LEFT, x, y);
+        drawer->drawTile(TEXTINPUT_RIGHT, x + w * 8 - 8, y);
+        for (int i = 1; i < w - 1; i++) {
+            drawer->drawTile(TEXTINPUT_MID, x + i * 8, y);
+        }
+
+        drawText(textInput.getLabel(), x, y + 16);
+
+        drawer->setPalleteSwap(OVERWORLD_2, BLACK, true);
+        GlFramebuffer* oldFB = GlFramebuffer::getCurrentFramebuffer();
+        textInput.getFramebuffer()->bind();
+        glClearColor(0.0, 0.0, 0.0, 0.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        drawer->resizeToFramebuffer();
+        drawCharBuffer(textInput.getTextBuffer(), textInput.getTextLength(), 3 + textInput.getScrollX(), 3);
+        if (textInput.isSelected()) {
+            drawer->drawTile(TEXT_CURSOR, 3 + 8 * textInput.getCursorPos() + textInput.getScrollX(), 2);
+        }
+
+        oldFB->bind();
+        drawer->resizeToFramebuffer();
+
+        drawer->drawImage(*textInput.getFramebuffer()->getTextures(), x + 1, y + 1);
+    }
+
+    void drawCharBuffer(char* buffer, int length, int x, int y) {
+        for (int i = 0; i < length; i++) {
+            if (buffer[i] == 0) {
+                break;
+            }
+            int tile = AIR + textEncoding.find(buffer[i]);
+            drawer->drawTile(tile, x + i * 8, y);
+        }
+    }
+
+    void drawText(std::string text, int x, int y) {
         for (int i = 0; i < text.length(); i++) {
             int tile = AIR + textEncoding.find(text.at(i));
             drawer->drawTile(tile, x + i * 8, y);
@@ -168,6 +210,9 @@ class UIDrawer {
         switch(element->getElementType()) {
             case UIElementType::BUTTON:
                 drawButton(*((Button*) element), xOff + ex, yOff + ey);
+                break;
+            case UIElementType::TEXT_INPUT:
+                drawTextInput(*((TextInput*) element), xOff + ex, yOff + ey);
                 break;
         }
     }

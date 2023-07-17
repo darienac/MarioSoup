@@ -2,7 +2,8 @@
 
 enum class UIElementType {
     NONE,
-    BUTTON
+    BUTTON,
+    TEXT_INPUT
 };
 
 // All elements should assume x and y are relative to the element's own coordinate system (despite setting an x or y position)
@@ -12,8 +13,9 @@ class IUIElement {
     int y = 0;
 
     public:
-    virtual void hover(int x, int y, int gameWidth, int gameHeight) = 0;
-    virtual void click() = 0;
+    virtual void hover(int x, int y, int gameWidth, int gameHeight) {};
+    virtual void click() {};
+    virtual void charInput(int codepoint) {};
     virtual UIElementType getElementType() {
         return UIElementType::NONE;
     }

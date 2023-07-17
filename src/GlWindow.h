@@ -17,21 +17,45 @@
 #include "render/StageDrawer.h"
 #include "render/UIDrawer.h"
 
-namespace {
-    void error_callback(int error, const char* description);
-    void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-    void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-    void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
-}
-
 class GlWindow {
     private:
     bool mouseLeftClicked = false;
 
     void setCallbacks() {
-        glfwSetKeyCallback(window, key_callback);
-        glfwSetMouseButtonCallback(window, mouse_button_callback);
-        glfwSetCursorPosCallback(window, cursor_position_callback);
+        glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+            if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+                glfwSetWindowShouldClose(window, GLFW_TRUE);
+            } else if ((key == GLFW_KEY_BACKSPACE || key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT || key == GLFW_KEY_DELETE) && action != GLFW_RELEASE) {
+                GlWindow* glWindow = ((GlWindow*) glfwGetWindowUserPointer(window));
+                if (glWindow->onCharElement != nullptr) {
+                    glWindow->onCharElement->charInput(key);
+                }
+            }
+        });
+        glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
+            GlWindow* glWindow = (GlWindow*) glfwGetWindowUserPointer(window);
+            if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_REPEAT) {
+                glWindow->mouseLeftPressed = (action == GLFW_PRESS);
+                if (action != GLFW_PRESS) {
+                    glWindow->setMouseLeftClicked();
+                    glWindow->mouseLeftDrag = false;
+                }
+            }
+        });
+        glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
+            GlWindow* glWindow = (GlWindow*) glfwGetWindowUserPointer(window);
+            glWindow->mouseX = xpos;
+            glWindow->mouseY = ypos;
+            if (glWindow->mouseLeftPressed) {
+                glWindow->mouseLeftDrag = true;
+            }
+        });
+        glfwSetCharCallback(window, [](GLFWwindow* window, unsigned int codepoint) {
+            GlWindow* glWindow = ((GlWindow*) glfwGetWindowUserPointer(window));
+            if (glWindow->onCharElement != nullptr) {
+                glWindow->onCharElement->charInput(codepoint);
+            }
+        });
     }
 
     public:
@@ -45,6 +69,8 @@ class GlWindow {
     GlFramebuffer* gameFramebuffer;
     GlScreenBuffer* windowFramebuffer;
 
+    IUIElement* onCharElement = nullptr;
+
     double mouseX = 0.0;
     double mouseY = 0.0;
     bool mouseLeftPressed = false;
@@ -56,7 +82,9 @@ class GlWindow {
             std::cout << "GLFW Not Initialized";
         }
 
-        glfwSetErrorCallback(error_callback);
+        glfwSetErrorCallback([](int error, const char* description) {
+            std::cerr << "Error: " << description << std::endl;
+        });
 
         // Set window hints for new window
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // Make invisible until window is properly configured
@@ -198,35 +226,3 @@ class GlWindow {
         delete imageShader;
     }
 };
-
-namespace {
-    void error_callback(int error, const char* description) {
-        std::cerr << "Error: " << description << std::endl;
-    }
-
-    void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-            glfwSetWindowShouldClose(window, GLFW_TRUE);
-        }
-    }
-
-    void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-        GlWindow* glWindow = (GlWindow*) glfwGetWindowUserPointer(window);
-        if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_REPEAT) {
-            glWindow->mouseLeftPressed = (action == GLFW_PRESS);
-            if (action != GLFW_PRESS) {
-                glWindow->setMouseLeftClicked();
-                glWindow->mouseLeftDrag = false;
-            }
-        }
-    }
-
-    void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
-        GlWindow* glWindow = (GlWindow*) glfwGetWindowUserPointer(window);
-        glWindow->mouseX = xpos;
-        glWindow->mouseY = ypos;
-        if (glWindow->mouseLeftPressed) {
-            glWindow->mouseLeftDrag = true;
-        }
-    }
-}

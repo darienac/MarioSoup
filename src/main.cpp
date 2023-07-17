@@ -18,11 +18,6 @@ int main() {
 	int fpsCounter = 0;
 	int fps = 0;
 
-    const char* menuItems[] = {
-        "file",
-        "edit"
-    };
-
 	while (!glfwWindowShouldClose(window.window)) {
 		double time = glfwGetTime();
 		fpsCounter++;

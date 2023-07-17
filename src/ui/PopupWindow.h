@@ -32,10 +32,13 @@ class PopupWindow : public IUIElement {
         }
     }
     void click() {
-        if (isHovered) {
-            for (int i = 0; i < numElements; i++) {
-                elements[i]->click();
-            }
+        for (int i = 0; i < numElements; i++) {
+            elements[i]->click();
+        }
+    }
+    void charInput(int codepoint) {
+        for (int i = 0; i < numElements; i++) {
+            elements[i]->charInput(codepoint);
         }
     }
 

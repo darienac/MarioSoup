@@ -5,6 +5,11 @@ enum class UIButtonType {
     RADIO
 };
 
+enum class UITextInputType {
+    TEXT,
+    NUMBER
+};
+
 union UIButtonValue {
     bool toggle;
     int numValue;
@@ -16,3 +21,4 @@ union UIButtonValue {
 #include "ui/MenuBar.h"
 #include "ui/PopupWindow.h"
 #include "ui/Button.h"
+#include "ui/TextInput.h"

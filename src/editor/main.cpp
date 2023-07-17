@@ -46,8 +46,16 @@ int main() {
 		std::cout << "Button 2 pressed\n";
 	});
 	button2.setPosition(80, 8);
-	IUIElement* buttons[] = {&button1, &button2};
-	PopupWindow popup = PopupWindow("rival rush. accept", 20, 12, buttons, 2);
+	char textInputBuffer[32];
+	textInputBuffer[0] = 0;
+	TextInput textInput = TextInput("test123", 8, 8, textInputBuffer, [](TextInput* input, char* value) {
+		std::cout << "Text Input pressed\n";
+	});
+	textInput.setPosition(8, 32);
+	IUIElement* elements[] = {&button1, &button2, &textInput};
+	PopupWindow popup = PopupWindow("rival rush. accept", 20, 12, elements, 3);
+
+	window.onCharElement = &textInput;
 
 	int windowWidth = 0;
 	int windowHeight = 0;

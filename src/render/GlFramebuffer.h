@@ -14,6 +14,8 @@ class GlFramebuffer {
     Texture* textures;
     int numTextures;
 
+    static GlFramebuffer* currentFramebuffer;
+
     public:
     GlFramebuffer(int numTextures, Texture textures[], bool useDepthBuffer): textures(textures), numTextures(numTextures) {
         this->useDepthBuffer = useDepthBuffer;
@@ -72,6 +74,11 @@ class GlFramebuffer {
     virtual void bind() {
         glBindFramebuffer(GL_FRAMEBUFFER, framebufferId);
         glViewport(0, 0, getWidth(), getHeight());
+        currentFramebuffer = this;
+    }
+
+    GLuint getFramebufferId() {
+        return framebufferId;
     }
 
     int getWidth() {
@@ -80,6 +87,14 @@ class GlFramebuffer {
 
     int getHeight() {
         return height;
+    }
+
+    Texture* getTextures() {
+        return textures;
+    }
+
+    static GlFramebuffer* getCurrentFramebuffer() {
+        return currentFramebuffer;
     }
 
     ~GlFramebuffer() {
@@ -91,3 +106,5 @@ class GlFramebuffer {
         }
     }
 };
+
+GlFramebuffer* GlFramebuffer::currentFramebuffer = nullptr;
