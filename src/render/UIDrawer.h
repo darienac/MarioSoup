@@ -13,7 +13,7 @@ class UIDrawer {
     ImageDrawer* drawer;
     int vOffset;
 
-    void drawMenuItem(const char* label, int x, bool isHover) {
+    void drawMenuItem(const char* label, int x, int y, bool isHover) {
         int l = strlen(label);
         int tile;
 
@@ -23,7 +23,7 @@ class UIDrawer {
             tile = MENU_OFF;
         }
         for (int i = x; i < l * 8 + x + 8; i += 8) {
-            drawer->drawTile(tile, i, vOffset);
+            drawer->drawTile(tile, i, vOffset + y);
         }
         drawText(label, x + 4, 4 + vOffset);
     }
@@ -31,6 +31,14 @@ class UIDrawer {
     public:
     UIDrawer(ImageDrawer& drawer, int windowHeight): drawer(&drawer) {
         updateWindowHeight(windowHeight);
+    }
+
+    void drawUIRegion(int x, int y, int w, int h) {
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                drawer->drawTile(UIREGION, x + i * 16, y + j * 16);
+            }
+        }
     }
 
     void updateWindowHeight(int height) {
@@ -43,14 +51,22 @@ class UIDrawer {
         int numLabels = menuBar.getNumLabels();
         // drawer->setPalleteSwap(OVERWORLD_2, true);
         int x = 0;
+        int barX;
+        int barY;
+        int tilesDrawn = 0;
+        menuBar.getPosition(barX, barY);
         for (int i = 0; i < numLabels; i++) {
             bool isHover = (i == menuBar.getNumHovered());
             bool isSelected = (i == menuBar.getNumSelected());
-            drawMenuItem(labels[i], x, isHover || isSelected);
+            drawMenuItem(labels[i], x + barX, barY, isHover || isSelected);
             if (isSelected) {
-                drawMenuList(lists[i], x, vOffset - 8);
+                drawMenuList(lists[i], x + barX, vOffset - 8 + barY);
             }
             x += strlen(labels[i]) * 8 + 8;
+            tilesDrawn += strlen(labels[i]) + 1;
+        }
+        for (int i = 0; i < (menuBar.getWidth() - tilesDrawn); i++) {
+            drawer->drawTile(MENU_OFF, x + barX + i * 8, vOffset + barY);
         }
     }
 
@@ -154,6 +170,13 @@ class UIDrawer {
         }
         int xOff = (w - strlen(button.getLabel())) * 4;
         drawText(button.getLabel(), x + xOff, y + 4);
+    }
+
+    void drawTextInput(TextInput& textInput) {
+        int ex;
+        int ey;
+        textInput.getPosition(ex, ey);
+        drawTextInput(textInput, ex, ey);
     }
 
     void drawTextInput(TextInput& textInput, int x, int y) {

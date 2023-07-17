@@ -11,6 +11,7 @@ class TextInput: public IUIElement {
     char* textBuffer;
     UITextInputType type;
     void (*callback)(TextInput* input, char* value);
+    void* pointer;
 
     char* value;
     bool hovered = false;
@@ -77,9 +78,9 @@ class TextInput: public IUIElement {
     }
 
     void hover(int x, int y, int gameWidth, int gameHeight) {
-        hovered = !(x < 0 || x >= width * 8 || y < 0 || y >= 16);
-        hoverX = x;
-        hoverY = y;
+        hoverX = x - this->x;
+        hoverY = y - this->y;
+        hovered = !(hoverX < 0 || hoverX >= width * 8 || hoverY < 0 || hoverY >= 16);
     }
 
     void click() {
@@ -104,7 +105,6 @@ class TextInput: public IUIElement {
         if (!selected) {
             return;
         }
-        std::printf("char: %c\n", codepoint);
         if (codepoint == GLFW_KEY_BACKSPACE) {
             backspaceInput();
             return;
@@ -171,6 +171,14 @@ class TextInput: public IUIElement {
 
     GlFramebuffer* getFramebuffer() {
         return framebuffer;
+    }
+
+    void setPointer(void* pointer) {
+        this->pointer = pointer;
+    }
+
+    void* getPointer() {
+        return pointer;
     }
 
     ~TextInput() {

@@ -21,6 +21,9 @@ class StageDrawer {
     int scoreboard[SCOREBOARD_SIZE];
     int title_screen[TITLE_SIZE];
 
+    int xOff = 0;
+    int yOff = 0;
+
     unsigned char* title_palletes1[TITLE_SIZE];
     unsigned char* title_palletes2[TITLE_SIZE];
     ImageDrawer* drawer;
@@ -28,7 +31,7 @@ class StageDrawer {
     void drawGrid(int tiles[], int width, int height, int x, int y, int dx, int dy) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                drawer->drawTile(tiles[i * width + j], x + j * dx, y + i * dy);
+                drawer->drawTile(tiles[i * width + j], x + j * dx + xOff, y + i * dy + yOff);
             }
         }
     }
@@ -37,7 +40,7 @@ class StageDrawer {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 drawer->setPalleteSwap(palletes1[i * width + j], palletes2[i * width + j], true);
-                drawer->drawTile(tiles[i * width + j], x + j * dx, y + i * dy);
+                drawer->drawTile(tiles[i * width + j], x + j * dx + xOff, y + i * dy + yOff);
             }
         }
     }
@@ -66,6 +69,11 @@ class StageDrawer {
         fillPalletes(title_palletes2, TITLE_WIDTH, 0, 8, TITLE_WIDTH, 1, OVERWORLD_1);
 
         title_screen[9 * TITLE_WIDTH + 5] = TITLE;
+    }
+
+    void setOffset(int x, int y) {
+        xOff = x;
+        yOff = y;
     }
 
     void fillGrid(int tiles[], int size, int tile) {

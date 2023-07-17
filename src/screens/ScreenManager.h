@@ -7,6 +7,7 @@ class ScreenManager {
     private:
     GlWindow* window;
     IScreen* screen = nullptr;
+    int fps;
 
     public:
     ScreenManager(GlWindow& window): window(&window) {}
@@ -14,7 +15,7 @@ class ScreenManager {
     void run() {
         double lastTime = glfwGetTime();
         int fpsCounter = 0;
-        int fps = 0;
+        fps = 0;
 
         while (!glfwWindowShouldClose(window->window)) {
             double time = glfwGetTime();
@@ -48,5 +49,9 @@ class ScreenManager {
         }
         this->screen = screen;
         screen->enable();
+    }
+
+    int getFPS() {
+        return fps;
     }
 };

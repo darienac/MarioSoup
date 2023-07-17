@@ -22,15 +22,27 @@
 class GlWindow {
     private:
     bool mouseLeftClicked = false;
+    bool fullscreen = false;
+    int oldWindowX;
+    int oldWindowY;
+    int oldWindowW;
+    int oldWindowH;
 
     void setCallbacks() {
         glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+            GlWindow* glWindow = (GlWindow*) glfwGetWindowUserPointer(window);
             if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
                 glfwSetWindowShouldClose(window, GLFW_TRUE);
             } else if ((key == GLFW_KEY_BACKSPACE || key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT || key == GLFW_KEY_DELETE) && action != GLFW_RELEASE) {
                 GlWindow* glWindow = ((GlWindow*) glfwGetWindowUserPointer(window));
                 if (glWindow->onCharElement != nullptr) {
                     glWindow->onCharElement->charInput(key);
+                }
+            } else if (key == GLFW_KEY_F11 && action == GLFW_PRESS) {
+                if (glWindow->isFullscreen()) {
+                    glWindow->disableFullscreen();
+                } else {
+                    glWindow->enableFullscreen();
                 }
             }
         });
@@ -211,6 +223,32 @@ class GlWindow {
 
     int getGameHeight() {
         return gameFramebuffer->getHeight();
+    }
+
+    void enableFullscreen() {
+        fullscreen = true;
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+        glfwGetWindowSize(window, &oldWindowW, &oldWindowH);
+        glfwGetWindowPos(window, &oldWindowX, &oldWindowY);
+
+        glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, 60);
+        glfwSwapInterval(1);
+    }
+
+    void disableFullscreen() {
+        fullscreen = false;
+
+        glfwSetWindowMonitor(window, NULL, 0, 0, getWidth(), getHeight(), 60);
+
+        glfwSetWindowSize(window, oldWindowW, oldWindowH);
+        glfwSetWindowPos(window, oldWindowX, oldWindowY);
+        glfwSwapInterval(1);
+    }
+
+    bool isFullscreen() {
+        return fullscreen;
     }
 
     ~GlWindow() {

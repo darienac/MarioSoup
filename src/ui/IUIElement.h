@@ -8,7 +8,7 @@ enum class UIElementType {
 
 // All elements should assume x and y are relative to the element's own coordinate system (despite setting an x or y position)
 class IUIElement {
-    private:
+    protected:
     int x = 0;
     int y = 0;
 
