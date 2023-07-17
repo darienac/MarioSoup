@@ -107,6 +107,10 @@ class ImageDrawer {
     }
 
     void drawImage(const Texture& texture, int x, int y, float cx, float cy, float cw, float ch) {
+        drawImage(texture, x, y, cw * texture.getWidth(), ch * texture.getHeight(), cx, cy, cw, ch);
+    }
+
+    void drawImage(const Texture& texture, int x, int y, int w, int h, float cx, float cy, float cw, float ch) {
         if (cw == 0 || ch == 0) {
             return;
         }
@@ -124,7 +128,7 @@ class ImageDrawer {
         shader->bindTexture(texture);
 
         glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3((float) x, (float) y, 0.0f));
-        model = glm::scale(model, glm::vec3(cw * texture.getWidth(), ch * texture.getHeight(), 1.0f));
+        model = glm::scale(model, glm::vec3(w, h, 1.0f));
         // std::printf("Scaled width: %f\n", cw * texture.getWidth());
 
         glm::mat4 viewModel = projection * model;
@@ -151,6 +155,14 @@ class ImageDrawer {
 
     void drawTile(int tile, int x, int y) {
         drawTile(Tiles::getTile(tile), x, y);
+    }
+
+    void drawTile(const Tile& tile, int x, int y, int w, int h) {
+        drawImage(*tile.texture, x, y, w, h, tile.cx, tile.cy, tile.cw, tile.ch);
+    }
+
+    void drawTile(int tile, int x, int y, int w, int h) {
+        drawTile(Tiles::getTile(tile), x, y, w, h);
     }
 
     glm::mat4 getLetterboxedProjection(const Texture& texture, float windowAspect) {
