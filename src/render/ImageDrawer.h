@@ -107,10 +107,17 @@ class ImageDrawer {
     }
 
     void drawImage(const Texture& texture, int x, int y, float cx, float cy, float cw, float ch) {
-        drawImage(texture, x, y, cw * texture.getWidth(), ch * texture.getHeight(), cx, cy, cw, ch);
+        drawImageStretched(texture, x, y, cw * texture.getWidth(), ch * texture.getHeight(), cx, cy, cw, ch);
     }
 
-    void drawImage(const Texture& texture, int x, int y, int w, int h, float cx, float cy, float cw, float ch) {
+    void drawImageStretched(const Texture& texture, int x, int y, int w, int h, int cx, int cy, int cw, int ch) {
+        float texWidth = texture.getWidth();
+        float texHeight = texture.getHeight();
+
+        drawImageStretched(texture, x, y, w, h, cx / texWidth, cy / texHeight, cw / texWidth, ch / texHeight);
+    }
+
+    void drawImageStretched(const Texture& texture, int x, int y, int w, int h, float cx, float cy, float cw, float ch) {
         if (cw == 0 || ch == 0) {
             return;
         }
@@ -157,12 +164,12 @@ class ImageDrawer {
         drawTile(Tiles::getTile(tile), x, y);
     }
 
-    void drawTile(const Tile& tile, int x, int y, int w, int h) {
-        drawImage(*tile.texture, x, y, w, h, tile.cx, tile.cy, tile.cw, tile.ch);
+    void drawTileStretched(const Tile& tile, int x, int y, int w, int h) {
+        drawImageStretched(*tile.texture, x, y, w, h, tile.cx, tile.cy, tile.cw, tile.ch);
     }
 
-    void drawTile(int tile, int x, int y, int w, int h) {
-        drawTile(Tiles::getTile(tile), x, y, w, h);
+    void drawTileStretched(int tile, int x, int y, int w, int h) {
+        drawTileStretched(Tiles::getTile(tile), x, y, w, h);
     }
 
     glm::mat4 getLetterboxedProjection(const Texture& texture, float windowAspect) {
