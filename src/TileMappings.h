@@ -98,7 +98,7 @@ namespace Tiles {
         BUTTON_LEFT, BUTTON_MID, BUTTON_RIGHT, BUTTON_ON_LEFT, BUTTON_ON_MID, BUTTON_ON_RIGHT,
         TEXTINPUT_LEFT, TEXTINPUT_MID, TEXTINPUT_RIGHT,
         UIBOX_BL, UIBOX_L, UIBOX_TL, UIBOX_T, UIBOX_TR, UIBOX_R, UIBOX_BR, UIBOX_B, UIBOX_C,
-        UIREGION,
+        UIREGION_LIGHT, UIREGION_DARK,
 
         COIN_ICO, TITLE,
 
@@ -192,7 +192,8 @@ namespace Tiles {
         tiles[UIBOX_B] = Tile(UI, 52, 8, 8, 8);
         tiles[UIBOX_BL] = Tile(UI, 48, 8, 8, 8);
         tiles[UIBOX_C] = Tile(UI, 52, 4, 8, 8);
-        tiles[UIREGION] = Tile(UI, 48, 16, 16, 16);
+        tiles[UIREGION_LIGHT] = Tile(UI, 0, 56, 8, 8);
+        tiles[UIREGION_DARK] = Tile(UI, 8, 56, 8, 8);
 
         tiles[COIN_ICO] = Tile(HUD, 264, 76, 8, 8);
         tiles[TITLE] = Tile(HUD, 40, 144, 176, 88);

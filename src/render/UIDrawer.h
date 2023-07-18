@@ -33,8 +33,8 @@ class UIDrawer {
         updateWindowHeight(windowHeight);
     }
 
-    void drawUIRegion(int x, int y, int w, int h) {
-        drawer->drawTileStretched(UIREGION, x, y, w * 16, h * 16);
+    void drawUIRegion(int tile, int x, int y, int w, int h) {
+        drawer->drawTileStretched(tile, x, y, w * 16, h * 16);
     }
 
     void updateWindowHeight(int height) {

@@ -55,13 +55,13 @@ class MenuBar : public IUIElement {
                 xMin = xMax;
                 xMax = xMin + 8 * (strlen(labels[i]) + 1);
             }
-            lists[numSelected].hover(x - xMin - this->x, y - gameHeight + 16 - this->y, gameWidth, gameHeight);
+            lists[numSelected].hover(x - xMin, y - gameHeight + 16, gameWidth, gameHeight);
         }
-        if (y >= gameHeight - 16 + this->y && y < gameHeight - this->y) {
+        if (y >= gameHeight - 16 && y < gameHeight) {
             int xMin = 0;
             for (int i = 0; i < numLabels; i++) {
                 int xMax = xMin + 8 * (strlen(labels[i]) + 1);
-                if (x >= xMin + this->x && x < xMax + this->x) {
+                if (x >= xMin && x < xMax) {
                     numHovered = i;
                     return;
                 }

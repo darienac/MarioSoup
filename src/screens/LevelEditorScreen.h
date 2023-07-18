@@ -56,8 +56,8 @@ class LevelEditorScreen: public IScreen {
         int windowWidth = window->getGameWidth();
         int windowHeight = window->getGameHeight();
 
-        menuBar.hover(mouseX, mouseY, windowWidth, windowHeight);
-        searchBar->hover(mouseX, mouseY, windowWidth, windowHeight);
+        menuBar.hover(mouseX - menuBar.getX(), mouseY - menuBar.getY(), windowWidth, windowHeight);
+        searchBar->hover(mouseX - searchBar->getX(), mouseY - searchBar->getY(), windowWidth, windowHeight);
 
         if (window->pollMouseLeftClicked()) {
             menuBar.click();
@@ -70,7 +70,7 @@ class LevelEditorScreen: public IScreen {
         window->stageDrawer->drawScoreboard(7654321, 54, 5, 4, -1, manager->getFPS());
 		window->stageDrawer->drawTitle(0, 7654321);
 
-        window->uiDrawer->drawUIRegion(0, 0, 9, 16);
+        window->uiDrawer->drawUIRegion(UIREGION_LIGHT, 0, 0, 9, 16);
         window->uiDrawer->drawMenuBar(menuBar);
         window->uiDrawer->drawTextInput(*searchBar);
     }

@@ -78,8 +78,8 @@ class TextInput: public IUIElement {
     }
 
     void hover(int x, int y, int gameWidth, int gameHeight) {
-        hoverX = x - this->x;
-        hoverY = y - this->y;
+        hoverX = x;
+        hoverY = y;
         hovered = !(hoverX < 0 || hoverX >= width * 8 || hoverY < 0 || hoverY >= 16);
     }
 
