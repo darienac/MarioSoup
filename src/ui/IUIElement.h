@@ -16,6 +16,7 @@ class IUIElement {
     virtual void hover(int x, int y, int gameWidth, int gameHeight) {};
     virtual void mouseDown() {};
     virtual void click() {};
+    virtual void scroll(double xOff, double yOff) {};
     virtual void charInput(int codepoint) {};
     virtual UIElementType getElementType() {
         return UIElementType::NONE;

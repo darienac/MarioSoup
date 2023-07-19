@@ -58,6 +58,10 @@ class GlWindow {
                 }
             }
         });
+        glfwSetScrollCallback(window, [](GLFWwindow* window, double xOff, double yOff) {
+            GlWindow* glWindow = (GlWindow*) glfwGetWindowUserPointer(window);
+            glWindow->uiEventElement->scroll(xOff, yOff);
+        });
         glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
             GlWindow* glWindow = (GlWindow*) glfwGetWindowUserPointer(window);
             glWindow->mouseX = xpos;

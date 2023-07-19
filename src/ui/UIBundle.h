@@ -29,6 +29,12 @@ class UIBundle: public IUIElement {
         }
     }
 
+    void scroll(double xOff, double yOff) {
+        for (int i = 0; i < numElements; i++) {
+            elements[i]->scroll(xOff, yOff);
+        }
+    }
+
     void charInput(int codepoint) {
         for (int i = 0; i < numElements; i++) {
             elements[i]->charInput(codepoint);

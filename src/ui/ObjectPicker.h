@@ -16,9 +16,18 @@ class ObjectPicker: public IUIElement {
     int width, height;
     int innerHeight = 1024;
     int scrollY = 0;
+    bool isHover = false;
     bool isDragScrolling = false;
     int dragScrollOffset;
     int hoverX, hoverY;
+
+    void limitScroll() {
+        if (scrollY < 0) {
+            scrollY = 0;
+        } else if (scrollY > innerHeight - height * 8) {
+            scrollY = (innerHeight - height * 8);
+        }
+    }
 
     public:
     // Intervals of 8 pixels for width and height
@@ -29,6 +38,7 @@ class ObjectPicker: public IUIElement {
     void hover(int x, int y, int gameWidth, int gameHeight) {
         hoverX = x;
         hoverY = y;
+        isHover = (hoverX >= 0 && hoverX < width * 8 && hoverY >= 0 && hoverY < height * 8);
 
         if (isDragScrolling) {
             int newScrollBarY = (height * 8 - hoverY) - dragScrollOffset;
@@ -37,16 +47,20 @@ class ObjectPicker: public IUIElement {
             getScrollBar(scrollBarHeight, scrollYMax, scrollBarMax, scrollBarY);
 
             scrollY = newScrollBarY * scrollYMax / scrollBarMax;
-            if (scrollY < 0) {
-                scrollY = 0;
-            } else if (scrollY > scrollYMax) {
-                scrollY = scrollYMax;
-            }
+            limitScroll();
         }
     }
     void click() {
         isDragScrolling = false;
     }
+
+    void scroll(double xOff, double yOff) {
+        if (isHover) {
+            scrollY += yOff * -10.0;
+            limitScroll();
+        }
+    }
+
     void mouseDown() override {
         if (hoverX >= width * 8 - 4 && hoverX < width * 8 && hoverY >= 0 && hoverY < height * 8) {
             isDragScrolling = true;
@@ -59,6 +73,7 @@ class ObjectPicker: public IUIElement {
             }
         }
     }
+
     void charInput(int codepoint) {}
 
     int getWidth() {
