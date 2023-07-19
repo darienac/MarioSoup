@@ -35,8 +35,8 @@ class GlWindow {
                 glfwSetWindowShouldClose(window, GLFW_TRUE);
             } else if ((key == GLFW_KEY_BACKSPACE || key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT || key == GLFW_KEY_DELETE) && action != GLFW_RELEASE) {
                 GlWindow* glWindow = ((GlWindow*) glfwGetWindowUserPointer(window));
-                if (glWindow->onCharElement != nullptr) {
-                    glWindow->onCharElement->charInput(key);
+                if (glWindow->uiEventElement != nullptr) {
+                    glWindow->uiEventElement->charInput(key);
                 }
             } else if (key == GLFW_KEY_F11 && action == GLFW_PRESS) {
                 if (glWindow->isFullscreen()) {
@@ -50,8 +50,10 @@ class GlWindow {
             GlWindow* glWindow = (GlWindow*) glfwGetWindowUserPointer(window);
             if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_REPEAT) {
                 glWindow->mouseLeftPressed = (action == GLFW_PRESS);
-                if (action != GLFW_PRESS) {
-                    glWindow->setMouseLeftClicked();
+                if (action == GLFW_PRESS) {
+                    glWindow->uiEventElement->mouseDown();
+                } else {
+                    glWindow->uiEventElement->click();
                     glWindow->mouseLeftDrag = false;
                 }
             }
@@ -60,14 +62,19 @@ class GlWindow {
             GlWindow* glWindow = (GlWindow*) glfwGetWindowUserPointer(window);
             glWindow->mouseX = xpos;
             glWindow->mouseY = ypos;
+
+            double mouseX;
+            double mouseY;
+            glWindow->getCursorPosLetterboxed(mouseX, mouseY);
+            glWindow->uiEventElement->hover(mouseX - glWindow->uiEventElement->getX(), mouseY - glWindow->uiEventElement->getY(), glWindow->getGameWidth(), glWindow->getGameHeight());
             if (glWindow->mouseLeftPressed) {
                 glWindow->mouseLeftDrag = true;
             }
         });
         glfwSetCharCallback(window, [](GLFWwindow* window, unsigned int codepoint) {
             GlWindow* glWindow = ((GlWindow*) glfwGetWindowUserPointer(window));
-            if (glWindow->onCharElement != nullptr) {
-                glWindow->onCharElement->charInput(codepoint);
+            if (glWindow->uiEventElement != nullptr) {
+                glWindow->uiEventElement->charInput(codepoint);
             }
         });
     }
@@ -83,7 +90,7 @@ class GlWindow {
     GlFramebuffer* gameFramebuffer;
     GlScreenBuffer* windowFramebuffer;
 
-    IUIElement* onCharElement = nullptr;
+    IUIElement* uiEventElement = nullptr;
 
     double mouseX = 0.0;
     double mouseY = 0.0;
@@ -175,16 +182,6 @@ class GlWindow {
 
     void getCursorPos(double& x, double& y) {
         glfwGetCursorPos(window, &x, &y);
-    }
-
-    void setMouseLeftClicked() {
-        mouseLeftClicked = true;
-    }
-
-    bool pollMouseLeftClicked() {
-        bool out = mouseLeftClicked;
-        mouseLeftClicked = false;
-        return out;
     }
 
     void getCursorPosLetterboxed(double& x, double& y) {

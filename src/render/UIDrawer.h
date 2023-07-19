@@ -34,7 +34,11 @@ class UIDrawer {
     }
 
     void drawUIRegion(int tile, int x, int y, int w, int h) {
-        drawer->drawTileStretched(tile, x, y, w * 16, h * 16);
+        drawer->drawTileStretched(tile, x, y, w * 8, h * 8);
+    }
+
+    void drawUIRegionPixels(int tile, int x, int y, int w, int h) {
+        drawer->drawTileStretched(tile, x, y, w, h);
     }
 
     void updateWindowHeight(int height) {
@@ -203,6 +207,15 @@ class UIDrawer {
         drawer->resizeToFramebuffer();
 
         drawer->drawImage(*textInput.getFramebuffer()->getTextures(), x + 1, y + 1);
+    }
+
+    void drawObjectPicker(ObjectPicker* picker, int x, int y) {
+        drawUIRegion(UIREGION_DARK, x, y, picker->getWidth(), picker->getHeight());
+
+        int scrollBarHeight, scrollYMax, scrollBarMax, scrollBarY;
+        picker->getScrollBar(scrollBarHeight, scrollYMax, scrollBarMax, scrollBarY);
+
+        drawUIRegionPixels(UIREGION_LIGHT, x + picker->getWidth() * 8 - 4, y + picker->getHeight() * 8 - scrollBarHeight - scrollBarY, 4, scrollBarHeight);
     }
 
     void drawCharBuffer(char* buffer, int length, int x, int y) {

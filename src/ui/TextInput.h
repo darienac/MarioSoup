@@ -2,6 +2,7 @@
 
 #include "ui/ui.h"
 #include "TileMappings.h"
+#include "render/GlFramebuffer.h"
 
 class TextInput: public IUIElement {
     private:
@@ -13,7 +14,6 @@ class TextInput: public IUIElement {
     void (*callback)(TextInput* input, char* value);
     void* pointer;
 
-    char* value;
     bool hovered = false;
     bool selected = false;
     int cursorPos = 0;
@@ -33,7 +33,11 @@ class TextInput: public IUIElement {
         }
         textLength--;
         cursorPos--;
+        textBuffer[textLength] = '\0';
         adjustScroll();
+        if (callback != nullptr) {
+            callback(this, textBuffer);
+        }
     }
 
     void deleteInput() {
@@ -44,7 +48,11 @@ class TextInput: public IUIElement {
             textBuffer[i - 1] = textBuffer[i];
         }
         textLength--;
+        textBuffer[textLength] = '\0';
         adjustScroll();
+        if (callback != nullptr) {
+            callback(this, textBuffer);
+        }
     }
 
     void leftInput() {
@@ -75,6 +83,7 @@ class TextInput: public IUIElement {
     TextInput(const char* label, int width, int maxLength, char* textBuffer, void (*callback)(TextInput* input, char* value)): label(label), width(width), maxLength(maxLength), textBuffer(textBuffer), type(type), callback(callback) {
         framebufferTexture = new Texture(width * 8 - 2, 14);
         framebuffer = new GlFramebuffer(1, framebufferTexture, false);
+        textBuffer[0] = '\0';
     }
 
     void hover(int x, int y, int gameWidth, int gameHeight) {
@@ -86,9 +95,6 @@ class TextInput: public IUIElement {
     void click() {
         selected = hovered;
         if (hovered) {
-            if (callback != nullptr) {
-                callback(this, value);
-            }
             int relX = hoverX - scrollX;
             cursorPos = (relX - 3) / 8;
             if (cursorPos < 0) {
@@ -130,7 +136,11 @@ class TextInput: public IUIElement {
         textBuffer[cursorPos] = codepoint;
         textLength++;
         cursorPos++;
+        textBuffer[textLength] = '\0';
         adjustScroll();
+        if (callback != nullptr) {
+            callback(this, textBuffer);
+        }
     }
 
     UIElementType getElementType() {

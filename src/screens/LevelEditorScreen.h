@@ -10,25 +10,33 @@ namespace {
         "file",
         "edit"
     };
-    MenuListButton buttons1[] = {
-        MenuListButton("open", UIButtonType::BUTTON, nullptr),
-        MenuListButton("save", UIButtonType::BUTTON, nullptr)
-    };
-    MenuListButton buttons2[] = {
-        MenuListButton("edit 1", UIButtonType::BUTTON, nullptr),
-        MenuListButton("toggle", UIButtonType::RADIO, nullptr)
-    };
-    MenuList lists[] = {
-        MenuList(buttons1, 2, 8),
-        MenuList(buttons2, 2, 8)
-    };
-    MenuBar menuBar = MenuBar(menuItems, 2, lists, 144, 0, 32);
 }
 
 class LevelEditorScreen: public IScreen {
     private:
+    static const int NUM_BUNDLE_ELEMENTS = 3;
+
+    MenuListButton buttons1[2] = {
+        MenuListButton("open", UIButtonType::BUTTON, nullptr),
+        MenuListButton("save", UIButtonType::BUTTON, nullptr)
+    };
+    MenuListButton buttons2[2] = {
+        MenuListButton("edit 1", UIButtonType::BUTTON, nullptr),
+        MenuListButton("toggle", UIButtonType::RADIO, nullptr)
+    };
+    MenuList lists[2] = {
+        MenuList(buttons1, 2, 8),
+        MenuList(buttons2, 2, 8)
+    };
+    MenuBar menuBar = MenuBar(menuItems, 2, lists, 144, 0, 32);
+
     TextInput* searchBar;
     char searchBarBuffer[32];
+    ObjectPicker* picker;
+
+    IUIElement* bundleElements[NUM_BUNDLE_ELEMENTS];
+
+    UIBundle* uiBundle;
 
     public:
     LevelEditorScreen(GlWindow& window, ScreenManager& manager) {
@@ -37,16 +45,22 @@ class LevelEditorScreen: public IScreen {
 
         searchBar = new TextInput("search objects", 16, 30, searchBarBuffer, [](TextInput* input, char* value){
             LevelEditorScreen* screen = (LevelEditorScreen*) input->getPointer();
-            // Do Stuff
         });
         searchBar->setPointer(this);
-        searchBar->setPosition(8, window.getHeight() - 32);
+        searchBar->setPosition(8, window.getHeight() - 28);
+
+        picker = new ObjectPicker(18, 28);
+
+        bundleElements[0] = &menuBar;
+        bundleElements[1] = searchBar;
+        bundleElements[2] = picker;
+        uiBundle = new UIBundle(bundleElements, NUM_BUNDLE_ELEMENTS);
     }
 
     void enable() {
         window->resize(400, 256);
         window->stageDrawer->setOffset(144, 0);
-        window->onCharElement = searchBar;
+        window->uiEventElement = uiBundle;
     }
 
     void renderFrame() override {
@@ -56,27 +70,24 @@ class LevelEditorScreen: public IScreen {
         int windowWidth = window->getGameWidth();
         int windowHeight = window->getGameHeight();
 
-        menuBar.hover(mouseX - menuBar.getX(), mouseY - menuBar.getY(), windowWidth, windowHeight);
-        searchBar->hover(mouseX - searchBar->getX(), mouseY - searchBar->getY(), windowWidth, windowHeight);
-
-        if (window->pollMouseLeftClicked()) {
-            menuBar.click();
-            searchBar->click();
-        }
-
         glClearColor((float) 0x94 / 0xFF, (float) 0x94 / 0xFF, (float) 0xFF / 0xFF, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         window->stageDrawer->drawScoreboard(7654321, 54, 5, 4, -1, manager->getFPS());
 		window->stageDrawer->drawTitle(0, 7654321);
 
-        window->uiDrawer->drawUIRegion(UIREGION_LIGHT, 0, 0, 9, 16);
         window->uiDrawer->drawMenuBar(menuBar);
+
+        window->uiDrawer->drawUIRegion(UIREGION_LIGHT, 0, 224, 18, 4);
         window->uiDrawer->drawTextInput(*searchBar);
+        window->uiDrawer->drawObjectPicker(picker, 0, 0);
     }
 
     ~LevelEditorScreen() {
         delete searchBar;
+        delete picker;
+
+        delete uiBundle;
     }
 };
 

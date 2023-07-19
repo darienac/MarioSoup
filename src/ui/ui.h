@@ -22,3 +22,5 @@ union UIButtonValue {
 #include "ui/PopupWindow.h"
 #include "ui/Button.h"
 #include "ui/TextInput.h"
+#include "ui/ObjectPicker.h"
+#include "ui/UIBundle.h"
