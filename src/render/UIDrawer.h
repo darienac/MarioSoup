@@ -209,13 +209,81 @@ class UIDrawer {
         drawer->drawImage(*textInput.getFramebuffer()->getTextures(), x + 1, y + 1);
     }
 
-    void drawObjectPicker(ObjectPicker* picker, int x, int y) {
-        drawUIRegion(UIREGION_DARK, x, y, picker->getWidth(), picker->getHeight());
+    void drawGameObjectPreview(GameObject& object, int x, int y, bool selected) {
+        drawer->drawTile(object.getTilePreview(), x, y);
+        if (selected) {
+            glEnable(GL_COLOR_LOGIC_OP);
+            glLogicOp(GL_EQUIV);
+            drawer->drawTile(SELECT_BLOCK, x, y);
+            glLogicOp(GL_COPY);
+            glDisable(GL_COLOR_LOGIC_OP);
+        }
+    }
+
+    void drawObjectPickerGroup(ObjectPickerGroup& group, int x, int y) {
+        int width = group.getWidth() * 8 - 4;
+        drawer->drawTileStretched(UICOLLAPSE, x + 16, y - 8, width - 16, 8);
+        if (group.isOpen()) {
+            drawer->drawTile(UICOLLAPSE_ARROWUP, x, y - 8);
+        } else {
+            drawer->drawTile(UICOLLAPSE_ARROWDOWN, x, y - 8);
+        }
+        drawText(group.getLabel(), x + 16, y - 8);
+        if (!group.isOpen()) {
+            return;
+        }
+
+        int yOffset = 8;
+        ObjectPickerGroup* groups = group.getGroups();
+        for (int i = 0; i < group.getNumGroups(); i++) {
+            drawObjectPickerGroup(groups[i], x, y - yOffset);
+            yOffset += groups[i].getHeight();
+        }
+
+        GameObject* items = group.getItems();
+        int selectedItem = group.getSelectedItem();
+        for (int i = 0; i < group.getNumItems(); i++) {
+            drawGameObjectPreview(items[i], x + (i % 8) * 16 + 8, y - yOffset - (i / 8) * 16 - 24, i == selectedItem);
+        }
+        yOffset += 16 * ((group.getNumItems() + 7) / 8);
+
+        drawer->drawTileStretched(UICOLLAPSE_END, x, y - yOffset - 24, width, 8);
+    }
+
+    void drawObjectPicker(ObjectPicker& picker, int x, int y) {
+        drawer->setPalleteSwap(OVERWORLD_2, true);
+
+        int scrollY = picker.getScrollY();
+        int pxlWidth = picker.getWidth() * 8;
+        int pxlHeight = picker.getHeight() * 8;
+
+
+        drawUIRegion(UIREGION_DARK, x, y, picker.getWidth(), picker.getHeight());
+
+        GlFramebuffer* oldFB = GlFramebuffer::getCurrentFramebuffer();
+        picker.getFramebuffer()->bind();
+        drawer->resizeToFramebuffer();
+        glClearColor(0.0, 0.0, 0.0, 0.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Render inner section
+        // drawer->drawTile(Tiles::ROCK, 0, pxlHeight + scrollY - 16);
+        int yOffset = 0;
+        ObjectPickerGroup* groups = picker.getGroups();
+        for (int i = 0; i < picker.getNumGroups(); i++) {
+            drawObjectPickerGroup(groups[i], x, y + pxlHeight + scrollY - yOffset);
+            yOffset += groups[i].getHeight();
+        }
+
+        // Return to previous framebuffer
+        oldFB->bind();
+        drawer->resizeToFramebuffer();
 
         int scrollBarHeight, scrollYMax, scrollBarMax, scrollBarY;
-        picker->getScrollBar(scrollBarHeight, scrollYMax, scrollBarMax, scrollBarY);
+        picker.getScrollBar(scrollBarHeight, scrollYMax, scrollBarMax, scrollBarY);
 
-        drawUIRegionPixels(UIREGION_LIGHT, x + picker->getWidth() * 8 - 4, y + picker->getHeight() * 8 - scrollBarHeight - scrollBarY, 4, scrollBarHeight);
+        drawer->drawImage(*picker.getFramebuffer()->getTextures(), x, y);
+        drawUIRegionPixels(UIREGION_LIGHT, x + pxlWidth - 4, y + pxlHeight - scrollBarHeight - scrollBarY, 4, scrollBarHeight);
     }
 
     void drawCharBuffer(char* buffer, int length, int x, int y) {

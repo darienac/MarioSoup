@@ -4,9 +4,10 @@
 #include "screens/IScreen.h"
 #include "screens/ScreenManager.h"
 #include "ui/ui.h"
+#include "game/GameObject.h"
 
 namespace {
-    const char* menuItems[] = {
+    const char* menuItems[2] = {
         "file",
         "edit"
     };
@@ -32,7 +33,22 @@ class LevelEditorScreen: public IScreen {
 
     TextInput* searchBar;
     char searchBarBuffer[32];
+
+    GameObject objects[2] = {
+        GameObject("rock", Tiles::ROCK),
+        GameObject("brick", Tiles::BRICK)
+    };
+
+    ObjectPickerGroup groups[2] = {
+        ObjectPickerGroup("group 1", nullptr, 0, objects, 2),
+        ObjectPickerGroup("group 2", nullptr, 0, nullptr, 0)
+    };
+    ObjectPickerGroup groups2[2] = {
+        ObjectPickerGroup("group a", groups, 2, objects, 2),
+        ObjectPickerGroup("group b", nullptr, 0, nullptr, 0)
+    };
     ObjectPicker* picker;
+    
 
     IUIElement* bundleElements[NUM_BUNDLE_ELEMENTS];
 
@@ -49,7 +65,9 @@ class LevelEditorScreen: public IScreen {
         searchBar->setPointer(this);
         searchBar->setPosition(8, window.getHeight() - 28);
 
-        picker = new ObjectPicker(18, 28);
+        // Setup Tile Picker
+        picker = new ObjectPicker(groups2, 2, 18, 28);
+        picker->getGroups()[0].setOpen(true);
 
         bundleElements[0] = &menuBar;
         bundleElements[1] = searchBar;
@@ -80,7 +98,7 @@ class LevelEditorScreen: public IScreen {
 
         window->uiDrawer->drawUIRegion(UIREGION_LIGHT, 0, 224, 18, 4);
         window->uiDrawer->drawTextInput(*searchBar);
-        window->uiDrawer->drawObjectPicker(picker, 0, 0);
+        window->uiDrawer->drawObjectPicker(*picker, 0, 0);
     }
 
     ~LevelEditorScreen() {
