@@ -10,7 +10,6 @@ class TextInput: public IUIElement {
     int width;
     int maxLength;
     char* textBuffer;
-    UITextInputType type;
     void (*callback)(TextInput* input, char* value);
     void* pointer;
 
@@ -80,7 +79,7 @@ class TextInput: public IUIElement {
     }
 
     public:
-    TextInput(const char* label, int width, int maxLength, char* textBuffer, void (*callback)(TextInput* input, char* value)): label(label), width(width), maxLength(maxLength), textBuffer(textBuffer), type(type), callback(callback) {
+    TextInput(const char* label, int width, int maxLength, char* textBuffer, void (*callback)(TextInput* input, char* value)): label(label), width(width), maxLength(maxLength), textBuffer(textBuffer), callback(callback) {
         framebufferTexture = new Texture(width * 8 - 2, 14);
         framebuffer = new GlFramebuffer(1, framebufferTexture, false);
         textBuffer[0] = '\0';

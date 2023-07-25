@@ -89,8 +89,8 @@ class LevelEditorScreen: public IScreen {
         double mouseX;
         double mouseY;
         window->getCursorPosLetterboxed(mouseX, mouseY);
-        int windowWidth = window->getGameWidth();
-        int windowHeight = window->getGameHeight();
+        // int windowWidth = window->getGameWidth();
+        // int windowHeight = window->getGameHeight();
 
         glClearColor((float) 0x94 / 0xFF, (float) 0x94 / 0xFF, (float) 0xFF / 0xFF, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

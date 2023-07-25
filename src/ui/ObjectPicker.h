@@ -10,10 +10,10 @@ class ObjectPickerGroup: public IUIElement {
     private:
     static const int maxFilteredItems = 32;
 
-    const char* label;
     int width = 0;
     char* filter = nullptr;
 
+    const char* label;
     ObjectPickerGroup* groups;
     int numGroups;
     GameObject** items;
@@ -189,9 +189,10 @@ class ObjectPickerGroup: public IUIElement {
 
 class ObjectPicker: public IUIElement {
     private:
-    int width, height;
     ObjectPickerGroup* groups;
     int numGroups;
+    int width;
+    int height;
 
     int innerHeight = 1024;
     int scrollY = 0;
@@ -316,7 +317,6 @@ class ObjectPicker: public IUIElement {
     }
 
     void getScrollBar(int& scrollBarHeight, int& scrollYMax, int& scrollBarMax, int& scrollBarY) {
-        int width = getWidth() * 8;
         int height = getHeight() * 8;
         int innerHeight = getInnerHeight();
         int scrollY = getScrollY();

@@ -336,7 +336,7 @@ class UIDrawer {
     }
 
     void drawText(std::string text, int x, int y) {
-        for (int i = 0; i < text.length(); i++) {
+        for (size_t i = 0; i < text.length(); i++) {
             int tile = AIR + textEncoding.find(text.at(i));
             drawer->drawTile(tile, x + i * 8, y);
         }
@@ -352,6 +352,8 @@ class UIDrawer {
                 break;
             case UIElementType::TEXT_INPUT:
                 drawTextInput(*((TextInput*) element), xOff + ex, yOff + ey);
+                break;
+            default:
                 break;
         }
     }

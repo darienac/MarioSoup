@@ -15,7 +15,9 @@
                 "-lglfw3dll",
                 "-lopengl32",
                 "-lglew32",
-                "-static"
+                "-static",
+                "-Wall",
+                "-Werror"
             ],
             "options": {
                 "cwd": "C:\\msys64\\mingw64\\bin"
@@ -41,7 +43,9 @@
                 "-lglfw3dll",
                 "-lopengl32",
                 "-lglew32",
-                "-static"
+                "-static",
+                "-Wall",
+                "-Werror"
             ],
             "options": {
                 "cwd": "C:\\msys64\\mingw64\\bin"

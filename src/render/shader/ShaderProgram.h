@@ -104,7 +104,7 @@ public:
 		return programId;
 	}
 
-	~ShaderProgram() {
+	virtual ~ShaderProgram() {
 		std::cout << "Shader destroyed\n";
 
 		unbind();

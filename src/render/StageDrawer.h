@@ -97,7 +97,7 @@ class StageDrawer {
     }
 
     void addText(int tiles[], int width, int height, std::string text, int x, int y) {
-        for (int i = 0; i < text.length(); i++) {
+        for (size_t i = 0; i < text.length(); i++) {
             int tile = AIR + textEncoding.find(text.at(i));
             tiles[y * width + x + i] = tile;
         }

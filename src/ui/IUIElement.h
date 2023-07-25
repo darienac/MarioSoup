@@ -39,4 +39,6 @@ class IUIElement {
     int getY() {
         return y;
     }
+
+    virtual ~IUIElement() {}
 };

@@ -97,7 +97,7 @@ class GlFramebuffer {
         return currentFramebuffer;
     }
 
-    ~GlFramebuffer() {
+    virtual ~GlFramebuffer() {
         std::cout << "Framebuffer destroyed\n";
 
         glDeleteFramebuffers(1, &framebufferId);

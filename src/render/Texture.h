@@ -21,7 +21,7 @@ class Texture {
 
     Texture(int width, int height) {
         glGenTextures(1, &textureId);
-        if (textureId < 0) {
+        if ((int) textureId < 0) {
             throw "Unable to create texture";
         }
 
@@ -40,7 +40,7 @@ class Texture {
     }
 
     void load(const std::string& fileName) {
-        if (textureId != -1) {
+        if (textureId != (GLuint) -1) {
             throw "Texture already loaded";
         }
 
@@ -82,7 +82,7 @@ class Texture {
     }
 
     ~Texture() {
-        if (getTextureId() == -1) {
+        if (getTextureId() == (GLuint) -1) {
             std::printf("Fake texture %d deleted\n", getTextureId());
             return;
         }
