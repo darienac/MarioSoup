@@ -5,6 +5,9 @@
 #include "screens/ScreenManager.h"
 #include "ui/ui.h"
 #include "game/GameObject.h"
+#include "game/GameObjectCache.h"
+
+using namespace GameObjectCache;
 
 namespace {
     const char* menuItems[2] = {
@@ -34,13 +37,8 @@ class LevelEditorScreen: public IScreen {
     TextInput* searchBar;
     char searchBarBuffer[32];
 
-    GameObject objects[2] = {
-        GameObject("rock", Tiles::ROCK),
-        GameObject("brick", Tiles::BRICK)
-    };
-
-    GameObject* objectList1[2] = {objects, objects + 1};
-    GameObject* objectList2[2] = {objects + 1, objects};
+    GameObject* objectList1[2] = {objects["smb:rock"], objects["smb:brick"]};
+    GameObject* objectList2[2] = {objects["smb:brick"], objects["smb:rock"]};
 
     ObjectPickerGroup groups[2] = {
         ObjectPickerGroup("group 1", nullptr, 0, objectList1, 2),

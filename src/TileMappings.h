@@ -103,8 +103,8 @@ namespace Tiles {
 
         COIN_ICO, TITLE,
 
-        ROCK,
-        BRICK
+        SMB_ROCK,
+        SMB_BRICK
     };
 
     Tile& getTile(int tile) {
@@ -205,7 +205,7 @@ namespace Tiles {
         tiles[COIN_ICO] = Tile(HUD, 264, 76, 8, 8);
         tiles[TITLE] = Tile(HUD, 40, 144, 176, 88);
 
-        tiles[ROCK] = Tile(TILESET, 0, 16, 16, 16);
-        tiles[BRICK] = Tile(TILESET, 17, 16, 16, 16);
+        tiles[SMB_ROCK] = Tile(TILESET, 0, 16, 16, 16);
+        tiles[SMB_BRICK] = Tile(TILESET, 17, 16, 16, 16);
     };
 }

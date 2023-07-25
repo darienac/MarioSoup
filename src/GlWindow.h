@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 #include "TileMappings.h"
+#include "game/GameObjectCache.h"
 
 #include "render/shader/ShaderProgram.h"
 #include "render/shader/ImageShader.h"
@@ -177,6 +178,7 @@ class GlWindow {
         gameFramebuffer = new GlFramebuffer(1, gameTexture, true);
 
         Tiles::initTiles();
+        GameObjectCache::init();
 
         drawer->bind();
 
