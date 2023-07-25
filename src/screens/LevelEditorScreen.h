@@ -20,6 +20,9 @@ class LevelEditorScreen: public IScreen {
     private:
     static const int NUM_BUNDLE_ELEMENTS = 3;
 
+    int scrollX = 0;
+    int scrollY = 0;
+
     MenuListButton buttons1[2] = {
         MenuListButton("open", UIButtonType::BUTTON, nullptr),
         MenuListButton("save", UIButtonType::BUTTON, nullptr)
@@ -55,6 +58,8 @@ class LevelEditorScreen: public IScreen {
 
     UIBundle* uiBundle;
 
+    GameLevel level = GameLevel(32, 32);
+
     public:
     LevelEditorScreen(GlWindow& window, ScreenManager& manager) {
         this->window = &window;
@@ -75,6 +80,8 @@ class LevelEditorScreen: public IScreen {
         bundleElements[1] = searchBar;
         bundleElements[2] = picker;
         uiBundle = new UIBundle(bundleElements, NUM_BUNDLE_ELEMENTS);
+
+        level.setGridObject(objects["smb:brick"], 0, 0);
     }
 
     void enable() {
@@ -105,6 +112,8 @@ class LevelEditorScreen: public IScreen {
 
         window->stageDrawer->drawScoreboard(7654321, 54, 5, 4, -1, manager->getFPS());
 		window->stageDrawer->drawTitle(0, 7654321);
+
+        window->levelDrawer->drawLevel(level, 144 + scrollX, scrollY);
     }
 
     ObjectPicker* getObjectPicker() {

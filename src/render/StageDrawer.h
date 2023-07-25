@@ -166,8 +166,4 @@ class StageDrawer {
         addScore(title_screen, TITLE_WIDTH, TITLE_HEIGHT, highScore, 16, 0);
         drawGridWithPalletes(title_screen, title_palletes1, title_palletes2, TITLE_WIDTH, TITLE_HEIGHT, scrollX, 48, 8, 8);
     }
-
-    void drawLevel(int tiles[], int width, int height, int scrollX) {
-        drawGrid(tiles, width, height, scrollX, 0, 16, 16);
-    }
 };

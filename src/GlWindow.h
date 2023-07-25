@@ -19,6 +19,7 @@
 #include "render/GlScreenBuffer.h"
 #include "render/StageDrawer.h"
 #include "render/UIDrawer.h"
+#include "render/LevelDrawer.h"
 
 class GlWindow {
     private:
@@ -88,6 +89,7 @@ class GlWindow {
     GLFWwindow* window;
     ImageDrawer* drawer;
     StageDrawer* stageDrawer;
+    LevelDrawer* levelDrawer;
     UIDrawer* uiDrawer;
     ImageShader* imageShader;
 
@@ -183,6 +185,7 @@ class GlWindow {
         drawer->bind();
 
         stageDrawer = new StageDrawer(*drawer);
+        levelDrawer = new LevelDrawer(*drawer);
         uiDrawer = new UIDrawer(*drawer, windowWidth, windowHeight);
     }
 
@@ -262,6 +265,7 @@ class GlWindow {
 
         delete drawer;
         delete stageDrawer;
+        delete levelDrawer;
         delete uiDrawer;
         delete gameTexture;
         delete gameFramebuffer;
