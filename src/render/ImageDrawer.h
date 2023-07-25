@@ -42,11 +42,17 @@ class ImageDrawer {
     private:
     ImageShader* shader;
     glm::mat4 projection;
+    float zPos = 0.0f;
 
     GLuint quadVerticesBuffer;
     GLuint quadFacesBuffer;
     GLuint quadTexCoordsBuffer;
     public:
+    static const float ZPOS_GAME_TILES;
+    static const float ZPOS_UI;
+    static const float ZPOS_TEXTHINT;
+
+
     ImageDrawer(ImageShader& shader, int width, int height): shader(&shader) {
         resize(width, height);
 
@@ -134,9 +140,8 @@ class ImageDrawer {
 
         shader->bindTexture(texture);
 
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3((float) x, (float) y, 0.0f));
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3((float) x, (float) y, zPos));
         model = glm::scale(model, glm::vec3(w, h, 1.0f));
-        // std::printf("Scaled width: %f\n", cw * texture.getWidth());
 
         glm::mat4 viewModel = projection * model;
 
@@ -195,4 +200,16 @@ class ImageDrawer {
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
+
+    void setZPos(float zPos) {
+        this->zPos = zPos;
+    }
+
+    float getZPos() {
+        return zPos;
+    }
 };
+
+const float ImageDrawer::ZPOS_GAME_TILES = 0.0f;
+const float ImageDrawer::ZPOS_UI = 0.5f;
+const float ImageDrawer::ZPOS_TEXTHINT = 1.0f;

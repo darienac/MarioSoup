@@ -1,30 +1,67 @@
 #pragma once
 
+#include <vector>
+#include <string.h>
+
 #include "ui/ui.h"
 #include "game/GameObject.h"
 
 class ObjectPickerGroup: public IUIElement {
     private:
+    static const int maxFilteredItems = 32;
+
     const char* label;
     int width = 0;
+    char* filter = nullptr;
+
     ObjectPickerGroup* groups;
     int numGroups;
-    GameObject* items;
+    GameObject** items;
     int numItems;
+    GameObject* filteredItems[maxFilteredItems];
+    int numFilteredItems = 0;
+
+
     bool open = false;
     bool isHover = false;
     int hoverX = 0;
     int hoverY = 0;
-    int hoveredItem = -1;
-    int selectedItem = -1;
+    GameObject* hoveredItem = nullptr;
+    GameObject** selectedItemLoc = nullptr;
 
     public:
-    ObjectPickerGroup(const char* label, ObjectPickerGroup* groups, int numGroups, GameObject* items, int numItems): label(label), groups(groups), numGroups(numGroups), items(items), numItems(numItems) {}
+    ObjectPickerGroup(const char* label, ObjectPickerGroup* groups, int numGroups, GameObject** items, int numItems): label(label), groups(groups), numGroups(numGroups), items(items), numItems(numItems) {}
 
+    void updateSearchFilter(char* filter) {
+        for (int i = 0; i < numGroups; i++) {
+            groups[i].updateSearchFilter(filter);
+        }
+        if (filter == nullptr || strlen(filter) == 0) {
+            this->filter = nullptr;
+            return;
+        }
+        this->filter = filter;
+
+        numFilteredItems = 0;
+        for (int i = 0; i < numItems && numFilteredItems < maxFilteredItems; i++) {
+            if (strstr(items[i]->getName(), filter) != nullptr) {
+                filteredItems[numFilteredItems] = items[i];
+                numFilteredItems++;
+            }
+        }
+    }
+    
+    void setSelectedItemLoc(GameObject** selectedItemLoc) {
+        this->selectedItemLoc = selectedItemLoc;
+        for (int i = 0; i < numGroups; i++) {
+            groups[i].setSelectedItemLoc(selectedItemLoc);
+        }
+    }
+    
     int getHeight() {
         ObjectPickerGroup* groups = getGroups();
         if (open) {
-            int height = 32 + ((numItems + 7) / 8) * 16;
+            int height = 32 + ((getNumItems() + 7) / 8) * 16;
             for (int i = 0; i < getNumGroups(); i++) {
                 height += groups[i].getHeight();
             }
@@ -68,21 +105,38 @@ class ObjectPickerGroup: public IUIElement {
         return numGroups;
     }
 
-    GameObject* getItems() {
-        return items;
+    GameObject** getItems() {
+        if (filter == nullptr) {
+            return items;
+        }
+        return filteredItems;
     }
 
     int getNumItems() {
-        return numItems;
+        if (filter == nullptr) {
+            return numItems;
+        }
+        return numFilteredItems;
     }
 
-    void selectItem(int itemNum) {
-        selectedItem = itemNum;
-        std::printf("Item selected: %d\n", itemNum);
+    void selectItem(GameObject* item) {
+        *selectedItemLoc = item;
     }
 
-    int getSelectedItem() {
-        return selectedItem;
+    GameObject* getSelectedItem() {
+        return *selectedItemLoc;
+    }
+
+    GameObject* getHoveredItem() {
+        return hoveredItem;
+    }
+
+    int getHoverX() {
+        return hoverX;
+    }
+
+    int getHoverY() {
+        return hoverY;
     }
 
     // Hover relative to top left corner
@@ -90,7 +144,8 @@ class ObjectPickerGroup: public IUIElement {
         hoverX = x;
         hoverY = y;
         isHover = (x >= 0 && x < width * 8 && y >= -getHeight() && y < 0);
-        hoveredItem = -1;
+        hoveredItem = nullptr;
+        GameObject** items = getItems();
 
         if (isHover) {
             ObjectPickerGroup* groups = getGroups();
@@ -102,10 +157,12 @@ class ObjectPickerGroup: public IUIElement {
             }
             yOffset += 8;
             if (hoverY + yOffset < 0 && getNumItems() > 0 && x >= 8 && x < width * 8 - 16) {
-                hoveredItem = (-(hoverY + yOffset + 1) / 16) * 8 + ((x - 8) / 16);
-                if (hoveredItem >= getNumItems()) {
-                    hoveredItem = -1;
+                int hoveredItemIdx = (-(hoverY + yOffset + 1) / 16) * 8 + ((x - 8) / 16);
+                if (hoveredItemIdx >= getNumItems()) {
+                    hoveredItem = nullptr;
+                    return;
                 }
+                hoveredItem = items[hoveredItemIdx];
             }
         }
     }
@@ -124,7 +181,7 @@ class ObjectPickerGroup: public IUIElement {
             groups[i].click();
         }
 
-        if (hoveredItem != -1) {
+        if (hoveredItem != nullptr) {
             selectItem(hoveredItem);
         }
     }
@@ -144,6 +201,7 @@ class ObjectPicker: public IUIElement {
     int hoverX, hoverY;
     Texture* framebufferTexture;
     GlFramebuffer* framebuffer;
+    GameObject* selectedItem;
 
     void limitScroll() {
         if (scrollY < 0) {
@@ -161,6 +219,13 @@ class ObjectPicker: public IUIElement {
 
         for (int i = 0; i < numGroups; i++) {
             groups[i].setWidth(width);
+            groups[i].setSelectedItemLoc(&selectedItem);
+        }
+    }
+
+    void updateSearchFilter(char* filter) {
+        for (int i = 0; i < numGroups; i++) {
+            groups[i].updateSearchFilter(filter);
         }
     }
 

@@ -12,8 +12,12 @@ class UIDrawer {
     private:
     ImageDrawer* drawer;
     int vOffset;
+    int windowWidth;
+    int windowHeight;
 
     void drawMenuItem(const char* label, int x, int y, bool isHover) {
+        drawer->setPalleteSwap(OVERWORLD_2, true);
+
         int l = strlen(label);
         int tile;
 
@@ -29,7 +33,8 @@ class UIDrawer {
     }
     
     public:
-    UIDrawer(ImageDrawer& drawer, int windowHeight): drawer(&drawer) {
+    UIDrawer(ImageDrawer& drawer, int windowWidth, int windowHeight): drawer(&drawer) {
+        updateWindowWidth(windowWidth);
         updateWindowHeight(windowHeight);
     }
 
@@ -41,8 +46,13 @@ class UIDrawer {
         drawer->drawTileStretched(tile, x, y, w, h);
     }
 
+    void updateWindowWidth(int width) {
+        windowWidth = width;
+    }
+
     void updateWindowHeight(int height) {
         vOffset = height - 16;
+        windowHeight = height;
     }
 
     void drawMenuBar(MenuBar& menuBar) {
@@ -220,6 +230,31 @@ class UIDrawer {
         }
     }
 
+    // Draws relative to x and y of cursor
+    void drawTextHint(const char* text, int x, int y) {
+        float oldZPos = drawer->getZPos();
+        drawer->setZPos(ImageDrawer::ZPOS_TEXTHINT);
+
+        int length = strlen(text);
+        int width = length * 8 + 4;
+        int height = 12;
+        y -= height;
+        if (x < 0) {
+            x = 0;
+        } else if (x > windowWidth - width) {
+            x = windowWidth - width;
+        }
+        if (y < 0) {
+            y = 0;
+        } else if (y >= windowHeight - height) {
+            y = windowHeight - height;
+        }
+        drawer->drawTileStretched(UIREGION_BLACK, x, y, width, height);
+        drawText(text, x + 2, y + 2);
+
+        drawer->setZPos(oldZPos);
+    }
+
     void drawObjectPickerGroup(ObjectPickerGroup& group, int x, int y) {
         int width = group.getWidth() * 8 - 4;
         drawer->drawTileStretched(UICOLLAPSE, x + 16, y - 8, width - 16, 8);
@@ -240,10 +275,14 @@ class UIDrawer {
             yOffset += groups[i].getHeight();
         }
 
-        GameObject* items = group.getItems();
-        int selectedItem = group.getSelectedItem();
+        GameObject** items = group.getItems();
+        GameObject* selectedItem = group.getSelectedItem();
+        GameObject* hoveredItem = group.getHoveredItem();
         for (int i = 0; i < group.getNumItems(); i++) {
-            drawGameObjectPreview(items[i], x + (i % 8) * 16 + 8, y - yOffset - (i / 8) * 16 - 24, i == selectedItem);
+            drawGameObjectPreview(*items[i], x + (i % 8) * 16 + 8, y - yOffset - (i / 8) * 16 - 24, items[i] == selectedItem);
+        }
+        if (hoveredItem != nullptr) {
+            drawTextHint(hoveredItem->getName(), group.getHoverX() + x, group.getHoverY() + y);
         }
         yOffset += 16 * ((group.getNumItems() + 7) / 8);
 

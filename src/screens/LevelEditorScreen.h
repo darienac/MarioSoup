@@ -39,12 +39,15 @@ class LevelEditorScreen: public IScreen {
         GameObject("brick", Tiles::BRICK)
     };
 
+    GameObject* objectList1[2] = {objects, objects + 1};
+    GameObject* objectList2[2] = {objects + 1, objects};
+
     ObjectPickerGroup groups[2] = {
-        ObjectPickerGroup("group 1", nullptr, 0, objects, 2),
+        ObjectPickerGroup("group 1", nullptr, 0, objectList1, 2),
         ObjectPickerGroup("group 2", nullptr, 0, nullptr, 0)
     };
     ObjectPickerGroup groups2[2] = {
-        ObjectPickerGroup("group a", groups, 2, objects, 2),
+        ObjectPickerGroup("group a", groups, 2, objectList2, 2),
         ObjectPickerGroup("group b", nullptr, 0, nullptr, 0)
     };
     ObjectPicker* picker;
@@ -61,6 +64,7 @@ class LevelEditorScreen: public IScreen {
 
         searchBar = new TextInput("search objects", 16, 30, searchBarBuffer, [](TextInput* input, char* value){
             LevelEditorScreen* screen = (LevelEditorScreen*) input->getPointer();
+            screen->getObjectPicker()->updateSearchFilter(value);
         });
         searchBar->setPointer(this);
         searchBar->setPosition(8, window.getHeight() - 28);
@@ -91,14 +95,22 @@ class LevelEditorScreen: public IScreen {
         glClearColor((float) 0x94 / 0xFF, (float) 0x94 / 0xFF, (float) 0xFF / 0xFF, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        window->stageDrawer->drawScoreboard(7654321, 54, 5, 4, -1, manager->getFPS());
-		window->stageDrawer->drawTitle(0, 7654321);
+        window->drawer->setZPos(ImageDrawer::ZPOS_UI);
 
         window->uiDrawer->drawMenuBar(menuBar);
 
         window->uiDrawer->drawUIRegion(UIREGION_LIGHT, 0, 224, 18, 4);
         window->uiDrawer->drawTextInput(*searchBar);
         window->uiDrawer->drawObjectPicker(*picker, 0, 0);
+
+        window->drawer->setZPos(ImageDrawer::ZPOS_GAME_TILES);
+
+        window->stageDrawer->drawScoreboard(7654321, 54, 5, 4, -1, manager->getFPS());
+		window->stageDrawer->drawTitle(0, 7654321);
+    }
+
+    ObjectPicker* getObjectPicker() {
+        return picker;
     }
 
     ~LevelEditorScreen() {

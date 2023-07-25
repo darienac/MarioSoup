@@ -181,7 +181,7 @@ class GlWindow {
         drawer->bind();
 
         stageDrawer = new StageDrawer(*drawer);
-        uiDrawer = new UIDrawer(*drawer, windowHeight);
+        uiDrawer = new UIDrawer(*drawer, windowWidth, windowHeight);
     }
 
     void getCursorPos(double& x, double& y) {
