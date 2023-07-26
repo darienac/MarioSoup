@@ -3,6 +3,7 @@
 #include "render/ImageDrawer.h"
 #include "game/GameLevel.h"
 #include "TileMappings.h"
+#include "ui/ui.h"
 
 using namespace Tiles;
 
@@ -51,21 +52,48 @@ class LevelDrawer {
         glDisable(GL_COLOR_LOGIC_OP);
     }
 
-    void drawLevelBoundButtons(GameLevel& level, int viewWidth, int viewHeight, int x, int y, int scrollX, int scrollY) {
+    void drawLevelBoundButtons(LevelEditorUI& levelEditor) {
+        int xOffset = 144;
+        int yOffset = 0;
+
+        int scrollX = levelEditor.getScrollX();
+        int scrollY = levelEditor.getScrollY();
+
+        GameLevel* level = levelEditor.getLevel();
+        int levelW = level->getWidth() * 16;
+        int levelH = level->getHeight() * 16;
+
         int viewX;
         int viewY;
-        int levelW = level.getWidth() * 16;
-        // int levelH = level.getHeight() * 16;
 
-        viewX = viewWidth / 2;
-        if (scrollX > viewWidth / 2 - 16) {
-            viewX = scrollX + 16;
-        } else if (scrollX + levelW < viewWidth / 2 + 16) {
-            viewX = scrollX + levelW - 16;
-        }
-        viewY = scrollY + level.getHeight() * 16;
+        // Expand Up
 
-        drawer->drawTile(LEVEL_MINUS, x + viewX - 16, y + viewY);
-        drawer->drawTile(LEVEL_PLUS, x + viewX, y + viewY);
+        viewX = levelEditor.getLevelBoundButtonX();
+        viewY = scrollY + levelH;
+
+        drawer->drawTile(LEVEL_MINUS, xOffset + viewX - 16, yOffset + viewY);
+        drawer->drawTile(LEVEL_PLUS, xOffset + viewX, yOffset + viewY);
+
+        // Expand Down
+
+        viewY = scrollY - 16;
+
+        drawer->drawTile(LEVEL_MINUS, xOffset + viewX - 16, yOffset + viewY);
+        drawer->drawTile(LEVEL_PLUS, xOffset + viewX, yOffset + viewY);
+
+        // Expand Right
+
+        viewX = scrollX + levelW;
+        viewY = levelEditor.getLevelBoundButtonY();
+
+        drawer->drawTile(LEVEL_MINUS, xOffset + viewX, yOffset + viewY - 16);
+        drawer->drawTile(LEVEL_PLUS, xOffset + viewX, yOffset + viewY);
+
+        // Expand Left
+
+        viewX = scrollX - 16;
+
+        drawer->drawTile(LEVEL_MINUS, xOffset + viewX, yOffset + viewY - 16);
+        drawer->drawTile(LEVEL_PLUS, xOffset + viewX, yOffset + viewY);
     }
 };

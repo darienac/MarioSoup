@@ -64,7 +64,7 @@ class LevelEditorScreen: public IScreen {
 		// window->stageDrawer->drawTitle(0, 7654321);
 
         window->levelDrawer->drawLevelBoundary(level, WINDOW_WIDTH - VIEW_WIDTH + scrollX, scrollY);
-        window->levelDrawer->drawLevelBoundButtons(level, VIEW_WIDTH, VIEW_HEIGHT, WINDOW_WIDTH - VIEW_WIDTH, 0, scrollX, scrollY);
+        window->levelDrawer->drawLevelBoundButtons(*editorUI);
         window->levelDrawer->drawLevel(level, 144 + scrollX, scrollY);
         window->levelDrawer->drawCursor(level, editorUI->getTileHoverX(), editorUI->getTileHoverY(), 144 + scrollX, scrollY);
     }

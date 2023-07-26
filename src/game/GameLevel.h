@@ -39,6 +39,26 @@ class GameLevel {
         objectGrid[width * y + x] = object;
     }
 
+    void resizeGrid(int newWidth, int newHeight, int xOff, int yOff) {
+        if (newWidth <= 0 || newHeight <= 0) {
+            return;
+        }
+
+        GameObject** newGrid = new GameObject*[newWidth * newHeight];
+
+        for (int i = 0; i < newWidth * newHeight; i++) {
+            int xOld = (i % newWidth) - xOff;
+            int yOld = (i / newWidth) - yOff;
+            newGrid[i] = getGridObject(xOld, yOld);
+        }
+
+        delete objectGrid;
+        objectGrid = newGrid;
+
+        width = newWidth;
+        height = newHeight;
+    }
+
     ~GameLevel() {
         delete objectGrid;
     }
