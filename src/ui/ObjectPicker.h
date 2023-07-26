@@ -252,7 +252,7 @@ class ObjectPicker: public IUIElement {
         int yOffset = 0;
         for (int i = 0; i < getNumGroups(); i++) {
             int height = groups[i].getHeight();
-            groups[i].hover(hoverX, -(pxlHeight - hoverY - yOffset), gameWidth, gameHeight);
+            groups[i].hover(hoverX, -(pxlHeight - hoverY - yOffset) - scrollY, gameWidth, gameHeight);
             yOffset += height;
         }
 
