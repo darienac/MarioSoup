@@ -1,6 +1,6 @@
-#include "GlWindow.h"
 #include "screens/ScreenManager.h"
 #include "screens/LevelEditorScreen.h"
+#include "GlWindow.h"
 
 const int WINDOW_WIDTH = 400;
 const int WINDOW_HEIGHT = 256;

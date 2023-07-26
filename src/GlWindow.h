@@ -2,6 +2,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 
+class GlWindow;
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -18,8 +20,8 @@
 #include "render/GlFramebuffer.h"
 #include "render/GlScreenBuffer.h"
 #include "render/StageDrawer.h"
-#include "render/UIDrawer.h"
 #include "render/LevelDrawer.h"
+#include "render/UIDrawer.h"
 
 class GlWindow {
     private:

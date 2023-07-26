@@ -100,6 +100,7 @@ namespace Tiles {
         UIBOX_BL, UIBOX_L, UIBOX_TL, UIBOX_T, UIBOX_TR, UIBOX_R, UIBOX_BR, UIBOX_B, UIBOX_C,
         UIREGION_LIGHT, UIREGION_DARK, UIREGION_BLACK,
         UICOLLAPSE, UICOLLAPSE_ARROWUP, UICOLLAPSE_ARROWDOWN, UICOLLAPSE_END,
+        LEVELBOUND_BL, LEVELBOUND_L, LEVELBOUND_TL, LEVELBOUND_T, LEVELBOUND_TR, LEVELBOUND_R, LEVELBOUND_BR, LEVELBOUND_B,
 
         COIN_ICO, TITLE,
 
@@ -201,6 +202,14 @@ namespace Tiles {
         tiles[UICOLLAPSE_ARROWDOWN] = Tile(UI, 0, 48, 16, 8);
         tiles[UICOLLAPSE_END] = Tile(UI, 0, 56, 16, 8);
 
+        tiles[LEVELBOUND_BL] = Tile(UI, 16, 40, 8, 8);
+        tiles[LEVELBOUND_L] = Tile(UI, 16, 36, 8, 8);
+        tiles[LEVELBOUND_TL] = Tile(UI, 16, 32, 8, 8);
+        tiles[LEVELBOUND_T] = Tile(UI, 20, 32, 8, 8);
+        tiles[LEVELBOUND_TR] = Tile(UI, 24, 32, 8, 8);
+        tiles[LEVELBOUND_R] = Tile(UI, 24, 36, 8, 8);
+        tiles[LEVELBOUND_BR] = Tile(UI, 24, 40, 8, 8);
+        tiles[LEVELBOUND_B] = Tile(UI, 20, 40, 8, 8);
 
         tiles[COIN_ICO] = Tile(HUD, 264, 76, 8, 8);
         tiles[TITLE] = Tile(HUD, 40, 144, 176, 88);
