@@ -140,7 +140,7 @@ class ObjectPickerGroup: public IUIElement {
     }
 
     // Hover relative to top left corner
-    void hover(int x, int y, int gameWidth, int gameHeight) {
+    bool hover(int x, int y, int gameWidth, int gameHeight) {
         hoverX = x;
         hoverY = y;
         isHover = (x >= 0 && x < width * 8 && y >= -getHeight() && y < 0);
@@ -160,11 +160,13 @@ class ObjectPickerGroup: public IUIElement {
                 int hoveredItemIdx = (-(hoverY + yOffset + 1) / 16) * 8 + ((x - 8) / 16);
                 if (hoveredItemIdx >= getNumItems()) {
                     hoveredItem = nullptr;
-                    return;
+                    return isHover;
                 }
                 hoveredItem = items[hoveredItemIdx];
             }
         }
+
+        return isHover;
     }
 
     void click() {
@@ -230,7 +232,7 @@ class ObjectPicker: public IUIElement {
         }
     }
 
-    void hover(int x, int y, int gameWidth, int gameHeight) {
+    bool hover(int x, int y, int gameWidth, int gameHeight) override {
         hoverX = x;
         hoverY = y;
         isHover = (hoverX >= 0 && hoverX < width * 8 && hoverY >= 0 && hoverY < height * 8);
@@ -253,6 +255,8 @@ class ObjectPicker: public IUIElement {
             groups[i].hover(hoverX, -(pxlHeight - hoverY - yOffset), gameWidth, gameHeight);
             yOffset += height;
         }
+
+        return isHover;
     }
     void click() {
         if (isDragScrolling) {

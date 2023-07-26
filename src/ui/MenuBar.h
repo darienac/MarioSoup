@@ -47,7 +47,8 @@ class MenuBar : public IUIElement {
         return width;
     }
 
-    void hover(int x, int y, int gameWidth, int gameHeight) {
+    bool hover(int x, int y, int gameWidth, int gameHeight) override {
+        bool isHovered = false;
         if (numSelected != -1) {
             int xMax = 0;
             int xMin;
@@ -55,20 +56,23 @@ class MenuBar : public IUIElement {
                 xMin = xMax;
                 xMax = xMin + 8 * (strlen(labels[i]) + 1);
             }
-            lists[numSelected].hover(x - xMin, y - gameHeight + 16, gameWidth, gameHeight);
+            isHovered |= lists[numSelected].hover(x - xMin, y - gameHeight + 16, gameWidth, gameHeight);
         }
         if (y >= gameHeight - 16 && y < gameHeight) {
+            isHovered = true;
             int xMin = 0;
             for (int i = 0; i < numLabels; i++) {
                 int xMax = xMin + 8 * (strlen(labels[i]) + 1);
                 if (x >= xMin && x < xMax) {
                     numHovered = i;
-                    return;
+                    return isHovered;
                 }
                 xMin = xMax;
             }
         }
         numHovered = -1;
+
+        return isHovered;
     }
 
     void click() {

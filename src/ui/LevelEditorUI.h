@@ -77,6 +77,18 @@ class LevelEditorUI: public UIBundle {
         return *picker;
     }
 
+    bool hover(int x, int y, int gameWidth, int gameHeight) override {
+        bool bundleHover = UIBundle::hover(x, y, gameWidth, gameHeight);
+
+        if (bundleHover) {
+            return true;
+        }
+        
+        // Hover stuff for level
+
+        return true;
+    }
+
     ~LevelEditorUI() {
         delete searchBar;
         delete picker;

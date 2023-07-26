@@ -17,21 +17,22 @@ class MenuList : public IUIElement {
     public:
     MenuList(MenuListButton* buttons, int numButtons, int width): buttons(buttons), numButtons(numButtons), width(width) {}
 
-    void hover(int x, int y, int gameWidth, int gameHeight) {
+    bool hover(int x, int y, int gameWidth, int gameHeight) override {
         if (x < 0 || x >= (width * 8)) {
             numHovered = -1;
             allowCloseList = true;
-            return;
+            return false;
         }
         if (y >= -4 || y < -4 - (numButtons * 8)) {
             numHovered = -1;
             allowCloseList = true;
-            return;
+            return false;
         }
 
         numHovered = -((y + 5) / 8);
-
         allowCloseList = (buttons[numHovered].getType() != UIButtonType::RADIO);
+
+        return true;
     }
     
     void click() {

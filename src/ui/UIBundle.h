@@ -10,32 +10,35 @@ class UIBundle: public IUIElement {
     public:
     UIBundle(IUIElement** elements, int numElements): elements(elements), numElements(numElements) {}
 
-    void hover(int x, int y, int gameWidth, int gameHeight) {
+    virtual bool hover(int x, int y, int gameWidth, int gameHeight) {
+        bool hovered = false;
         for (int i = 0; i < numElements; i++) {
             IUIElement* element = elements[i];
-            element->hover(x - element->getX(), y - element->getY(), gameWidth, gameHeight);
+            hovered |= element->hover(x - element->getX(), y - element->getY(), gameWidth, gameHeight);
         }
+
+        return hovered;
     }
 
-    void mouseDown() {
+    virtual void mouseDown() {
         for (int i = 0; i < numElements; i++) {
             elements[i]->mouseDown();
         }
     }
 
-    void click() {
+    virtual void click() {
         for (int i = 0; i < numElements; i++) {
             elements[i]->click();
         }
     }
 
-    void scroll(double xOff, double yOff) {
+    virtual void scroll(double xOff, double yOff) {
         for (int i = 0; i < numElements; i++) {
             elements[i]->scroll(xOff, yOff);
         }
     }
 
-    void charInput(int codepoint) {
+    virtual void charInput(int codepoint) {
         for (int i = 0; i < numElements; i++) {
             elements[i]->charInput(codepoint);
         }

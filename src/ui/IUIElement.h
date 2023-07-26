@@ -13,7 +13,9 @@ class IUIElement {
     int y = 0;
 
     public:
-    virtual void hover(int x, int y, int gameWidth, int gameHeight) {};
+    virtual bool hover(int x, int y, int gameWidth, int gameHeight) {
+        return false;
+    };
     virtual void mouseDown() {};
     virtual void click() {};
     virtual void scroll(double xOff, double yOff) {};

@@ -85,10 +85,11 @@ class TextInput: public IUIElement {
         textBuffer[0] = '\0';
     }
 
-    void hover(int x, int y, int gameWidth, int gameHeight) {
+    bool hover(int x, int y, int gameWidth, int gameHeight) override {
         hoverX = x;
         hoverY = y;
         hovered = !(hoverX < 0 || hoverX >= width * 8 || hoverY < 0 || hoverY >= 16);
+        return hovered;
     }
 
     void click() {

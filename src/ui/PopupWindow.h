@@ -15,7 +15,7 @@ class PopupWindow : public IUIElement {
     public:
     PopupWindow(const char* label, int width, int height, IUIElement** elements, int numElements): label(label), width(width), height(height), elements(elements), numElements(numElements) {}
 
-    void hover(int x, int y, int gameWidth, int gameHeight) {
+    bool hover(int x, int y, int gameWidth, int gameHeight) override {
         int x0 = (gameWidth - width * 8) / 2;
         int y0 = (gameHeight - height * 8) / 2;
         int x1 = x0 + width * 8;
@@ -27,6 +27,8 @@ class PopupWindow : public IUIElement {
                 elements[i]->hover(x - x0, y - y0, gameWidth, gameHeight);
             }
         }
+
+        return isHovered;
     }
     void click() {
         for (int i = 0; i < numElements; i++) {

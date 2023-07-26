@@ -14,8 +14,9 @@ class Button: public IUIElement {
     public:
     Button(const char* label, int width, void (*callback)(Button* button, UIButtonValue& value)): label(label), width(width), callback(callback) {}
 
-    void hover(int x, int y, int gameWidth, int gameHeight) {
+    bool hover(int x, int y, int gameWidth, int gameHeight) override {
         hovered = !(x < 0 || x >= width * 8 || y < 0 || y >= 16);
+        return hovered;
     }
 
     void click() {
