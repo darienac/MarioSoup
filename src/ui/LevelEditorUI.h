@@ -199,7 +199,7 @@ class LevelEditorUI: public UIBundle {
             return;
         }
 
-        int speed = keys[GLFW_KEY_LEFT_CONTROL] ? 8 : 2;
+        int speed = keys[GLFW_KEY_LEFT_SHIFT] ? 8 : 2;
 
         if (keys[GLFW_KEY_LEFT]) {
             (*scrollX) += speed;
@@ -299,12 +299,13 @@ class LevelEditorUI: public UIBundle {
 
     void scroll(double xOff, double yOff) override {
         if (isHover) {
+            int speed = keys[GLFW_KEY_LEFT_SHIFT] ? 32 : 8;
             if (keys[GLFW_KEY_LEFT_CONTROL]) {
-                *scrollX += yOff * -8;
-                *scrollY += xOff * 8;
+                *scrollX += yOff * -speed;
+                *scrollY += xOff * speed;
             } else {
-                *scrollX += xOff * 8;
-                *scrollY += yOff * -8;
+                *scrollX += xOff * speed;
+                *scrollY += yOff * -speed;
             }
             boundScroll();
             setTileHover();
