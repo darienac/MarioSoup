@@ -31,10 +31,13 @@ class GlWindow {
     int oldWindowY;
     int oldWindowW;
     int oldWindowH;
+    bool keys[348] = {false};
 
     void setCallbacks() {
         glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
             GlWindow* glWindow = (GlWindow*) glfwGetWindowUserPointer(window);
+            glWindow->setKey(key, action != GLFW_RELEASE);
+
             if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
                 glfwSetWindowShouldClose(window, GLFW_TRUE);
             } else if ((key == GLFW_KEY_BACKSPACE || key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT || key == GLFW_KEY_DELETE) && action != GLFW_RELEASE) {
@@ -195,6 +198,16 @@ class GlWindow {
         stageDrawer = new StageDrawer(*drawer);
         levelDrawer = new LevelDrawer(*drawer);
         uiDrawer = new UIDrawer(*drawer, windowWidth, windowHeight);
+    }
+
+    void setKey(int key, bool value) {
+        if (key < 348) {
+            keys[key] = value;
+        }
+    }
+
+    bool* getKeys() {
+        return keys;
     }
 
     void getCursorPos(double& x, double& y) {

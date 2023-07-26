@@ -29,7 +29,7 @@ class LevelEditorScreen: public IScreen {
         this->window = &window;
         this->manager = &manager;
 
-        editorUI = new LevelEditorUI(level, WINDOW_WIDTH, WINDOW_HEIGHT, scrollX, scrollY);
+        editorUI = new LevelEditorUI(level, WINDOW_WIDTH, WINDOW_HEIGHT, scrollX, scrollY, window.getKeys());
     }
 
     void enable() {
@@ -39,6 +39,8 @@ class LevelEditorScreen: public IScreen {
     }
 
     void renderFrame() override {
+        editorUI->tick();
+
         double mouseX;
         double mouseY;
         window->getCursorPosLetterboxed(mouseX, mouseY);

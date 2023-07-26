@@ -47,11 +47,15 @@ class LevelEditorUI: public UIBundle {
 
     IUIElement* bundleElements[NUM_BUNDLE_ELEMENTS];
 
-    GameLevel* level;
-
     bool isHover = false;
+
+    GameLevel* level;
     int* scrollX;
     int* scrollY;
+    bool* keys;
+
+    int hoverX = -1;
+    int hoverY = -1;
     int tileHoverX = -1;
     int tileHoverY = -1;
     int lastTileHoverX = -1;
@@ -72,8 +76,26 @@ class LevelEditorUI: public UIBundle {
         }
     }
 
+    void setTileHover() {
+        tileHoverX = (hoverX - *scrollX) / 16;
+        tileHoverY = (hoverY - *scrollY) / 16;
+    }
+
+    void boundScroll() {
+        if (*scrollX > 32) {
+            *scrollX = 32;
+        } else if (*scrollX < -level->getWidth() * 16 + 32) {
+            *scrollX = -level->getWidth() * 16 + 32;
+        }
+        if (*scrollY > 32) {
+            *scrollY = 32;
+        } else if (*scrollY < -level->getHeight() * 16 + 32) {
+            *scrollY = -level->getHeight() * 16 + 32;
+        }
+    }
+
     public:
-    LevelEditorUI(GameLevel& level, int width, int height, int& scrollX, int& scrollY) : UIBundle(bundleElements, NUM_BUNDLE_ELEMENTS), level(&level), scrollX(&scrollX), scrollY(&scrollY) {
+    LevelEditorUI(GameLevel& level, int width, int height, int& scrollX, int& scrollY, bool* keys) : UIBundle(bundleElements, NUM_BUNDLE_ELEMENTS), level(&level), scrollX(&scrollX), scrollY(&scrollY), keys(keys) {
         searchBar = new TextInput("search objects", 16, 30, searchBarBuffer, [](TextInput* input, char* value) {
             LevelEditorUI* editorUI = (LevelEditorUI*) input->getPointer();
             editorUI->getObjectPicker().updateSearchFilter(value);
@@ -88,6 +110,29 @@ class LevelEditorUI: public UIBundle {
         bundleElements[0] = &menuBar;
         bundleElements[1] = searchBar;
         bundleElements[2] = picker;
+    }
+
+    // Function should run 60 times per second when active
+    void tick() {
+        if (!isHover) {
+            return;
+        }
+
+        int speed = keys[GLFW_KEY_LEFT_CONTROL] ? 8 : 2;
+
+        if (keys[GLFW_KEY_LEFT]) {
+            (*scrollX) += speed;
+        }
+        if (keys[GLFW_KEY_RIGHT]) {
+            (*scrollX) -= speed;
+        }
+        if (keys[GLFW_KEY_UP]) {
+            (*scrollY) -= speed;
+        }
+        if (keys[GLFW_KEY_DOWN]) {
+            (*scrollY) += speed;
+        }
+        boundScroll();
     }
 
     MenuBar& getMenuBar() {
@@ -114,15 +159,18 @@ class LevelEditorUI: public UIBundle {
         isHover = !(UIBundle::hover(x, y, gameWidth, gameHeight) || x < 144 || x >= gameWidth || y < 0 || y >= gameHeight - 16);
 
         if (!isHover) {
+            hoverX = -1;
+            hoverY = -1;
             tileHoverX = -1;
             tileHoverY = -1;
             return true;
         }
         
         // Hover behavior for level
-        x -= 144;
-        tileHoverX = (x - *scrollX) / 16;
-        tileHoverY = (y - *scrollY) / 16;
+        hoverX = x - 144;
+        hoverY = y;
+        setTileHover();
+
         if (isMouseDown) {
             placeBlock(picker->getSelectedItem());
         } else if (isMouseRightDown) {
@@ -160,6 +208,27 @@ class LevelEditorUI: public UIBundle {
         UIBundle::clickRight();
 
         isMouseRightDown = false;
+    }
+
+    void scroll(double xOff, double yOff) override {
+        if (isHover) {
+            if (keys[GLFW_KEY_LEFT_CONTROL]) {
+                *scrollX += yOff * -8;
+                *scrollY += xOff * 8;
+            } else {
+                *scrollX += xOff * 8;
+                *scrollY += yOff * -8;
+            }
+            boundScroll();
+            setTileHover();
+            if (isMouseDown) {
+                placeBlock(picker->getSelectedItem());
+            } else if (isMouseRightDown) {
+                placeBlock(GameObjectCache::objects["air"]);
+            }
+        } else {
+            UIBundle::scroll(xOff, yOff);
+        }
     }
 
     ~LevelEditorUI() {
