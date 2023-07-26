@@ -82,6 +82,10 @@ class MenuBar : public IUIElement {
                 return;
             }
         }
-        numSelected = numHovered;
+        if (numSelected == numHovered) {
+            numSelected = -1;
+        } else {
+            numSelected = numHovered;
+        }
     }
 };
