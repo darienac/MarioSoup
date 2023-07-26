@@ -60,6 +60,12 @@ class GlWindow {
                     glWindow->uiEventElement->click();
                     glWindow->mouseLeftDrag = false;
                 }
+            } else if (button == GLFW_MOUSE_BUTTON_RIGHT && action != GLFW_REPEAT) {
+                if (action == GLFW_PRESS) {
+                    glWindow->uiEventElement->mouseRightDown();
+                } else {
+                    glWindow->uiEventElement->clickRight();
+                }
             }
         });
         glfwSetScrollCallback(window, [](GLFWwindow* window, double xOff, double yOff) {

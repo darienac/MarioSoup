@@ -204,7 +204,7 @@ class ObjectPicker: public IUIElement {
     int hoverX, hoverY;
     Texture* framebufferTexture;
     GlFramebuffer* framebuffer;
-    GameObject* selectedItem;
+    GameObject* selectedItem = nullptr;
 
     void limitScroll() {
         if (scrollY < 0) {
@@ -329,6 +329,10 @@ class ObjectPicker: public IUIElement {
         scrollYMax = innerHeight - height;
         scrollBarMax = height - scrollBarHeight;
         scrollBarY = scrollY * scrollBarMax / scrollYMax;
+    }
+
+    GameObject* getSelectedItem() {
+        return selectedItem;
     }
 
     ~ObjectPicker() {

@@ -47,8 +47,33 @@ class LevelEditorUI: public UIBundle {
 
     IUIElement* bundleElements[NUM_BUNDLE_ELEMENTS];
 
+    GameLevel* level;
+
+    bool isHover = false;
+    int* scrollX;
+    int* scrollY;
+    int tileHoverX = -1;
+    int tileHoverY = -1;
+    int lastTileHoverX = -1;
+    int lastTileHoverY = -1;
+    GameObject* lastPlacedObject = nullptr;
+    bool isMouseDown = false;
+    bool isMouseRightDown = false;
+
+    void placeBlock(GameObject* object) {
+        if (object == nullptr) {
+            return;
+        }
+        if (object != lastPlacedObject || tileHoverX != lastTileHoverX || tileHoverY != lastTileHoverY) {
+            lastTileHoverX = tileHoverX;
+            lastTileHoverY = tileHoverY;
+
+            level->setGridObject(object, tileHoverX, tileHoverY);
+        }
+    }
+
     public:
-    LevelEditorUI(int width, int height) : UIBundle(bundleElements, NUM_BUNDLE_ELEMENTS) {
+    LevelEditorUI(GameLevel& level, int width, int height, int& scrollX, int& scrollY) : UIBundle(bundleElements, NUM_BUNDLE_ELEMENTS), level(&level), scrollX(&scrollX), scrollY(&scrollY) {
         searchBar = new TextInput("search objects", 16, 30, searchBarBuffer, [](TextInput* input, char* value) {
             LevelEditorUI* editorUI = (LevelEditorUI*) input->getPointer();
             editorUI->getObjectPicker().updateSearchFilter(value);
@@ -77,16 +102,64 @@ class LevelEditorUI: public UIBundle {
         return *picker;
     }
 
-    bool hover(int x, int y, int gameWidth, int gameHeight) override {
-        bool bundleHover = UIBundle::hover(x, y, gameWidth, gameHeight);
+    int getTileHoverX() {
+        return tileHoverX;
+    }
+    
+    int getTileHoverY() {
+        return tileHoverY;
+    }
 
-        if (bundleHover) {
+    bool hover(int x, int y, int gameWidth, int gameHeight) override {
+        isHover = !(UIBundle::hover(x, y, gameWidth, gameHeight) || x < 144 || x >= gameWidth || y < 0 || y >= gameHeight - 16);
+
+        if (!isHover) {
+            tileHoverX = -1;
+            tileHoverY = -1;
             return true;
         }
         
-        // Hover stuff for level
+        // Hover behavior for level
+        x -= 144;
+        tileHoverX = (x - *scrollX) / 16;
+        tileHoverY = (y - *scrollY) / 16;
+        if (isMouseDown) {
+            placeBlock(picker->getSelectedItem());
+        } else if (isMouseRightDown) {
+            placeBlock(GameObjectCache::objects["air"]);
+        }
 
         return true;
+    }
+
+    void mouseDown() override {
+        UIBundle::mouseDown();
+
+        if (isHover) {
+            isMouseDown = true;
+            placeBlock(picker->getSelectedItem());
+        }
+    }
+
+    void mouseRightDown() override {
+        UIBundle::mouseRightDown();
+
+        if (isHover) {
+            isMouseRightDown = true;
+            placeBlock(GameObjectCache::objects["air"]);
+        }
+    }
+
+    void click() override {
+        UIBundle::click();
+
+        isMouseDown = false;
+    }
+
+    void clickRight() override {
+        UIBundle::clickRight();
+
+        isMouseRightDown = false;
     }
 
     ~LevelEditorUI() {

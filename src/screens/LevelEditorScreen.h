@@ -24,9 +24,7 @@ class LevelEditorScreen: public IScreen {
         this->window = &window;
         this->manager = &manager;
 
-        editorUI = new LevelEditorUI(window.getWidth(), window.getHeight());
-
-        level.setGridObject(objects["smb:brick"], 0, 0);
+        editorUI = new LevelEditorUI(level, window.getWidth(), window.getHeight(), scrollX, scrollY);
     }
 
     void enable() {
@@ -60,6 +58,7 @@ class LevelEditorScreen: public IScreen {
 
         window->levelDrawer->drawLevelBoundary(level, 144 + scrollX, scrollY);
         window->levelDrawer->drawLevel(level, 144 + scrollX, scrollY);
+        window->levelDrawer->drawCursor(level, editorUI->getTileHoverX(), editorUI->getTileHoverY(), 144 + scrollX, scrollY);
     }
 
     ~LevelEditorScreen() {

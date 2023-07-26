@@ -35,4 +35,19 @@ class LevelDrawer {
         drawer->drawTileStretched(LEVELBOUND_L, x, y + 8, 8, h - 16);
         drawer->drawTileStretched(LEVELBOUND_R, x + w - 8, y + 8, 8, h - 16);
     }
+
+    void drawCursor(GameLevel& level, int tileX, int tileY, int x, int y) {
+        int w = level.getWidth();
+        int h = level.getHeight();
+
+        if (tileX < 0 || tileX >= w || tileY < 0 || tileY >= h) {
+            return;
+        }
+
+        glEnable(GL_COLOR_LOGIC_OP);
+        glLogicOp(GL_EQUIV);
+        drawer->drawTile(SELECT_BLOCK, x + tileX * 16, y + tileY * 16);
+        glLogicOp(GL_COPY);
+        glDisable(GL_COLOR_LOGIC_OP);
+    }
 };
