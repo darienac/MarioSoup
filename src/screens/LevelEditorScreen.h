@@ -12,6 +12,11 @@ using namespace GameObjectCache;
 
 class LevelEditorScreen: public IScreen {
     private:
+    static const int WINDOW_WIDTH = 400;
+    static const int WINDOW_HEIGHT = 256;
+    static const int VIEW_WIDTH = 256;
+    static const int VIEW_HEIGHT = 240;
+
     int scrollX = 0;
     int scrollY = 0;
 
@@ -24,12 +29,12 @@ class LevelEditorScreen: public IScreen {
         this->window = &window;
         this->manager = &manager;
 
-        editorUI = new LevelEditorUI(level, window.getWidth(), window.getHeight(), scrollX, scrollY);
+        editorUI = new LevelEditorUI(level, WINDOW_WIDTH, WINDOW_HEIGHT, scrollX, scrollY);
     }
 
     void enable() {
-        window->resize(400, 256);
-        window->stageDrawer->setOffset(144, 0);
+        window->resize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        window->stageDrawer->setOffset(WINDOW_WIDTH - VIEW_WIDTH, 0);
         window->uiEventElement = editorUI;
     }
 
@@ -56,7 +61,8 @@ class LevelEditorScreen: public IScreen {
         // window->stageDrawer->drawScoreboard(7654321, 54, 5, 4, -1, manager->getFPS());
 		// window->stageDrawer->drawTitle(0, 7654321);
 
-        window->levelDrawer->drawLevelBoundary(level, 144 + scrollX, scrollY);
+        window->levelDrawer->drawLevelBoundary(level, WINDOW_WIDTH - VIEW_WIDTH + scrollX, scrollY);
+        window->levelDrawer->drawLevelBoundButtons(level, VIEW_WIDTH, VIEW_HEIGHT, WINDOW_WIDTH - VIEW_WIDTH, 0, scrollX, scrollY);
         window->levelDrawer->drawLevel(level, 144 + scrollX, scrollY);
         window->levelDrawer->drawCursor(level, editorUI->getTileHoverX(), editorUI->getTileHoverY(), 144 + scrollX, scrollY);
     }

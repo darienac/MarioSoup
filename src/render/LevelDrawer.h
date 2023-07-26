@@ -50,4 +50,22 @@ class LevelDrawer {
         glLogicOp(GL_COPY);
         glDisable(GL_COLOR_LOGIC_OP);
     }
+
+    void drawLevelBoundButtons(GameLevel& level, int viewWidth, int viewHeight, int x, int y, int scrollX, int scrollY) {
+        int viewX;
+        int viewY;
+        int levelW = level.getWidth() * 16;
+        // int levelH = level.getHeight() * 16;
+
+        viewX = viewWidth / 2;
+        if (scrollX > viewWidth / 2 - 16) {
+            viewX = scrollX + 16;
+        } else if (scrollX + levelW < viewWidth / 2 + 16) {
+            viewX = scrollX + levelW - 16;
+        }
+        viewY = scrollY + level.getHeight() * 16;
+
+        drawer->drawTile(LEVEL_MINUS, x + viewX - 16, y + viewY);
+        drawer->drawTile(LEVEL_PLUS, x + viewX, y + viewY);
+    }
 };
