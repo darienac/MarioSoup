@@ -52,7 +52,7 @@ class LevelEditorUI: public UIBundle {
 
     bool isHover = false;
 
-    GameLevel* level;
+    GameLevelRegion* level;
     int width;
     int height;
     int* scrollX;
@@ -176,7 +176,7 @@ class LevelEditorUI: public UIBundle {
     }
 
     public:
-    LevelEditorUI(GameLevel& level, int width, int height, int& scrollX, int& scrollY, bool* keys) : UIBundle(bundleElements, NUM_BUNDLE_ELEMENTS), level(&level), width(width), height(height), scrollX(&scrollX), scrollY(&scrollY), keys(keys) {
+    LevelEditorUI(GameLevelRegion& level, int width, int height, int& scrollX, int& scrollY, bool* keys) : UIBundle(bundleElements, NUM_BUNDLE_ELEMENTS), level(&level), width(width), height(height), scrollX(&scrollX), scrollY(&scrollY), keys(keys) {
         searchBar = new TextInput("search objects", 16, 30, searchBarBuffer, [](TextInput* input, char* value) {
             LevelEditorUI* editorUI = (LevelEditorUI*) input->getPointer();
             editorUI->getObjectPicker().updateSearchFilter(value);
@@ -349,7 +349,7 @@ class LevelEditorUI: public UIBundle {
         return *scrollY;
     }
 
-    GameLevel* getLevel() {
+    GameLevelRegion* getLevel() {
         return level;
     }
 

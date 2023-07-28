@@ -14,7 +14,7 @@ class LevelDrawer {
     public:
     LevelDrawer(ImageDrawer& drawer): drawer(&drawer) {}
 
-    void drawLevel(GameLevel& level, int x, int y) {
+    void drawLevel(GameLevelRegion& level, int x, int y) {
         for (int i = 0; i < level.getWidth(); i++) {
             for (int j = 0; j < level.getHeight(); j++) {
                 drawer->drawTile(level.getGridObject(i, j)->getTilePreview(), x + i * 16, y + j * 16);
@@ -22,7 +22,7 @@ class LevelDrawer {
         }
     }
 
-    void drawLevelBoundary(GameLevel& level, int x, int y) {
+    void drawLevelBoundary(GameLevelRegion& level, int x, int y) {
         int w = level.getWidth() * 16;
         int h = level.getHeight() * 16;
 
@@ -37,7 +37,7 @@ class LevelDrawer {
         drawer->drawTileStretched(LEVELBOUND_R, x + w - 8, y + 8, 8, h - 16);
     }
 
-    void drawCursor(GameLevel& level, int tileX, int tileY, int x, int y) {
+    void drawCursor(GameLevelRegion& level, int tileX, int tileY, int x, int y) {
         int w = level.getWidth();
         int h = level.getHeight();
 
@@ -59,7 +59,7 @@ class LevelDrawer {
         int scrollX = levelEditor.getScrollX();
         int scrollY = levelEditor.getScrollY();
 
-        GameLevel* level = levelEditor.getLevel();
+        GameLevelRegion* level = levelEditor.getLevel();
         int levelW = level->getWidth() * 16;
         int levelH = level->getHeight() * 16;
 

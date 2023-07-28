@@ -1,16 +1,19 @@
 #pragma once
 
+#include <set>
+#include <vector>
+
 #include "game/GameObject.h"
 #include "game/GameObjectCache.h"
 
-class GameLevel {
+class GameLevelRegion {
     private:
     int width;
     int height;
     GameObject** objectGrid;
 
     public:
-    GameLevel(int width, int height): width(width), height(height) {
+    GameLevelRegion(int width, int height): width(width), height(height) {
         objectGrid = new GameObject*[width * height];
         for (int i = 0; i < width * height; i++) {
             objectGrid[i] = GameObjectCache::objects["air"];
@@ -23,6 +26,10 @@ class GameLevel {
 
     int getHeight() {
         return height;
+    }
+
+    GameObject** getObjectGrid() {
+        return objectGrid;
     }
 
     GameObject* getGridObject(int x, int y) {
@@ -59,7 +66,45 @@ class GameLevel {
         height = newHeight;
     }
 
-    ~GameLevel() {
+    void mapUsedObjects(std::set<GameObject*>& objects) {
+        for (int i = 0; i < width * height; i++) {
+            objects.insert(objectGrid[i]);
+        }
+    }
+
+    ~GameLevelRegion() {
         delete objectGrid;
+    }
+};
+
+class GameLevel {
+    private:
+    std::vector<GameLevelRegion*> regions;
+
+    public:
+    GameLevel() {
+
+    }
+
+    GameLevelRegion* addRegion(int width, int height) {
+        GameLevelRegion* region = new GameLevelRegion(width, height);
+        regions.push_back(region);
+        return region;
+    }
+
+    std::vector<GameLevelRegion*>* getRegions() {
+        return &regions;
+    }
+
+    void mapUsedObjects(std::set<GameObject*>& objects) {
+        for (GameLevelRegion* region : regions) {
+            region->mapUsedObjects(objects);
+        }
+    }
+
+    ~GameLevel() {
+        for (GameLevelRegion* region : regions) {
+            delete region;
+        }
     }
 };

@@ -17,19 +17,21 @@ class LevelEditorScreen: public IScreen {
     static const int VIEW_WIDTH = 256;
     static const int VIEW_HEIGHT = 240;
 
-    int scrollX = 0;
-    int scrollY = 0;
+    int scrollX = 32;
+    int scrollY = 32;
 
     GlWindow* window;
     LevelEditorUI* editorUI;
-    GameLevel level = GameLevel(8, 8);
+    GameLevel level = GameLevel();
+    GameLevelRegion* levelRegion;
 
     public:
     LevelEditorScreen(GlWindow& window, ScreenManager& manager) {
         this->window = &window;
         this->manager = &manager;
 
-        editorUI = new LevelEditorUI(level, WINDOW_WIDTH, WINDOW_HEIGHT, scrollX, scrollY, window.getKeys());
+        levelRegion = level.addRegion(8, 8);
+        editorUI = new LevelEditorUI(*levelRegion, WINDOW_WIDTH, WINDOW_HEIGHT, scrollX, scrollY, window.getKeys());
     }
 
     void enable() {
@@ -63,10 +65,10 @@ class LevelEditorScreen: public IScreen {
         // window->stageDrawer->drawScoreboard(7654321, 54, 5, 4, -1, manager->getFPS());
 		// window->stageDrawer->drawTitle(0, 7654321);
 
-        window->levelDrawer->drawLevelBoundary(level, WINDOW_WIDTH - VIEW_WIDTH + scrollX, scrollY);
+        window->levelDrawer->drawLevelBoundary(*levelRegion, WINDOW_WIDTH - VIEW_WIDTH + scrollX, scrollY);
         window->levelDrawer->drawLevelBoundButtons(*editorUI);
-        window->levelDrawer->drawLevel(level, 144 + scrollX, scrollY);
-        window->levelDrawer->drawCursor(level, editorUI->getTileHoverX(), editorUI->getTileHoverY(), 144 + scrollX, scrollY);
+        window->levelDrawer->drawLevel(*levelRegion, 144 + scrollX, scrollY);
+        window->levelDrawer->drawCursor(*levelRegion, editorUI->getTileHoverX(), editorUI->getTileHoverY(), 144 + scrollX, scrollY);
     }
 
     ~LevelEditorScreen() {
