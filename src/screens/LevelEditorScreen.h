@@ -31,7 +31,8 @@ class LevelEditorScreen: public IScreen {
         this->manager = &manager;
 
         levelRegion = level.addRegion(8, 8);
-        editorUI = new LevelEditorUI(*levelRegion, WINDOW_WIDTH, WINDOW_HEIGHT, scrollX, scrollY, window.getKeys());
+        level.setCurrentRegion(levelRegion);
+        editorUI = new LevelEditorUI(&level, WINDOW_WIDTH, WINDOW_HEIGHT, scrollX, scrollY, window.getKeys());
     }
 
     void enable() {
@@ -65,9 +66,9 @@ class LevelEditorScreen: public IScreen {
         // window->stageDrawer->drawScoreboard(7654321, 54, 5, 4, -1, manager->getFPS());
 		// window->stageDrawer->drawTitle(0, 7654321);
 
-        window->levelDrawer->drawLevelBoundary(*levelRegion, WINDOW_WIDTH - VIEW_WIDTH + scrollX, scrollY);
+        window->levelDrawer->drawLevelRegionBoundary(*levelRegion, WINDOW_WIDTH - VIEW_WIDTH + scrollX, scrollY);
         window->levelDrawer->drawLevelBoundButtons(*editorUI);
-        window->levelDrawer->drawLevel(*levelRegion, 144 + scrollX, scrollY);
+        window->levelDrawer->drawLevelRegion(*levelRegion, 144 + scrollX, scrollY);
         window->levelDrawer->drawCursor(*levelRegion, editorUI->getTileHoverX(), editorUI->getTileHoverY(), 144 + scrollX, scrollY);
     }
 

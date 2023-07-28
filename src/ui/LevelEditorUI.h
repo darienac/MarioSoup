@@ -2,6 +2,7 @@
 
 #include "game/GameObject.h"
 #include "game/GameObjectCache.h"
+#include "game/LevelSaver.h"
 #include "ui/ui.h"
 
 using namespace GameObjectCache;
@@ -20,7 +21,12 @@ class LevelEditorUI: public UIBundle {
 
     MenuListButton buttons1[2] = {
         MenuListButton("open", UIButtonType::BUTTON, nullptr),
-        MenuListButton("save", UIButtonType::BUTTON, nullptr)
+        MenuListButton("save", UIButtonType::BUTTON, [](MenuListButton* button, UIButtonValue& value) {
+            LevelEditorUI* editorUI = (LevelEditorUI*) button->getPointer();
+
+            LevelSaver saver = LevelSaver();
+            saver.saveLevel(*(editorUI->getLevel()), "res/test.mwf");
+        })
     };
     MenuListButton buttons2[2] = {
         MenuListButton("edit 1", UIButtonType::BUTTON, nullptr),
@@ -52,7 +58,7 @@ class LevelEditorUI: public UIBundle {
 
     bool isHover = false;
 
-    GameLevelRegion* level;
+    GameLevel* level;
     int width;
     int height;
     int* scrollX;
@@ -77,7 +83,7 @@ class LevelEditorUI: public UIBundle {
             lastTileHoverX = tileHoverX;
             lastTileHoverY = tileHoverY;
 
-            level->setGridObject(object, tileHoverX, tileHoverY);
+            level->getCurrentRegion()->setGridObject(object, tileHoverX, tileHoverY);
         }
     }
 
@@ -92,15 +98,18 @@ class LevelEditorUI: public UIBundle {
     }
 
     void boundScroll() {
+        int w = level->getCurrentRegion()->getWidth();
+        int h = level->getCurrentRegion()->getHeight();
+
         if (*scrollX > 32) {
             *scrollX = 32;
-        } else if (*scrollX < -level->getWidth() * 16 + 32) {
-            *scrollX = -level->getWidth() * 16 + 32;
+        } else if (*scrollX < -w * 16 + 32) {
+            *scrollX = -w * 16 + 32;
         }
         if (*scrollY > 32) {
             *scrollY = 32;
-        } else if (*scrollY < -level->getHeight() * 16 + 32) {
-            *scrollY = -level->getHeight() * 16 + 32;
+        } else if (*scrollY < -h * 16 + 32) {
+            *scrollY = -h * 16 + 32;
         }
     }
 
@@ -114,23 +123,25 @@ class LevelEditorUI: public UIBundle {
             return mx >= x && mx < x + 16 && my >= y && my < y + 16;
         };
 
-        int levelW = level->getWidth() * 16;
-        int levelH = level->getHeight() * 16;
+        GameLevelRegion* region = level->getCurrentRegion();
+
+        int regionW = region->getWidth();
+        int regionH = region->getHeight();
 
         int viewX;
         int viewY;
 
         viewX = getLevelBoundButtonX();
-        viewY = *scrollY + levelH;
+        viewY = *scrollY + regionH * 16;
 
         if (inBoundButton(viewX - 16, viewY)) {
             // Shrink up
-            level->resizeGrid(level->getWidth(), level->getHeight() - 1, 0, 0);
+            region->resizeGrid(regionW, regionH - 1, 0, 0);
             return;
         }
         if (inBoundButton(viewX, viewY)) {
             // Expand up
-            level->resizeGrid(level->getWidth(), level->getHeight() + 1, 0, 0);
+            region->resizeGrid(regionW, regionH + 1, 0, 0);
             return;
         }
 
@@ -138,26 +149,26 @@ class LevelEditorUI: public UIBundle {
 
         if (inBoundButton(viewX - 16, viewY)) {
             // Shrink down
-            level->resizeGrid(level->getWidth(), level->getHeight() - 1, 0, -1);
+            region->resizeGrid(regionW, regionH - 1, 0, -1);
             return;
         }
         if (inBoundButton(viewX, viewY)) {
             // Expand down
-            level->resizeGrid(level->getWidth(), level->getHeight() + 1, 0, 1);
+            region->resizeGrid(regionW, regionH + 1, 0, 1);
             return;
         }
 
-        viewX = *scrollX + levelW;
+        viewX = *scrollX + regionW * 16;
         viewY = getLevelBoundButtonY();
 
         if (inBoundButton(viewX, viewY - 16)) {
             // Shrink right
-            level->resizeGrid(level->getWidth() - 1, level->getHeight(), 0, 0);
+            region->resizeGrid(regionW - 1, regionH, 0, 0);
             return;
         }
         if (inBoundButton(viewX, viewY)) {
             // Expand right
-            level->resizeGrid(level->getWidth() + 1, level->getHeight(), 0, 0);
+            region->resizeGrid(regionW + 1, regionH, 0, 0);
             return;
         }
 
@@ -165,18 +176,18 @@ class LevelEditorUI: public UIBundle {
 
         if (inBoundButton(viewX, viewY - 16)) {
             // Shrink left
-            level->resizeGrid(level->getWidth() - 1, level->getHeight(), -1, 0);
+            region->resizeGrid(regionW - 1, regionH, -1, 0);
             return;
         }
         if (inBoundButton(viewX, viewY)) {
             // Expand left
-            level->resizeGrid(level->getWidth() + 1, level->getHeight(), 1, 0);
+            region->resizeGrid(regionW + 1, regionH, 1, 0);
             return;
         }
     }
 
     public:
-    LevelEditorUI(GameLevelRegion& level, int width, int height, int& scrollX, int& scrollY, bool* keys) : UIBundle(bundleElements, NUM_BUNDLE_ELEMENTS), level(&level), width(width), height(height), scrollX(&scrollX), scrollY(&scrollY), keys(keys) {
+    LevelEditorUI(GameLevel* level, int width, int height, int& scrollX, int& scrollY, bool* keys) : UIBundle(bundleElements, NUM_BUNDLE_ELEMENTS), level(level), width(width), height(height), scrollX(&scrollX), scrollY(&scrollY), keys(keys) {
         searchBar = new TextInput("search objects", 16, 30, searchBarBuffer, [](TextInput* input, char* value) {
             LevelEditorUI* editorUI = (LevelEditorUI*) input->getPointer();
             editorUI->getObjectPicker().updateSearchFilter(value);
@@ -184,6 +195,8 @@ class LevelEditorUI: public UIBundle {
 
         searchBar->setPointer(this);
         searchBar->setPosition(8, height - 28);
+
+        menuBar.setPointer(this);
 
         picker = new ObjectPicker(groups2, 2, 18, 28);
         picker->getGroups()[0].setOpen(true);
@@ -320,23 +333,23 @@ class LevelEditorUI: public UIBundle {
     }
 
     int getLevelBoundButtonX() {
-        int levelW = level->getWidth() * 16;
+        int regionW = level->getCurrentRegion()->getWidth() * 16;
 
         if (*scrollX > VIEW_WIDTH / 2 - 16) {
             return *scrollX + 16;
-        } else if (*scrollX + levelW < VIEW_WIDTH / 2 + 16) {
-            return *scrollX + levelW - 16;
+        } else if (*scrollX + regionW < VIEW_WIDTH / 2 + 16) {
+            return *scrollX + regionW - 16;
         }
         return VIEW_WIDTH / 2;
     }
 
     int getLevelBoundButtonY() {
-        int levelH = level->getHeight() * 16;
+        int regionH = level->getCurrentRegion()->getHeight() * 16;
 
         if (*scrollY > VIEW_HEIGHT / 2 - 16) {
             return *scrollY + 16;
-        } else if (*scrollY + levelH < VIEW_HEIGHT / 2 + 16) {
-            return *scrollY + levelH - 16;
+        } else if (*scrollY + regionH < VIEW_HEIGHT / 2 + 16) {
+            return *scrollY + regionH - 16;
         }
         return VIEW_HEIGHT / 2;
     }
@@ -349,8 +362,12 @@ class LevelEditorUI: public UIBundle {
         return *scrollY;
     }
 
-    GameLevelRegion* getLevel() {
+    GameLevel* getLevel() {
         return level;
+    }
+
+    GameLevelRegion* getCurrentRegion() {
+        return level->getCurrentRegion();
     }
 
     ~LevelEditorUI() {

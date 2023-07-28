@@ -30,7 +30,7 @@ class MenuList : public IUIElement {
         }
 
         numHovered = -((y + 5) / 8);
-        allowCloseList = (buttons[numHovered].getType() != UIButtonType::RADIO);
+        allowCloseList = buttons[numHovered].isAllowCloseList();
 
         return true;
     }
@@ -38,6 +38,9 @@ class MenuList : public IUIElement {
     void click() {
         if (numHovered != -1) {
             buttons[numHovered].click();
+            if (buttons[numHovered].isAllowCloseList()) {
+                numHovered = -1;
+            }
         }
     }
 
@@ -59,5 +62,11 @@ class MenuList : public IUIElement {
 
     bool isAllowCloseList() {
         return allowCloseList;
+    }
+
+    void setPointer(void* pointer) {
+        for (int i = 0; i < numButtons; i++) {
+            buttons[i].setPointer(pointer);
+        }
     }
 };

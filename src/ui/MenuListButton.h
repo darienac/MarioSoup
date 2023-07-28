@@ -8,6 +8,7 @@ class MenuListButton {
     private:
     const char* name;
     UIButtonType type;
+    void* pointer;
     void (*callback)(MenuListButton* button, UIButtonValue& value);
     UIButtonValue value = {};
 
@@ -28,6 +29,18 @@ class MenuListButton {
 
     UIButtonType getType() {
         return type;
+    }
+
+    void setPointer(void* pointer) {
+        this->pointer = pointer;
+    }
+
+    void* getPointer() {
+        return pointer;
+    }
+
+    bool isAllowCloseList() {
+        return type != UIButtonType::RADIO;
     }
 
     void click() {

@@ -10,12 +10,24 @@
 
 class LevelSaver {
     private:
+    static const int VERSION_NUM = 1;
+
+    void writeInt(std::ostream& stream, const int data) {
+        stream.write((char*) &data, sizeof(int));
+    }
+    void writeByte(std::ostream& stream, const char data) {
+        stream.write(&data, sizeof(char));
+    }
+    void writeString(std::ostream& stream, const char* data) {
+        stream.write(data, strlen(data) + 1);
+    }
+
     public:
     LevelSaver() {}
 
     void saveLevel(GameLevel& level, const char* filePath) {
         std::ofstream file;
-        file.open(filePath, std::ios::in, std::ios::trunc);
+        file.open(filePath, std::ios::out | std::ios::trunc | std::ios::binary);
 
         saveLevel(level, file);
 
@@ -27,13 +39,14 @@ class LevelSaver {
         level.mapUsedObjects(objectSet);
         std::vector<GameObject*> objectList(objectSet.begin(), objectSet.end());
         std::map<GameObject*, int> objectKey;
-        for (int i = 0; i < objectList.size(); i++) {
+        for (size_t i = 0; i < objectList.size(); i++) {
             objectKey[objectList.at(i)] = i;
         }
 
-        stream << objectList.size();
+        writeInt(stream, VERSION_NUM);
+        writeInt(stream, objectList.size());
         for (GameObject* object : objectList) {
-            stream << object->getId();
+            writeString(stream, object->getId());
         }
 
         for (GameLevelRegion* region : *level.getRegions()) {
@@ -44,12 +57,12 @@ class LevelSaver {
     void saveLevelRegion(GameLevelRegion& region, std::map<GameObject*, int> objectKey, std::ostream& stream) {
         int w = region.getWidth();
         int h = region.getHeight();
-        stream << w;
-        stream << h;
+        writeInt(stream, w);
+        writeInt(stream, h);
 
         GameObject** objects = region.getObjectGrid();
         for (int i = 0; i < w * h; i++) {
-            stream << objectKey[objects[i]];
+            writeByte(stream, objectKey[objects[i]]);
         }
     }
 };

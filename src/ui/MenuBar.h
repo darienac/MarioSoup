@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "ui/IUIElement.h"
+#include "ui/ui.h"
 
 class MenuBar : public IUIElement {
     private:
@@ -45,6 +45,12 @@ class MenuBar : public IUIElement {
 
     int getWidth() {
         return width;
+    }
+
+    void setPointer(void* pointer) {
+        for (int i = 0; i < numLabels; i++) {
+            lists[i].setPointer(pointer);
+        }
     }
 
     bool hover(int x, int y, int gameWidth, int gameHeight) override {

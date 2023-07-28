@@ -80,6 +80,7 @@ class GameLevelRegion {
 class GameLevel {
     private:
     std::vector<GameLevelRegion*> regions;
+    GameLevelRegion* currentRegion = nullptr;
 
     public:
     GameLevel() {
@@ -94,6 +95,14 @@ class GameLevel {
 
     std::vector<GameLevelRegion*>* getRegions() {
         return &regions;
+    }
+
+    void setCurrentRegion(GameLevelRegion* region) {
+        currentRegion = region;
+    }
+
+    GameLevelRegion* getCurrentRegion() {
+        return currentRegion;
     }
 
     void mapUsedObjects(std::set<GameObject*>& objects) {
