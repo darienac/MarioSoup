@@ -73,7 +73,7 @@ class GameLevelRegion {
     }
 
     ~GameLevelRegion() {
-        delete objectGrid;
+        delete [] objectGrid;
     }
 };
 
@@ -83,9 +83,7 @@ class GameLevel {
     GameLevelRegion* currentRegion = nullptr;
 
     public:
-    GameLevel() {
-
-    }
+    GameLevel() {}
 
     GameLevelRegion* addRegion(int width, int height) {
         GameLevelRegion* region = new GameLevelRegion(width, height);

@@ -3,6 +3,7 @@
 #include "game/GameObject.h"
 #include "game/GameObjectCache.h"
 #include "game/LevelSaver.h"
+#include "game/LevelLoader.h"
 #include "ui/ui.h"
 
 using namespace GameObjectCache;
@@ -20,7 +21,13 @@ class LevelEditorUI: public UIBundle {
     };
 
     MenuListButton buttons1[2] = {
-        MenuListButton("open", UIButtonType::BUTTON, nullptr),
+        MenuListButton("open", UIButtonType::BUTTON, [](MenuListButton* button, UIButtonValue& value) {
+            LevelEditorUI* editorUI = (LevelEditorUI*) button->getPointer();
+            *editorUI->level = GameLevel();
+
+            LevelLoader loader = LevelLoader();
+            loader.loadLevel(*editorUI->level, "res/test.mwf");
+        }),
         MenuListButton("save", UIButtonType::BUTTON, [](MenuListButton* button, UIButtonValue& value) {
             LevelEditorUI* editorUI = (LevelEditorUI*) button->getPointer();
 

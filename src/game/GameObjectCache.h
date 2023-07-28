@@ -7,7 +7,12 @@
 #include "TileMappings.h"
 
 namespace GameObjectCache {
-    std::map<std::string, GameObject*> objects;
+    struct strCompare {
+        bool operator()(const char* a, const char* b) const {
+            return strcmp(a, b) < 0;
+        }
+    };
+    std::map<const char*, GameObject*, strCompare> objects;
 };
 
 namespace {

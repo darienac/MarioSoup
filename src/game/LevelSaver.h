@@ -10,8 +10,6 @@
 
 class LevelSaver {
     private:
-    static const int VERSION_NUM = 1;
-
     void writeInt(std::ostream& stream, const int data) {
         stream.write((char*) &data, sizeof(int));
     }
@@ -23,6 +21,8 @@ class LevelSaver {
     }
 
     public:
+    static const int VERSION_NUM = 1;
+
     LevelSaver() {}
 
     void saveLevel(GameLevel& level, const char* filePath) {
@@ -45,9 +45,12 @@ class LevelSaver {
 
         writeInt(stream, VERSION_NUM);
         writeInt(stream, objectList.size());
+
         for (GameObject* object : objectList) {
             writeString(stream, object->getId());
         }
+
+        writeInt(stream, level.getRegions()->size());
 
         for (GameLevelRegion* region : *level.getRegions()) {
             saveLevelRegion(*region, objectKey, stream);
