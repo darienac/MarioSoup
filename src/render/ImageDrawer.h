@@ -50,6 +50,7 @@ class ImageDrawer {
     public:
     static const float ZPOS_GAME_TILES;
     static const float ZPOS_UI;
+    static const float ZPOS_UI_DIALOG;
     static const float ZPOS_TEXTHINT;
 
 
@@ -212,4 +213,5 @@ class ImageDrawer {
 
 const float ImageDrawer::ZPOS_GAME_TILES = 0.0f;
 const float ImageDrawer::ZPOS_UI = 0.5f;
+const float ImageDrawer::ZPOS_UI_DIALOG = 0.9f;
 const float ImageDrawer::ZPOS_TEXTHINT = 1.0f;

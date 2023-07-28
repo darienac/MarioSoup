@@ -6,15 +6,22 @@
 #include "game/LevelLoader.h"
 #include "ui/ui.h"
 
+#include <GLFW/glfw3.h>
+
 using namespace GameObjectCache;
 
 class LevelEditorUI: public UIBundle {
+    public:
+    enum UIState {
+        EDITOR, SAVE_DIALOG, OPEN_DIALOG
+    };
     private:
     static const int NUM_BUNDLE_ELEMENTS = 3;
 
     static const int VIEW_WIDTH = 256;
     static const int VIEW_HEIGHT = 240;
     
+    // Editor Bundle Elements
     const char* menuItems[2] = {
         "file",
         "edit"
@@ -23,16 +30,19 @@ class LevelEditorUI: public UIBundle {
     MenuListButton buttons1[2] = {
         MenuListButton("open", UIButtonType::BUTTON, [](MenuListButton* button, UIButtonValue& value) {
             LevelEditorUI* editorUI = (LevelEditorUI*) button->getPointer();
-            *editorUI->level = GameLevel();
 
-            LevelLoader loader = LevelLoader();
-            loader.loadLevel(*editorUI->level, "res/test.mwf");
+            editorUI->setState(OPEN_DIALOG);
+            // *editorUI->level = GameLevel();
+
+            // LevelLoader loader = LevelLoader();
+            // loader.loadLevel(*editorUI->level, "res/test.mwf");
         }),
         MenuListButton("save", UIButtonType::BUTTON, [](MenuListButton* button, UIButtonValue& value) {
             LevelEditorUI* editorUI = (LevelEditorUI*) button->getPointer();
 
-            LevelSaver saver = LevelSaver();
-            saver.saveLevel(*(editorUI->getLevel()), "res/test.mwf");
+            editorUI->setState(SAVE_DIALOG);
+            // LevelSaver saver = LevelSaver();
+            // saver.saveLevel(*(editorUI->getLevel()), "res/test.mwf");
         })
     };
     MenuListButton buttons2[2] = {
@@ -63,6 +73,16 @@ class LevelEditorUI: public UIBundle {
 
     IUIElement* bundleElements[NUM_BUNDLE_ELEMENTS];
 
+    // File Picker
+    TextInput* fileInput;
+    char fileInputBuffer[256];
+    Button confirmFileButton = Button("ok", 4, [](Button* button, UIButtonValue& value) {
+        std::printf("OK pressed\n");
+    });
+    IUIElement* filePickerElements[2];
+
+    PopupWindow filePickerWindow = PopupWindow("enter filepath", 18, 10, filePickerElements, 2);
+
     bool isHover = false;
 
     GameLevel* level;
@@ -81,6 +101,7 @@ class LevelEditorUI: public UIBundle {
     GameObject* lastPlacedObject = nullptr;
     bool isMouseDown = false;
     bool isMouseRightDown = false;
+    UIState state = EDITOR;
 
     void placeBlock(GameObject* object) {
         if (object == nullptr) {
@@ -200,6 +221,7 @@ class LevelEditorUI: public UIBundle {
             editorUI->getObjectPicker().updateSearchFilter(value);
         });
 
+        // Editor Bundle Elements
         searchBar->setPointer(this);
         searchBar->setPosition(8, height - 28);
 
@@ -211,6 +233,15 @@ class LevelEditorUI: public UIBundle {
         bundleElements[0] = &menuBar;
         bundleElements[1] = searchBar;
         bundleElements[2] = picker;
+
+        // File Picker
+        fileInput = new TextInput("file path", 11, 255, fileInputBuffer, nullptr);
+
+        fileInput->setPosition(8, 8);
+        confirmFileButton.setPosition(104, 8);
+
+        filePickerElements[0] = fileInput;
+        filePickerElements[1] = &confirmFileButton;
     }
 
     // Function should run 60 times per second when active
@@ -236,6 +267,14 @@ class LevelEditorUI: public UIBundle {
         boundScroll();
     }
 
+    UIState getState() {
+        return state;
+    }
+
+    void setState(UIState state) {
+        this->state = state;
+    }
+
     MenuBar& getMenuBar() {
         return menuBar;
     }
@@ -246,6 +285,10 @@ class LevelEditorUI: public UIBundle {
 
     ObjectPicker& getObjectPicker() {
         return *picker;
+    }
+
+    PopupWindow& getFilePickerWindow() {
+        return filePickerWindow;
     }
 
     int getTileHoverX() {
@@ -380,5 +423,6 @@ class LevelEditorUI: public UIBundle {
     ~LevelEditorUI() {
         delete searchBar;
         delete picker;
+        delete fileInput;
     }
 };

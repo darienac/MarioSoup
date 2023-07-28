@@ -4,6 +4,7 @@
 #include "game/GameLevel.h"
 #include "TileMappings.h"
 #include "ui/ui.h"
+#include "ui/leveleditor/LevelEditorUI.h"
 
 using namespace Tiles;
 

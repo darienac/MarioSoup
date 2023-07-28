@@ -7,6 +7,7 @@
 #include "game/GameObjectCache.h"
 #include "game/GameLevel.h"
 #include "ui/ui.h"
+#include "ui/leveleditor/LevelEditorUI.h"
 
 using namespace GameObjectCache;
 
@@ -71,6 +72,17 @@ class LevelEditorScreen: public IScreen {
         window->levelDrawer->drawLevelBoundButtons(*editorUI);
         window->levelDrawer->drawLevelRegion(*region, 144 + scrollX, scrollY);
         window->levelDrawer->drawCursor(*region, editorUI->getTileHoverX(), editorUI->getTileHoverY(), 144 + scrollX, scrollY);
+
+        LevelEditorUI::UIState uiState = editorUI->getState();
+        switch (uiState) {
+            case LevelEditorUI::OPEN_DIALOG:
+            case LevelEditorUI::SAVE_DIALOG:
+                window->drawer->setZPos(ImageDrawer::ZPOS_UI_DIALOG);
+                window->uiDrawer->drawPopupWindow(editorUI->getFilePickerWindow(), WINDOW_WIDTH, WINDOW_HEIGHT);
+                break;
+            default:
+                break;
+        };
     }
 
     ~LevelEditorScreen() {
