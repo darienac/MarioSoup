@@ -5,6 +5,9 @@
 #include "ui/ui.h"
 #include "render/GlFramebuffer.h"
 
+#include <stdio.h>
+#include <ctype.h>
+
 using namespace Tiles;
 using namespace Palletes;
 
@@ -325,19 +328,43 @@ class UIDrawer {
         drawUIRegionPixels(UIREGION_LIGHT, x + pxlWidth - 4, y + pxlHeight - scrollBarHeight - scrollBarY, 4, scrollBarHeight);
     }
 
-    void drawCharBuffer(char* buffer, int length, int x, int y) {
+    void drawTextRegion(TextRegion& region, int x, int y) {
+        const char* text = region.getText();
+        const char* textEnd = text + strlen(text);
+        const char* lineStart = text;
+        const char* lineEnd = text;
+        const char* linePos = text;
+        int lineNum = 0;
+        int lineLength = region.getMaxWidth();
+        while (linePos < textEnd) {
+            if (linePos - lineStart > lineLength) {
+                drawCharBuffer(lineStart, lineEnd - lineStart, x, y - lineNum * 8);
+                lineNum++;
+                linePos = lineEnd;
+                lineStart = lineEnd + 1;
+            } else if (std::isspace(*linePos)) {
+                lineEnd = linePos;
+            }
+            linePos++;
+        }
+        if (linePos >= lineStart) {
+            drawCharBuffer(lineStart, linePos - lineStart, x, y - lineNum * 8);
+        }
+    }
+
+    void drawCharBuffer(const char* buffer, int length, int x, int y) {
         for (int i = 0; i < length; i++) {
             if (buffer[i] == 0) {
                 break;
             }
-            int tile = AIR + textEncoding.find(buffer[i]);
+            int tile = AIR + textEncoding.find(std::tolower(buffer[i]));
             drawer->drawTile(tile, x + i * 8, y);
         }
     }
 
     void drawText(std::string text, int x, int y) {
         for (size_t i = 0; i < text.length(); i++) {
-            int tile = AIR + textEncoding.find(text.at(i));
+            int tile = AIR + textEncoding.find(std::tolower(text.at(i)));
             drawer->drawTile(tile, x + i * 8, y);
         }
     }
@@ -353,6 +380,8 @@ class UIDrawer {
             case UIElementType::TEXT_INPUT:
                 drawTextInput(*((TextInput*) element), xOff + ex, yOff + ey);
                 break;
+            case UIElementType::TEXT_REGION:
+                drawTextRegion(*((TextRegion*) element), xOff + ex, yOff + ey);
             default:
                 break;
         }

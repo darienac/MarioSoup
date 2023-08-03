@@ -24,3 +24,4 @@ union UIButtonValue {
 #include "ui/TextInput.h"
 #include "ui/ObjectPicker.h"
 #include "ui/UIBundle.h"
+#include "ui/TextRegion.h"

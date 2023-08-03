@@ -24,7 +24,9 @@ class PopupWindow : public IUIElement {
         isHovered = (x >= x0 && x < x1 && y >= y0 && y < y1);
         if (isHovered) {
             for (int i = 0; i < numElements; i++) {
-                elements[i]->hover(x - x0, y - y0, gameWidth, gameHeight);
+                int ex = elements[i]->getX();
+                int ey = elements[i]->getY();
+                elements[i]->hover(x - x0 - ex, y - y0 - ey, gameWidth, gameHeight);
             }
         }
 

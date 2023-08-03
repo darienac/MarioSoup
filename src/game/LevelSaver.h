@@ -7,6 +7,7 @@
 #include <map>
 
 #include "game/GameLevel.h"
+#include "render/ResourceReader.h"
 
 class LevelSaver {
     private:
@@ -26,8 +27,9 @@ class LevelSaver {
     LevelSaver() {}
 
     void saveLevel(GameLevel& level, const char* filePath) {
+        std::string fullPath = ResourceReader::getFullPath(ResourceReader::World, filePath);
         std::ofstream file;
-        file.open(filePath, std::ios::out | std::ios::trunc | std::ios::binary);
+        file.open(fullPath, std::ios::out | std::ios::trunc | std::ios::binary);
 
         saveLevel(level, file);
 

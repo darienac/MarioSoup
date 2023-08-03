@@ -3,7 +3,8 @@
 enum class UIElementType {
     NONE,
     BUTTON,
-    TEXT_INPUT
+    TEXT_INPUT,
+    TEXT_REGION
 };
 
 // All elements should assume x and y are relative to the element's own coordinate system (despite setting an x or y position)

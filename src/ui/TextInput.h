@@ -107,6 +107,17 @@ class TextInput: public IUIElement {
         }
     }
 
+    void activate() {
+        selected = true;
+    }
+
+    void clear() {
+        textBuffer[0] = '\0';
+        cursorPos = 0;
+        scrollX = 0;
+        textLength = 0;
+    }
+
     void charInput(int codepoint) {
         if (!selected) {
             return;
@@ -143,7 +154,7 @@ class TextInput: public IUIElement {
         }
     }
 
-    UIElementType getElementType() {
+    UIElementType getElementType() override {
         return UIElementType::TEXT_INPUT;
     }
 

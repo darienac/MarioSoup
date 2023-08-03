@@ -10,7 +10,8 @@ class ResourceReader {
 	enum ResourceType {
 		Shader,
 		Model,
-		Texture
+		Texture,
+		World
 	};
 	const static std::string readResource(ResourceType type, const std::string& path) {
 		std::string fullPath = getFullPath(type, path);
@@ -22,17 +23,18 @@ class ResourceReader {
 	const static std::string getFullPath(ResourceType type, std::string path) {
 		switch (type) {
 		case Shader:
-			path = "shaders/" + path;
+			path = "res/shaders/" + path;
 			break;
 		case Model:
-			path = "models/" + path;
+			path = "res/models/" + path;
 			break;
 		case Texture:
-			path = "textures/" + path;
+			path = "res/textures/" + path;
 			break;
+		case World:
+			path = "worlds/" + path;
 		}
 
-		path = "res/" + path;
 		return path;
 	}
 };

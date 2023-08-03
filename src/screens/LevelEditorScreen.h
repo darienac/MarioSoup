@@ -1,17 +1,18 @@
 #pragma once
 
 #include "screens/IScreen.h"
-#include "screens/ScreenManager.h"
+#include "ui/leveleditor/ILevelEditorScreen.h"
 #include "GlWindow.h"
 #include "game/GameObject.h"
 #include "game/GameObjectCache.h"
 #include "game/GameLevel.h"
 #include "ui/ui.h"
 #include "ui/leveleditor/LevelEditorUI.h"
+#include "ui/leveleditor/FilePickerPopup.h"
+#include "ui/leveleditor/InfoPopup.h"
+#include "screens/ScreenManager.h"
 
-using namespace GameObjectCache;
-
-class LevelEditorScreen: public IScreen {
+class LevelEditorScreen: public ILevelEditorScreen, public IScreen {
     private:
     static const int WINDOW_WIDTH = 400;
     static const int WINDOW_HEIGHT = 256;
@@ -21,24 +22,29 @@ class LevelEditorScreen: public IScreen {
     int scrollX = 32;
     int scrollY = 32;
 
+    UIState uiState;
+
     GlWindow* window;
     LevelEditorUI* editorUI;
-    GameLevel level = GameLevel();
+    FilePickerPopup* filePicker;
+    InfoPopup infoPopup = InfoPopup(this);
+    GameLevel* level = new GameLevel();
 
     public:
     LevelEditorScreen(GlWindow& window, ScreenManager& manager) {
         this->window = &window;
         this->manager = &manager;
 
-        GameLevelRegion* levelRegion = level.addRegion(8, 8);
-        level.setCurrentRegion(levelRegion);
-        editorUI = new LevelEditorUI(&level, WINDOW_WIDTH, WINDOW_HEIGHT, scrollX, scrollY, window.getKeys());
+        GameLevelRegion* levelRegion = level->addRegion(8, 8);
+        level->setCurrentRegion(levelRegion);
+        editorUI = new LevelEditorUI(this, WINDOW_WIDTH, WINDOW_HEIGHT, scrollX, scrollY, window.getKeys());
+        filePicker = new FilePickerPopup(this);
     }
 
     void enable() {
         window->resize(WINDOW_WIDTH, WINDOW_HEIGHT);
         window->stageDrawer->setOffset(WINDOW_WIDTH - VIEW_WIDTH, 0);
-        window->uiEventElement = editorUI;
+        setState(EDITOR);
     }
 
     void renderFrame() override {
@@ -66,26 +72,68 @@ class LevelEditorScreen: public IScreen {
         // window->stageDrawer->drawScoreboard(7654321, 54, 5, 4, -1, manager->getFPS());
 		// window->stageDrawer->drawTitle(0, 7654321);
 
-        GameLevelRegion* region = level.getCurrentRegion();
+        GameLevelRegion* region = level->getCurrentRegion();
 
         window->levelDrawer->drawLevelRegionBoundary(*region, WINDOW_WIDTH - VIEW_WIDTH + scrollX, scrollY);
         window->levelDrawer->drawLevelBoundButtons(*editorUI);
         window->levelDrawer->drawLevelRegion(*region, 144 + scrollX, scrollY);
         window->levelDrawer->drawCursor(*region, editorUI->getTileHoverX(), editorUI->getTileHoverY(), 144 + scrollX, scrollY);
 
-        LevelEditorUI::UIState uiState = editorUI->getState();
         switch (uiState) {
-            case LevelEditorUI::OPEN_DIALOG:
-            case LevelEditorUI::SAVE_DIALOG:
+            case OPEN_DIALOG:
+            case SAVE_DIALOG:
                 window->drawer->setZPos(ImageDrawer::ZPOS_UI_DIALOG);
-                window->uiDrawer->drawPopupWindow(editorUI->getFilePickerWindow(), WINDOW_WIDTH, WINDOW_HEIGHT);
+                window->uiDrawer->drawPopupWindow(*filePicker, WINDOW_WIDTH, WINDOW_HEIGHT);
                 break;
+            case INFO_POPUP:
+                window->drawer->setZPos(ImageDrawer::ZPOS_UI_DIALOG);
+                window->uiDrawer->drawPopupWindow(infoPopup, WINDOW_WIDTH, WINDOW_HEIGHT);
             default:
                 break;
         };
     }
 
+    virtual GameLevel* getLevel() override {
+        return level;
+    }
+
+    virtual void setLevel(GameLevel* level) override {
+        delete this->level;
+        this->level = level;
+    }
+
+    virtual UIState getState() override {
+        return uiState;
+    }
+    virtual void setState(UIState state) override {
+        this->uiState = state;
+
+        switch (uiState) {
+            case EDITOR:
+                window->uiEventElement = editorUI;
+                break;
+            case OPEN_DIALOG:
+            case SAVE_DIALOG:
+                window->uiEventElement = filePicker;
+                filePicker->enable();
+                break;
+            case INFO_POPUP:
+                window->uiEventElement = &infoPopup;
+                break;
+        }
+    }
+
+    virtual char* getFileInputBuffer() override {
+        return filePicker->getFileInputBuffer();
+    }
+
+    virtual void setInfoMessage(const char* message) {
+        infoPopup.setMessage(message);
+    }
+
     ~LevelEditorScreen() {
         delete editorUI;
+        delete filePicker;
+        delete level;
     }
 };

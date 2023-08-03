@@ -3,6 +3,7 @@
 #include "game/LevelSaver.h"
 #include "game/GameLevel.h"
 #include "game/GameObjectCache.h"
+#include "render/ResourceReader.h"
 
 class LevelLoader {
     private:
@@ -41,8 +42,13 @@ class LevelLoader {
     LevelLoader() {}
 
     void loadLevel(GameLevel& level, const char* filePath) {
+        std::string fullPath = ResourceReader::getFullPath(ResourceReader::World, filePath);
         std::ifstream file;
-        file.open(filePath, std::ios::in | std::ios::binary);
+        file.open(fullPath, std::ios::in | std::ios::binary);
+        if (!file.is_open()) {
+            file.close();
+            throw "Unable to open file";
+        }
 
         loadLevel(level, file);
         level.setCurrentRegion(level.getRegions()->at(0));

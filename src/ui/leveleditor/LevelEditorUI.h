@@ -4,6 +4,7 @@
 #include "game/GameObjectCache.h"
 #include "game/LevelSaver.h"
 #include "game/LevelLoader.h"
+#include "ui/leveleditor/ILevelEditorScreen.h"
 #include "ui/ui.h"
 
 #include <GLFW/glfw3.h>
@@ -11,10 +12,6 @@
 using namespace GameObjectCache;
 
 class LevelEditorUI: public UIBundle {
-    public:
-    enum UIState {
-        EDITOR, SAVE_DIALOG, OPEN_DIALOG
-    };
     private:
     static const int NUM_BUNDLE_ELEMENTS = 3;
 
@@ -29,20 +26,14 @@ class LevelEditorUI: public UIBundle {
 
     MenuListButton buttons1[2] = {
         MenuListButton("open", UIButtonType::BUTTON, [](MenuListButton* button, UIButtonValue& value) {
-            LevelEditorUI* editorUI = (LevelEditorUI*) button->getPointer();
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
 
-            editorUI->setState(OPEN_DIALOG);
-            // *editorUI->level = GameLevel();
-
-            // LevelLoader loader = LevelLoader();
-            // loader.loadLevel(*editorUI->level, "res/test.mwf");
+            editorScreen->setState(ILevelEditorScreen::OPEN_DIALOG);
         }),
         MenuListButton("save", UIButtonType::BUTTON, [](MenuListButton* button, UIButtonValue& value) {
-            LevelEditorUI* editorUI = (LevelEditorUI*) button->getPointer();
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
 
-            editorUI->setState(SAVE_DIALOG);
-            // LevelSaver saver = LevelSaver();
-            // saver.saveLevel(*(editorUI->getLevel()), "res/test.mwf");
+            editorScreen->setState(ILevelEditorScreen::SAVE_DIALOG);
         })
     };
     MenuListButton buttons2[2] = {
@@ -73,19 +64,9 @@ class LevelEditorUI: public UIBundle {
 
     IUIElement* bundleElements[NUM_BUNDLE_ELEMENTS];
 
-    // File Picker
-    TextInput* fileInput;
-    char fileInputBuffer[256];
-    Button confirmFileButton = Button("ok", 4, [](Button* button, UIButtonValue& value) {
-        std::printf("OK pressed\n");
-    });
-    IUIElement* filePickerElements[2];
-
-    PopupWindow filePickerWindow = PopupWindow("enter filepath", 18, 10, filePickerElements, 2);
-
     bool isHover = false;
 
-    GameLevel* level;
+    ILevelEditorScreen* screen;
     int width;
     int height;
     int* scrollX;
@@ -101,9 +82,9 @@ class LevelEditorUI: public UIBundle {
     GameObject* lastPlacedObject = nullptr;
     bool isMouseDown = false;
     bool isMouseRightDown = false;
-    UIState state = EDITOR;
 
     void placeBlock(GameObject* object) {
+        GameLevel* level = screen->getLevel();
         if (object == nullptr) {
             return;
         }
@@ -126,6 +107,7 @@ class LevelEditorUI: public UIBundle {
     }
 
     void boundScroll() {
+        GameLevel* level = screen->getLevel();
         int w = level->getCurrentRegion()->getWidth();
         int h = level->getCurrentRegion()->getHeight();
 
@@ -142,6 +124,7 @@ class LevelEditorUI: public UIBundle {
     }
 
     void clickLevelBoundButtons() {
+        GameLevel* level = screen->getLevel();
         int xOffset = 144;
         int yOffset = 0;
 
@@ -215,7 +198,7 @@ class LevelEditorUI: public UIBundle {
     }
 
     public:
-    LevelEditorUI(GameLevel* level, int width, int height, int& scrollX, int& scrollY, bool* keys) : UIBundle(bundleElements, NUM_BUNDLE_ELEMENTS), level(level), width(width), height(height), scrollX(&scrollX), scrollY(&scrollY), keys(keys) {
+    LevelEditorUI(ILevelEditorScreen* screen, int width, int height, int& scrollX, int& scrollY, bool* keys) : UIBundle(bundleElements, NUM_BUNDLE_ELEMENTS), screen(screen), width(width), height(height), scrollX(&scrollX), scrollY(&scrollY), keys(keys) {
         searchBar = new TextInput("search objects", 16, 30, searchBarBuffer, [](TextInput* input, char* value) {
             LevelEditorUI* editorUI = (LevelEditorUI*) input->getPointer();
             editorUI->getObjectPicker().updateSearchFilter(value);
@@ -225,7 +208,7 @@ class LevelEditorUI: public UIBundle {
         searchBar->setPointer(this);
         searchBar->setPosition(8, height - 28);
 
-        menuBar.setPointer(this);
+        menuBar.setPointer(screen);
 
         picker = new ObjectPicker(groups2, 2, 18, 28);
         picker->getGroups()[0].setOpen(true);
@@ -233,15 +216,6 @@ class LevelEditorUI: public UIBundle {
         bundleElements[0] = &menuBar;
         bundleElements[1] = searchBar;
         bundleElements[2] = picker;
-
-        // File Picker
-        fileInput = new TextInput("file path", 11, 255, fileInputBuffer, nullptr);
-
-        fileInput->setPosition(8, 8);
-        confirmFileButton.setPosition(104, 8);
-
-        filePickerElements[0] = fileInput;
-        filePickerElements[1] = &confirmFileButton;
     }
 
     // Function should run 60 times per second when active
@@ -267,14 +241,6 @@ class LevelEditorUI: public UIBundle {
         boundScroll();
     }
 
-    UIState getState() {
-        return state;
-    }
-
-    void setState(UIState state) {
-        this->state = state;
-    }
-
     MenuBar& getMenuBar() {
         return menuBar;
     }
@@ -285,10 +251,6 @@ class LevelEditorUI: public UIBundle {
 
     ObjectPicker& getObjectPicker() {
         return *picker;
-    }
-
-    PopupWindow& getFilePickerWindow() {
-        return filePickerWindow;
     }
 
     int getTileHoverX() {
@@ -383,6 +345,7 @@ class LevelEditorUI: public UIBundle {
     }
 
     int getLevelBoundButtonX() {
+        GameLevel* level = screen->getLevel();
         int regionW = level->getCurrentRegion()->getWidth() * 16;
 
         if (*scrollX > VIEW_WIDTH / 2 - 16) {
@@ -394,6 +357,7 @@ class LevelEditorUI: public UIBundle {
     }
 
     int getLevelBoundButtonY() {
+        GameLevel* level = screen->getLevel();
         int regionH = level->getCurrentRegion()->getHeight() * 16;
 
         if (*scrollY > VIEW_HEIGHT / 2 - 16) {
@@ -413,16 +377,15 @@ class LevelEditorUI: public UIBundle {
     }
 
     GameLevel* getLevel() {
-        return level;
+        return screen->getLevel();
     }
 
     GameLevelRegion* getCurrentRegion() {
-        return level->getCurrentRegion();
+        return screen->getLevel()->getCurrentRegion();
     }
 
     ~LevelEditorUI() {
         delete searchBar;
         delete picker;
-        delete fileInput;
     }
 };

@@ -8,6 +8,7 @@ class Button: public IUIElement {
     int width;
     void (*callback)(Button* button, UIButtonValue& value);
     UIButtonValue value = {};
+    void* pointer;
 
     bool hovered = false;
 
@@ -41,5 +42,17 @@ class Button: public IUIElement {
 
     bool isHovered() {
         return hovered;
+    }
+
+    void setHovered(bool value) {
+        hovered = value;
+    }
+
+    void setPointer(void* pointer) {
+        this->pointer = pointer;
+    }
+
+    void* getPointer() {
+        return pointer;
     }
 };
