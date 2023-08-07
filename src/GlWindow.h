@@ -38,9 +38,7 @@ class GlWindow {
             GlWindow* glWindow = (GlWindow*) glfwGetWindowUserPointer(window);
             glWindow->setKey(key, action != GLFW_RELEASE);
 
-            if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-                glfwSetWindowShouldClose(window, GLFW_TRUE);
-            } else if ((key == GLFW_KEY_BACKSPACE || key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT || key == GLFW_KEY_DELETE) && action != GLFW_RELEASE) {
+            if ((key == GLFW_KEY_BACKSPACE || key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT || key == GLFW_KEY_DELETE || key == GLFW_KEY_ESCAPE) && action != GLFW_RELEASE) {
                 GlWindow* glWindow = ((GlWindow*) glfwGetWindowUserPointer(window));
                 if (glWindow->uiEventElement != nullptr) {
                     glWindow->uiEventElement->charInput(key);
@@ -198,6 +196,10 @@ class GlWindow {
         stageDrawer = new StageDrawer(*drawer);
         levelDrawer = new LevelDrawer(*drawer);
         uiDrawer = new UIDrawer(*drawer, windowWidth, windowHeight);
+    }
+
+    void exitWindow() {
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
 
     void setKey(int key, bool value) {

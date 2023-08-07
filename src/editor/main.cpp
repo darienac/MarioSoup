@@ -12,6 +12,7 @@ int main() {
 
 	PlayLevelScreen playScreen = PlayLevelScreen(window, manager);
 	LevelEditorScreen editorScreen = LevelEditorScreen(window, manager, playScreen);
+	playScreen.setEditorScreen(&editorScreen);
 
 	manager.setScreen(&editorScreen);
 	manager.run();

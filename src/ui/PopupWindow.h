@@ -34,7 +34,7 @@ class PopupWindow : public IUIElement {
         this->cancelCallback = callback;
     }
 
-    bool hover(int x, int y, int gameWidth, int gameHeight) override {
+    virtual bool hover(int x, int y, int gameWidth, int gameHeight) override {
         int x0 = (gameWidth - width * 8) / 2;
         int y0 = (gameHeight - height * 8) / 2;
         int x1 = x0 + width * 8;
@@ -55,7 +55,7 @@ class PopupWindow : public IUIElement {
 
         return isHovered;
     }
-    void click() {
+    virtual void click() override {
         if (isHovered) {
             for (int i = 0; i < numElements; i++) {
                 elements[i]->click();
@@ -64,7 +64,12 @@ class PopupWindow : public IUIElement {
             cancelCallback(this);
         }
     }
-    void charInput(int codepoint) {
+    virtual void charInput(int codepoint) override {
+        if (codepoint == GLFW_KEY_ESCAPE && canCancel) {
+            cancelCallback(this);
+            return;
+        }
+
         for (int i = 0; i < numElements; i++) {
             elements[i]->charInput(codepoint);
         }

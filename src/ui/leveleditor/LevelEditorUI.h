@@ -368,6 +368,12 @@ class LevelEditorUI: public UIBundle {
         }
     }
 
+    virtual void charInput(int codepoint) override {
+        if (codepoint == GLFW_KEY_ESCAPE) {
+            screen->closeWindow();
+        }
+    }
+
     int getLevelBoundButtonX() {
         GameLevel* level = screen->getLevel();
         int regionW = level->getCurrentRegion()->getWidth() * 16;

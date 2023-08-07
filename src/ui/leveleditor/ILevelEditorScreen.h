@@ -21,4 +21,5 @@ class ILevelEditorScreen: public IScreen {
     virtual void setFullscreen(bool value) = 0;
 
     virtual void runLevel() = 0;
+    virtual void closeWindow() = 0;
 };

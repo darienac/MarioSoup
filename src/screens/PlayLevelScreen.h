@@ -1,9 +1,10 @@
 #pragma once
 
-#include "screens/IScreen.h"
+#include "ui/playlevel/IPlayLevelScreen.h"
+#include "ui/playlevel/PlayLevelUI.h"
 #include "screens/ScreenManager.h"
 
-class PlayLevelScreen: public IScreen {
+class PlayLevelScreen: public IPlayLevelScreen {
     private:
     static const int WINDOW_WIDTH = 256;
     static const int WINDOW_HEIGHT = 240;
@@ -12,15 +13,19 @@ class PlayLevelScreen: public IScreen {
     int scrollY = 0;
 
     GameLevel* level;
+    PlayLevelUI* levelUI;
+    ILevelEditorScreen* editorScreen = nullptr;
 
     public:
     PlayLevelScreen(GlWindow& window, ScreenManager& manager) {
         this->window = &window;
         this->manager = &manager;
+
+        levelUI = new PlayLevelUI(this, window.getKeys());
     }
 
-    void setLevel(GameLevel* level) {
-        this->level = level;
+    void setEditorScreen(ILevelEditorScreen* screen) {
+        editorScreen = screen;
     }
 
     void renderFrame() override {
@@ -34,5 +39,24 @@ class PlayLevelScreen: public IScreen {
 
     virtual void enable() override {
         window->resize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        window->uiEventElement = levelUI;
+    }
+
+    virtual void exitWindow() override {
+        window->exitWindow();
+    }
+
+    virtual void setLevel(GameLevel* level) override {
+        this->level = level;
+    }
+
+    virtual void exitToEditor() override {
+        if (editorScreen != nullptr) {
+            manager->setScreen(editorScreen);
+        }
+    }
+
+    ~PlayLevelScreen() {
+        delete levelUI;
     }
 };

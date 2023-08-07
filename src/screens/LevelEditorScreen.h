@@ -2,6 +2,8 @@
 
 #include "screens/IScreen.h"
 #include "ui/leveleditor/ILevelEditorScreen.h"
+#include "ui/playlevel/IPlayLevelScreen.h"
+
 #include "GlWindow.h"
 #include "game/GameObject.h"
 #include "game/GameObjectCache.h"
@@ -11,7 +13,6 @@
 #include "ui/leveleditor/FilePickerPopup.h"
 #include "ui/leveleditor/InfoPopup.h"
 #include "screens/ScreenManager.h"
-#include "screens/PlayLevelScreen.h"
 
 class LevelEditorScreen: public ILevelEditorScreen {
     private:
@@ -25,14 +26,14 @@ class LevelEditorScreen: public ILevelEditorScreen {
 
     UIState uiState;
 
-    PlayLevelScreen* playLevelScreen;
+    IPlayLevelScreen* playLevelScreen;
     LevelEditorUI* editorUI;
     FilePickerPopup* filePicker;
     InfoPopup infoPopup = InfoPopup(this);
     GameLevel* level = new GameLevel();
 
     public:
-    LevelEditorScreen(GlWindow& window, ScreenManager& manager, PlayLevelScreen& playLevelScreen) {
+    LevelEditorScreen(GlWindow& window, ScreenManager& manager, IPlayLevelScreen& playLevelScreen) {
         this->window = &window;
         this->manager = &manager;
         this->playLevelScreen = &playLevelScreen;
@@ -148,6 +149,10 @@ class LevelEditorScreen: public ILevelEditorScreen {
     virtual void runLevel() override {
         playLevelScreen->setLevel(level);
         manager->setScreen(playLevelScreen);
+    }
+
+    virtual void closeWindow() override {
+        window->exitWindow();
     }
 
     ~LevelEditorScreen() {
