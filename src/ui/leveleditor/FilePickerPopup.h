@@ -61,6 +61,14 @@ class FilePickerPopup : public PopupWindow {
 
         filePickerElements[0] = fileInput;
         filePickerElements[1] = &confirmFileButton;
+
+        setCanCancel(true);
+        setPointer(screen);
+        setCancelCallback([](PopupWindow* popup) {
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) popup->getPointer();
+
+            editorScreen->setState(ILevelEditorScreen::UIState::EDITOR);
+        });
     }
 
     char* getFileInputBuffer() {

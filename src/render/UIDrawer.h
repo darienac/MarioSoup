@@ -136,7 +136,12 @@ class UIDrawer {
         drawer->drawTile(UIBOX_BL, x0, y0);
         drawer->drawTile(UIBOX_BR, x1, y0);
         drawer->drawTile(UIBOX_TL, x0, y1);
-        drawer->drawTile(UIBOX_TR, x1, y1);
+        if (popup.getCanCancel()) {
+            drawer->drawTile(UI_X, x1, y1);
+        } else {
+            drawer->drawTile(UIBOX_TR, x1, y1);
+        }
+        
         for (int i = 1; i < w - 1; i++) {
             drawer->drawTile(UIBOX_B, x0 + i * 8, y0);
             drawer->drawTile(UIBOX_T, x0 + i * 8, y1);
