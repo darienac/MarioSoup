@@ -1,9 +1,7 @@
 #pragma once
 
-#include "GlWindow.h"
-#include "screens/ScreenManager.h"
-
 class ScreenManager;
+class GlWindow;
 
 class IScreen {
     protected:

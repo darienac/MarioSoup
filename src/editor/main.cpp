@@ -1,4 +1,5 @@
 #include "screens/ScreenManager.h"
+#include "screens/PlayLevelScreen.h"
 #include "screens/LevelEditorScreen.h"
 #include "GlWindow.h"
 
@@ -9,8 +10,9 @@ int main() {
 	GlWindow window = GlWindow("Level Editor", WINDOW_WIDTH, WINDOW_HEIGHT);
 	ScreenManager manager = ScreenManager(window);
 
-	LevelEditorScreen screen = LevelEditorScreen(window, manager);
+	PlayLevelScreen playScreen = PlayLevelScreen(window, manager);
+	LevelEditorScreen editorScreen = LevelEditorScreen(window, manager, playScreen);
 
-	manager.setScreen(&screen);
+	manager.setScreen(&editorScreen);
 	manager.run();
 }

@@ -11,8 +11,9 @@
 #include "ui/leveleditor/FilePickerPopup.h"
 #include "ui/leveleditor/InfoPopup.h"
 #include "screens/ScreenManager.h"
+#include "screens/PlayLevelScreen.h"
 
-class LevelEditorScreen: public ILevelEditorScreen, public IScreen {
+class LevelEditorScreen: public ILevelEditorScreen {
     private:
     static const int WINDOW_WIDTH = 400;
     static const int WINDOW_HEIGHT = 256;
@@ -24,16 +25,17 @@ class LevelEditorScreen: public ILevelEditorScreen, public IScreen {
 
     UIState uiState;
 
-    GlWindow* window;
+    PlayLevelScreen* playLevelScreen;
     LevelEditorUI* editorUI;
     FilePickerPopup* filePicker;
     InfoPopup infoPopup = InfoPopup(this);
     GameLevel* level = new GameLevel();
 
     public:
-    LevelEditorScreen(GlWindow& window, ScreenManager& manager) {
+    LevelEditorScreen(GlWindow& window, ScreenManager& manager, PlayLevelScreen& playLevelScreen) {
         this->window = &window;
         this->manager = &manager;
+        this->playLevelScreen = &playLevelScreen;
 
         GameLevelRegion* levelRegion = level->addRegion(8, 8);
         level->setCurrentRegion(levelRegion);
@@ -129,6 +131,23 @@ class LevelEditorScreen: public ILevelEditorScreen, public IScreen {
 
     virtual void setInfoMessage(const char* message) {
         infoPopup.setMessage(message);
+    }
+
+    virtual bool isFullscreen() override {
+        return window->isFullscreen();
+    }
+
+    virtual void setFullscreen(bool value) override {
+        if (value) {
+            window->enableFullscreen();
+        } else {
+            window->disableFullscreen();
+        }
+    }
+
+    virtual void runLevel() override {
+        playLevelScreen->setLevel(level);
+        manager->setScreen(playLevelScreen);
     }
 
     ~LevelEditorScreen() {

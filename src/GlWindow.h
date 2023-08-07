@@ -253,6 +253,9 @@ class GlWindow {
     }
 
     void enableFullscreen() {
+        if (fullscreen) {
+            return;
+        }
         fullscreen = true;
         GLFWmonitor* monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -265,6 +268,9 @@ class GlWindow {
     }
 
     void disableFullscreen() {
+        if (!fullscreen) {
+            return;
+        }
         fullscreen = false;
 
         glfwSetWindowMonitor(window, NULL, 0, 0, getWidth(), getHeight(), 60);

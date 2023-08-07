@@ -19,32 +19,50 @@ class LevelEditorUI: public UIBundle {
     static const int VIEW_HEIGHT = 240;
     
     // Editor Bundle Elements
-    const char* menuItems[2] = {
+    const char* menuItems[4] = {
         "file",
-        "edit"
+        "edit",
+        "view",
+        "run"
     };
 
-    MenuListButton buttons1[2] = {
-        MenuListButton("open", UIButtonType::BUTTON, [](MenuListButton* button, UIButtonValue& value) {
+    MenuListButton buttonsFile[2] = {
+        MenuListButton("open", UIButtonType::BUTTON, [](MenuListButton* button) {
             ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
 
             editorScreen->setState(ILevelEditorScreen::OPEN_DIALOG);
         }),
-        MenuListButton("save", UIButtonType::BUTTON, [](MenuListButton* button, UIButtonValue& value) {
+        MenuListButton("save", UIButtonType::BUTTON, [](MenuListButton* button) {
             ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
 
             editorScreen->setState(ILevelEditorScreen::SAVE_DIALOG);
         })
     };
-    MenuListButton buttons2[2] = {
+    MenuListButton buttonsEdit[2] = {
         MenuListButton("edit 1", UIButtonType::BUTTON, nullptr),
         MenuListButton("toggle", UIButtonType::RADIO, nullptr)
     };
-    MenuList lists[2] = {
-        MenuList(buttons1, 2, 8),
-        MenuList(buttons2, 2, 8)
+    MenuListButton buttonsView[1] = {
+        MenuListButton("fullscreen", UIButtonType::RADIO, [](MenuListButton* button) {
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
+
+            editorScreen->setFullscreen(button->getValue().toggle);
+        })
     };
-    MenuBar menuBar = MenuBar(menuItems, 2, lists, 144, 0, 32);
+    MenuListButton buttonsRun[1] = {
+        MenuListButton("run level", UIButtonType::BUTTON, [](MenuListButton* button) {
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
+
+            editorScreen->runLevel();
+        })
+    };
+    MenuList lists[4] = {
+        MenuList(buttonsFile, 2, 12),
+        MenuList(buttonsEdit, 2, 12),
+        MenuList(buttonsView, 1, 12),
+        MenuList(buttonsRun, 1, 12)
+    };
+    MenuBar menuBar = MenuBar(menuItems, 4, lists, 144, 0, 32);
 
     TextInput* searchBar;
     char searchBarBuffer[32];
@@ -209,6 +227,12 @@ class LevelEditorUI: public UIBundle {
         searchBar->setPosition(8, height - 28);
 
         menuBar.setPointer(screen);
+
+        buttonsView[0].setOnListOpen([](MenuListButton* button) {
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
+
+            button->setToggle(editorScreen->isFullscreen());
+        });
 
         picker = new ObjectPicker(groups2, 2, 18, 28);
         picker->getGroups()[0].setOpen(true);

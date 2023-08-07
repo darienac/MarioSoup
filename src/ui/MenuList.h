@@ -69,4 +69,10 @@ class MenuList : public IUIElement {
             buttons[i].setPointer(pointer);
         }
     }
+
+    void listOpen() {
+        for (int i = 0; i < numButtons; i++) {
+            buttons[i].listOpen();
+        }
+    }
 };

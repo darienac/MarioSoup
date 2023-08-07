@@ -92,6 +92,9 @@ class MenuBar : public IUIElement {
             numSelected = -1;
         } else {
             numSelected = numHovered;
+            if (numSelected != -1) {
+                lists[numSelected].listOpen();
+            }
         }
     }
 };

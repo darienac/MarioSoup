@@ -5,18 +5,27 @@
 // Doesn't implement IUIElement since bounding boxes are calculated by a parent MenuList
 
 class MenuListButton {
+    public:
+    typedef void (*button_callback)(MenuListButton* button);
+
     private:
     const char* name;
     UIButtonType type;
     void* pointer;
-    void (*callback)(MenuListButton* button, UIButtonValue& value);
+    button_callback onClick;
+    button_callback onListOpen = nullptr;
+
     UIButtonValue value = {};
 
     public:
-    MenuListButton(const char* name, UIButtonType type, void (*callback)(MenuListButton* button, UIButtonValue& value)): name(name), type(type), callback(callback) {}
+    MenuListButton(const char* name, UIButtonType type, button_callback onClick): name(name), type(type), onClick(onClick) {}
 
-    void setToggle(UIButtonValue value) {
-        this->value = value;
+    void setToggle(bool value) {
+        this->value.toggle = value;
+    }
+
+    void setOnListOpen(button_callback callback) {
+        onListOpen = callback;
     }
 
     UIButtonValue getValue() {
@@ -47,8 +56,14 @@ class MenuListButton {
         if (type == UIButtonType::RADIO) {
             value.toggle = !value.toggle;
         }
-        if (callback != nullptr) {
-            callback(this, value);
+        if (onClick != nullptr) {
+            onClick(this);
+        }
+    }
+
+    void listOpen() {
+        if (onListOpen != nullptr) {
+            onListOpen(this);
         }
     }
 };
