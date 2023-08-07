@@ -83,6 +83,22 @@ class Tile {
 
 namespace {
     Tile tiles[256];
+
+    void initTileGrid(Tile* tiles, TextureName texName, int x0, int y0, int w, int h, int columns, int amount) {
+        while (true) {
+            int x = x0;
+            for (int i = 0; i < columns; i++) {
+                *tiles = Tile(texName, x, y0, w, h);
+                amount--;
+                if (amount == 0) {
+                    return;
+                }
+                tiles++;
+                x += w;
+            }
+            y0 += h;
+        }
+    }
 };
 
 namespace Tiles {
@@ -98,6 +114,7 @@ namespace Tiles {
         BUTTON_LEFT, BUTTON_MID, BUTTON_RIGHT, BUTTON_ON_LEFT, BUTTON_ON_MID, BUTTON_ON_RIGHT,
         TEXTINPUT_LEFT, TEXTINPUT_MID, TEXTINPUT_RIGHT,
         UIBOX_BL, UIBOX_L, UIBOX_TL, UIBOX_T, UIBOX_TR, UIBOX_R, UIBOX_BR, UIBOX_B, UIBOX_C,
+        UI_X,
         UIREGION_LIGHT, UIREGION_DARK, UIREGION_BLACK,
         UICOLLAPSE, UICOLLAPSE_ARROWUP, UICOLLAPSE_ARROWDOWN, UICOLLAPSE_END,
         LEVELBOUND_BL, LEVELBOUND_L, LEVELBOUND_TL, LEVELBOUND_T, LEVELBOUND_TR, LEVELBOUND_R, LEVELBOUND_BR, LEVELBOUND_B,
@@ -121,53 +138,7 @@ namespace Tiles {
 
         tiles[AIR] = Tile(HUD, 264, 8, 0, 0);
 
-        tiles[D0] = Tile(HUD, 264, 8, 8, 8);
-        tiles[D1] = Tile(HUD, 273, 8, 8, 8);
-        tiles[D2] = Tile(HUD, 282, 8, 8, 8);
-        tiles[D3] = Tile(HUD, 291, 8, 8, 8);
-        tiles[D4] = Tile(HUD, 300, 8, 8, 8);
-        tiles[D5] = Tile(HUD, 309, 8, 8, 8);
-        tiles[D6] = Tile(HUD, 318, 8, 8, 8);
-        tiles[D7] = Tile(HUD, 327, 8, 8, 8);
-        tiles[D8] = Tile(HUD, 336, 8, 8, 8);
-        tiles[D9] = Tile(HUD, 345, 8, 8, 8);
-
-        tiles[LA] = Tile(HUD, 354, 8, 8, 8);
-        tiles[LB] = Tile(HUD, 363, 8, 8, 8);
-        tiles[LC] = Tile(HUD, 372, 8, 8, 8);
-        tiles[LD] = Tile(HUD, 381, 8, 8, 8);
-        tiles[LE] = Tile(HUD, 390, 8, 8, 8);
-        tiles[LF] = Tile(HUD, 399, 8, 8, 8);
-
-        tiles[LG] = Tile(HUD, 264, 17, 8, 8);
-        tiles[LH] = Tile(HUD, 273, 17, 8, 8);
-        tiles[LI] = Tile(HUD, 282, 17, 8, 8);
-        tiles[LJ] = Tile(HUD, 291, 17, 8, 8);
-        tiles[LK] = Tile(HUD, 300, 17, 8, 8);
-        tiles[LL] = Tile(HUD, 309, 17, 8, 8);
-        tiles[LM] = Tile(HUD, 318, 17, 8, 8);
-        tiles[LN] = Tile(HUD, 327, 17, 8, 8);
-        tiles[LO] = Tile(HUD, 336, 17, 8, 8);
-        tiles[LP] = Tile(HUD, 345, 17, 8, 8);
-        tiles[LQ] = Tile(HUD, 354, 17, 8, 8);
-        tiles[LR] = Tile(HUD, 363, 17, 8, 8);
-        tiles[LS] = Tile(HUD, 372, 17, 8, 8);
-        tiles[LT] = Tile(HUD, 381, 17, 8, 8);
-        tiles[LU] = Tile(HUD, 390, 17, 8, 8);
-        tiles[LV] = Tile(HUD, 399, 17, 8, 8);
-
-        tiles[LW] = Tile(HUD, 264, 26, 8, 8);
-        tiles[LX] = Tile(HUD, 273, 26, 8, 8);
-        tiles[LY] = Tile(HUD, 282, 26, 8, 8);
-        tiles[LZ] = Tile(HUD, 291, 26, 8, 8);
-        tiles[DA] = Tile(HUD, 300, 26, 8, 8);
-        tiles[XX] = Tile(HUD, 309, 26, 8, 8);
-        tiles[EX] = Tile(HUD, 318, 26, 8, 8);
-        tiles[DO] = Tile(HUD, 327, 26, 8, 8);
-        tiles[CO] = Tile(HUD, 336, 26, 8, 8);
-
-        tiles[FS] = Tile(UI, 48, 48, 8, 8);
-        tiles[BS] = Tile(UI, 56, 48, 8, 8);
+        initTileGrid(tiles + D0, UI, 64, 0, 8, 8, 16, 43);
 
         tiles[TEXT_CURSOR] = Tile(UI, 8, 24, 8, 8);
         tiles[MENU_OFF] = Tile(UI, 0, 0, 8, 16);
@@ -198,6 +169,7 @@ namespace Tiles {
         tiles[UIBOX_B] = Tile(UI, 52, 8, 8, 8);
         tiles[UIBOX_BL] = Tile(UI, 48, 8, 8, 8);
         tiles[UIBOX_C] = Tile(UI, 52, 4, 8, 8);
+        tiles[UI_X] = Tile(UI, 32, 32, 8, 8);
         tiles[UIREGION_LIGHT] = Tile(UI, 0, 0, 8, 8);
         tiles[UIREGION_DARK] = Tile(UI, 8, 0, 8, 8);
         tiles[UIREGION_BLACK] = Tile(UI, 48, 16, 8, 8);
