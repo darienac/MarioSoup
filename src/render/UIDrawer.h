@@ -19,8 +19,6 @@ class UIDrawer {
     int windowHeight;
 
     void drawMenuItem(const char* label, int x, int y, bool isHover) {
-        drawer->setPalleteSwap(OVERWORLD_2, true);
-
         int l = strlen(label);
         int tile;
 
@@ -62,7 +60,6 @@ class UIDrawer {
         const char** labels = menuBar.getLabels();
         MenuList* lists = menuBar.getLists();
         int numLabels = menuBar.getNumLabels();
-        // drawer->setPalleteSwap(OVERWORLD_2, true);
         int x = 0;
         int barX;
         int barY;
@@ -99,8 +96,6 @@ class UIDrawer {
     }
 
     void drawMenuListButton(MenuListButton& button, int x, int y, int width, bool isHover) {
-        drawer->setPalleteSwap(OVERWORLD_2, true);
-
         int tile;
         if (isHover) {
             tile = MENULIST_ON;
@@ -123,8 +118,6 @@ class UIDrawer {
     }
 
     void drawPopupWindow(PopupWindow& popup, int gameWidth, int gameHeight) {
-        drawer->setPalleteSwap(OVERWORLD_2, true);
-
         int w = popup.getWidth();
         int h = popup.getHeight();
         int x0 = (gameWidth - w * 8) / 2;
@@ -168,8 +161,6 @@ class UIDrawer {
     }
 
     void drawButton(Button& button, int x, int y) {
-        drawer->setPalleteSwap(OVERWORLD_2, true);
-        
         int w = button.getWidth();
         bool hover = button.isHovered();
         if (hover) {
@@ -198,8 +189,6 @@ class UIDrawer {
     }
 
     void drawTextInput(TextInput& textInput, int x, int y) {
-        drawer->setPalleteSwap(OVERWORLD_2, true);
-        
         int w = textInput.getWidth();
         drawer->drawTile(TEXTINPUT_LEFT, x, y);
         drawer->drawTile(TEXTINPUT_RIGHT, x + w * 8 - 8, y);
@@ -220,6 +209,8 @@ class UIDrawer {
         if (textInput.isSelected()) {
             drawer->drawTile(TEXT_CURSOR, 3 + 8 * textInput.getCursorPos() + textInput.getScrollX(), 2);
         }
+
+        drawer->removePalleteSwap();
 
         oldFB->bind();
         drawer->resizeToFramebuffer();
@@ -298,8 +289,6 @@ class UIDrawer {
     }
 
     void drawObjectPicker(ObjectPicker& picker, int x, int y) {
-        drawer->setPalleteSwap(OVERWORLD_2, true);
-
         int scrollY = picker.getScrollY();
         int pxlWidth = picker.getWidth() * 8;
         int pxlHeight = picker.getHeight() * 8;
