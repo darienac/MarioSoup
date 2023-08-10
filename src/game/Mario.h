@@ -19,6 +19,10 @@ class Mario {
         gameObject = *GameObjectCache::objects["player"];
     }
 
+    GameObject& getGameObject() {
+        return gameObject;
+    }
+
     int getX() {
         return x;
     }
@@ -33,5 +37,13 @@ class Mario {
 
     void setY(int value) {
         y = value;
+    }
+
+    int getZoneLayer() {
+        return zoneLayer;
+    }
+
+    void setZoneLayer(int value) {
+        zoneLayer = value;
     }
 };

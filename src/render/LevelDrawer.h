@@ -111,4 +111,10 @@ class LevelDrawer {
         drawer->drawTile(LEVEL_MINUS, xOffset + viewX, yOffset + viewY - 16);
         drawer->drawTile(LEVEL_PLUS, xOffset + viewX, yOffset + viewY);
     }
+
+    void drawMario(GameLevelZone& zone, int x, int y) {
+        Mario* mario = &zone.getMario();
+        drawer->setZPos(ImageDrawer::ZPOS_GAME_TILES[mario->getZoneLayer()]);
+        drawer->drawTile(mario->getGameObject().getLevelTile(), x + mario->getX(), y + mario->getY());
+    }
 };

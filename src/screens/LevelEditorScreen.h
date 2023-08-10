@@ -78,6 +78,8 @@ class LevelEditorScreen: public ILevelEditorScreen {
         window->levelDrawer->drawLevelBoundButtons(*editorUI);
         window->levelDrawer->drawLevelZone(*zone, 144 + scrollX, scrollY);
         window->levelDrawer->drawLevelZoneBoundary(*zone, WINDOW_WIDTH - VIEW_WIDTH + scrollX, scrollY);
+        window->levelDrawer->drawMario(*zone, 144 + scrollX, scrollY);
+
         window->levelDrawer->drawCursor(*zone, editorUI->getTileHoverX(), editorUI->getTileHoverY(), 144 + scrollX, scrollY);
 
         switch (uiState) {
