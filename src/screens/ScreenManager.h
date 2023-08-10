@@ -39,6 +39,7 @@ class ScreenManager {
             window->drawer->drawLetterboxedImage(*window->gameTexture, (float) window->windowFramebuffer->getWidth() / (float) window->windowFramebuffer->getHeight());
 
             glfwSwapBuffers(window->window);
+            glFinish();
             glfwPollEvents();
         }
     }
