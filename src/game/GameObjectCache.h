@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-#include "GameObject.h"
+#include "game/GameObject.h"
 #include "TileMappings.h"
 
 namespace GameObjectCache {
@@ -16,15 +16,19 @@ namespace GameObjectCache {
 };
 
 namespace {
-    void addObject(GameObject* object) {
+    GameObject& addObject(GameObject* object) {
         GameObjectCache::objects[object->getId()] = object;
+        return *object;
     }
 }
 
 namespace GameObjectCache {
     void init() {
         addObject(new GameObject("air", "air", Tiles::AIR));
+        addObject(new GameObject("player", "player", Tiles::MARIO_STAND_SMB3));
+
         addObject(new GameObject("smb:rock", "rock", Tiles::SMB_ROCK));
         addObject(new GameObject("smb:brick", "brick", Tiles::SMB_BRICK));
+        addObject(new GameObject("smb:fence", "fence", Tiles::SMB_FENCE)).setPreferredLayer(GameObject::BACKGROUND);
     }
 }

@@ -32,9 +32,7 @@ class PlayLevelScreen: public IPlayLevelScreen {
         glClearColor((float) 0x94 / 0xFF, (float) 0x94 / 0xFF, (float) 0xFF / 0xFF, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        window->drawer->setZPos(ImageDrawer::ZPOS_GAME_TILES);
-
-        window->levelDrawer->drawLevelRegion(*level->getCurrentRegion(), scrollX, scrollY);
+        window->levelDrawer->drawLevelZone(*level->getCurrentZone(), scrollX, scrollY);
     }
 
     virtual void enable() override {

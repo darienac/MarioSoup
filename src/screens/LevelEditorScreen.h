@@ -38,8 +38,8 @@ class LevelEditorScreen: public ILevelEditorScreen {
         this->manager = &manager;
         this->playLevelScreen = &playLevelScreen;
 
-        GameLevelRegion* levelRegion = level->addRegion(8, 8);
-        level->setCurrentRegion(levelRegion);
+        GameLevelZone* levelZone = level->addZone(8, 8);
+        level->setCurrentZone(levelZone);
         editorUI = new LevelEditorUI(this, WINDOW_WIDTH, WINDOW_HEIGHT, scrollX, scrollY, window.getKeys());
         filePicker = new FilePickerPopup(this);
     }
@@ -70,17 +70,15 @@ class LevelEditorScreen: public ILevelEditorScreen {
         window->uiDrawer->drawTextInput(editorUI->getSearchBar());
         window->uiDrawer->drawObjectPicker(editorUI->getObjectPicker(), 0, 0);
 
-        window->drawer->setZPos(ImageDrawer::ZPOS_GAME_TILES);
-
         // window->stageDrawer->drawScoreboard(7654321, 54, 5, 4, -1, manager->getFPS());
 		// window->stageDrawer->drawTitle(0, 7654321);
 
-        GameLevelRegion* region = level->getCurrentRegion();
+        GameLevelZone* zone = level->getCurrentZone();
 
-        window->levelDrawer->drawLevelRegionBoundary(*region, WINDOW_WIDTH - VIEW_WIDTH + scrollX, scrollY);
         window->levelDrawer->drawLevelBoundButtons(*editorUI);
-        window->levelDrawer->drawLevelRegion(*region, 144 + scrollX, scrollY);
-        window->levelDrawer->drawCursor(*region, editorUI->getTileHoverX(), editorUI->getTileHoverY(), 144 + scrollX, scrollY);
+        window->levelDrawer->drawLevelZone(*zone, 144 + scrollX, scrollY);
+        window->levelDrawer->drawLevelZoneBoundary(*zone, WINDOW_WIDTH - VIEW_WIDTH + scrollX, scrollY);
+        window->levelDrawer->drawCursor(*zone, editorUI->getTileHoverX(), editorUI->getTileHoverY(), 144 + scrollX, scrollY);
 
         switch (uiState) {
             case OPEN_DIALOG:

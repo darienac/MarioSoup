@@ -53,7 +53,7 @@ namespace Palletes {
 
 namespace {
     enum TextureName {
-        MARIO,
+        MARIO_SMB3,
         TILESET,
         HUD,
         UI
@@ -84,7 +84,7 @@ class Tile {
 namespace {
     Tile tiles[256];
 
-    void initTileGrid(Tile* tiles, TextureName texName, int x0, int y0, int w, int h, int columns, int amount) {
+    void initTileGrid(Tile* tiles, TextureName texName, int x0, int y0, int w, int h, int paddingX, int paddingY, int columns, int amount) {
         while (true) {
             int x = x0;
             for (int i = 0; i < columns; i++) {
@@ -94,9 +94,9 @@ namespace {
                     return;
                 }
                 tiles++;
-                x += w;
+                x += w + paddingX;
             }
-            y0 += h;
+            y0 += h + paddingY;
         }
     }
 };
@@ -122,8 +122,13 @@ namespace Tiles {
 
         COIN_ICO, TITLE,
 
-        SMB_ROCK,
-        SMB_BRICK
+        MARIO_STAND_SMB3, MARIO_WALK_SMB3, MARIO_JUMP_SMB3,
+        MARIO_RUN1_SMB3, MARIO_RUN2_SMB3, MARIO_VAULT_SMB3,
+        MARIO_SKID_SMB3, MARIO_FRONT_SMB3, MARIO_GRAB1_SMB3, MARIO_GRAB2_SMB3, MARIO_KICK_SMB3, MARIO_SLIDE_SMB3,
+        MARIO_SWIM1_SMB3, MARIO_SWIM2_SMB3, MARIO_SWIM3_SMB3, MARIO_SWIM4_SMB3,
+        MARIO_CLIMB_SMB3, MARIO_DIE_SMB3,
+
+        SMB_ROCK, SMB_BRICK, SMB_FENCE
     };
 
     Tile& getTile(int tile) {
@@ -131,14 +136,14 @@ namespace Tiles {
     };
 
     void initTiles() {
-        textures[TextureName::MARIO] = new Texture("smb_mario_and_luigi.png");
+        textures[TextureName::MARIO_SMB3] = new Texture("smb3_mario.png");
         textures[TextureName::TILESET] = new Texture("smb_misc_tileset.png");
         textures[TextureName::HUD] = new Texture("smb_hud.png");
         textures[TextureName::UI] = new Texture("ui_elements.png");
 
         tiles[AIR] = Tile(HUD, 264, 8, 0, 0);
 
-        initTileGrid(tiles + D0, UI, 64, 0, 8, 8, 16, 43);
+        initTileGrid(tiles + D0, UI, 64, 0, 8, 8, 0, 0, 16, 43);
 
         tiles[TEXT_CURSOR] = Tile(UI, 8, 24, 8, 8);
         tiles[MENU_OFF] = Tile(UI, 0, 0, 8, 16);
@@ -193,7 +198,10 @@ namespace Tiles {
         tiles[COIN_ICO] = Tile(HUD, 264, 76, 8, 8);
         tiles[TITLE] = Tile(HUD, 40, 144, 176, 88);
 
+        initTileGrid(tiles + MARIO_STAND_SMB3, MARIO_SMB3, 1, 16, 16, 16, 2, 0, 18, 18);
+
         tiles[SMB_ROCK] = Tile(TILESET, 0, 16, 16, 16);
         tiles[SMB_BRICK] = Tile(TILESET, 17, 16, 16, 16);
+        tiles[SMB_FENCE] = Tile(TILESET, 34, 67, 16, 16);
     };
 }

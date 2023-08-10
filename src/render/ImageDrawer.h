@@ -39,6 +39,14 @@ const GLint quadFaces[] = {
 };
 
 class ImageDrawer {
+    public:
+    static constexpr float ZPOS_BGTILE_UI = 0.0f;
+    static constexpr float ZPOS_GAME_TILES[3] = {0.1f, 0.2f, 0.3f};
+    static constexpr float ZPOS_TILE_UI = 0.4f;
+    static constexpr float ZPOS_UI = 0.5f;
+    static constexpr float ZPOS_UI_DIALOG = 0.9f;
+    static constexpr float ZPOS_TEXTHINT = 1.0f;
+
     private:
     ImageShader* shader;
     glm::mat4 projection;
@@ -47,13 +55,8 @@ class ImageDrawer {
     GLuint quadVerticesBuffer;
     GLuint quadFacesBuffer;
     GLuint quadTexCoordsBuffer;
+    
     public:
-    static const float ZPOS_GAME_TILES;
-    static const float ZPOS_UI;
-    static const float ZPOS_UI_DIALOG;
-    static const float ZPOS_TEXTHINT;
-
-
     ImageDrawer(ImageShader& shader, int width, int height): shader(&shader) {
         resize(width, height);
 
@@ -210,8 +213,3 @@ class ImageDrawer {
         return zPos;
     }
 };
-
-const float ImageDrawer::ZPOS_GAME_TILES = 0.0f;
-const float ImageDrawer::ZPOS_UI = 0.5f;
-const float ImageDrawer::ZPOS_UI_DIALOG = 0.9f;
-const float ImageDrawer::ZPOS_TEXTHINT = 1.0f;

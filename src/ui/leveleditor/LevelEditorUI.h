@@ -68,14 +68,14 @@ class LevelEditorUI: public UIBundle {
     char searchBarBuffer[32];
 
     GameObject* objectList1[2] = {objects["smb:rock"], objects["smb:brick"]};
-    GameObject* objectList2[2] = {objects["smb:brick"], objects["smb:rock"]};
+    GameObject* objectList2[3] = {objects["smb:brick"], objects["smb:rock"], objects["smb:fence"]};
 
     ObjectPickerGroup groups[2] = {
         ObjectPickerGroup("group 1", nullptr, 0, objectList1, 2),
         ObjectPickerGroup("group 2", nullptr, 0, nullptr, 0)
     };
     ObjectPickerGroup groups2[2] = {
-        ObjectPickerGroup("group a", groups, 2, objectList2, 2),
+        ObjectPickerGroup("group a", groups, 2, objectList2, 3),
         ObjectPickerGroup("group b", nullptr, 0, nullptr, 0)
     };
     ObjectPicker* picker;
@@ -97,21 +97,55 @@ class LevelEditorUI: public UIBundle {
     int tileHoverY = -1;
     int lastTileHoverX = -1;
     int lastTileHoverY = -1;
+    int lastLayer = -1;
+    int eraseLayer = -1;
     GameObject* lastPlacedObject = nullptr;
     bool isMouseDown = false;
     bool isMouseRightDown = false;
 
-    void placeBlock(GameObject* object) {
+    void placeBlock(GameObject* object, int layer) {
+        if (layer == -1) {
+            return;
+        }
+
         GameLevel* level = screen->getLevel();
         if (object == nullptr) {
             return;
         }
-        if (object != lastPlacedObject || tileHoverX != lastTileHoverX || tileHoverY != lastTileHoverY) {
+        if (object != lastPlacedObject || layer != lastLayer || tileHoverX != lastTileHoverX || tileHoverY != lastTileHoverY) {
             lastTileHoverX = tileHoverX;
             lastTileHoverY = tileHoverY;
+            lastLayer = layer;
+            lastPlacedObject = object;
 
-            level->getCurrentRegion()->setGridObject(object, tileHoverX, tileHoverY);
+            level->getCurrentZone()->getRegions()[layer]->setGridObject(object, tileHoverX, tileHoverY);
         }
+    }
+
+    void placeBlock(GameObject* object) {
+        if (object == nullptr) {
+            return;
+        }
+        placeBlock(object, object->getPreferredLayer());
+    }
+
+    void eraseBlock() {
+        if (eraseLayer == -1) {
+            setEraseLayer();
+        }
+        placeBlock(GameObjectCache::objects["air"], eraseLayer);
+    }
+
+    void setEraseLayer() {
+        GameLevelRegion** regions = screen->getLevel()->getCurrentZone()->getRegions();
+        GameObject* object = GameObjectCache::objects["air"];
+        for (int i = GameObject::NUM_LAYERS - 1; i >= 0; i--) {
+            if (regions[i]->getGridObject(tileHoverX, tileHoverY) != object) {
+                eraseLayer = i;
+                return;
+            }
+        }
+        eraseLayer = -1;
     }
 
     void setTileHover() {
@@ -126,8 +160,8 @@ class LevelEditorUI: public UIBundle {
 
     void boundScroll() {
         GameLevel* level = screen->getLevel();
-        int w = level->getCurrentRegion()->getWidth();
-        int h = level->getCurrentRegion()->getHeight();
+        int w = level->getCurrentZone()->getWidth();
+        int h = level->getCurrentZone()->getHeight();
 
         if (*scrollX > 32) {
             *scrollX = 32;
@@ -148,29 +182,29 @@ class LevelEditorUI: public UIBundle {
 
         auto inBoundButton = [this, &xOffset, &yOffset](int x, int y) {
             int mx = hoverX;
-            int my = hoverY; 
+            int my = hoverY;
             return mx >= x && mx < x + 16 && my >= y && my < y + 16;
         };
 
-        GameLevelRegion* region = level->getCurrentRegion();
+        GameLevelZone* zone = level->getCurrentZone();
 
-        int regionW = region->getWidth();
-        int regionH = region->getHeight();
+        int zoneW = zone->getWidth();
+        int zoneH = zone->getHeight();
 
         int viewX;
         int viewY;
 
         viewX = getLevelBoundButtonX();
-        viewY = *scrollY + regionH * 16;
+        viewY = *scrollY + zoneH * 16;
 
         if (inBoundButton(viewX - 16, viewY)) {
             // Shrink up
-            region->resizeGrid(regionW, regionH - 1, 0, 0);
+            zone->resizeGrid(zoneW, zoneH - 1, 0, 0);
             return;
         }
         if (inBoundButton(viewX, viewY)) {
             // Expand up
-            region->resizeGrid(regionW, regionH + 1, 0, 0);
+            zone->resizeGrid(zoneW, zoneH + 1, 0, 0);
             return;
         }
 
@@ -178,26 +212,26 @@ class LevelEditorUI: public UIBundle {
 
         if (inBoundButton(viewX - 16, viewY)) {
             // Shrink down
-            region->resizeGrid(regionW, regionH - 1, 0, -1);
+            zone->resizeGrid(zoneW, zoneH - 1, 0, -1);
             return;
         }
         if (inBoundButton(viewX, viewY)) {
             // Expand down
-            region->resizeGrid(regionW, regionH + 1, 0, 1);
+            zone->resizeGrid(zoneW, zoneH + 1, 0, 1);
             return;
         }
 
-        viewX = *scrollX + regionW * 16;
+        viewX = *scrollX + zoneW * 16;
         viewY = getLevelBoundButtonY();
 
         if (inBoundButton(viewX, viewY - 16)) {
             // Shrink right
-            region->resizeGrid(regionW - 1, regionH, 0, 0);
+            zone->resizeGrid(zoneW - 1, zoneH, 0, 0);
             return;
         }
         if (inBoundButton(viewX, viewY)) {
             // Expand right
-            region->resizeGrid(regionW + 1, regionH, 0, 0);
+            zone->resizeGrid(zoneW + 1, zoneH, 0, 0);
             return;
         }
 
@@ -205,12 +239,12 @@ class LevelEditorUI: public UIBundle {
 
         if (inBoundButton(viewX, viewY - 16)) {
             // Shrink left
-            region->resizeGrid(regionW - 1, regionH, -1, 0);
+            zone->resizeGrid(zoneW - 1, zoneH, -1, 0);
             return;
         }
         if (inBoundButton(viewX, viewY)) {
             // Expand left
-            region->resizeGrid(regionW + 1, regionH, 1, 0);
+            zone->resizeGrid(zoneW + 1, zoneH, 1, 0);
             return;
         }
     }
@@ -304,7 +338,7 @@ class LevelEditorUI: public UIBundle {
         if (isMouseDown) {
             placeBlock(picker->getSelectedItem());
         } else if (isMouseRightDown) {
-            placeBlock(GameObjectCache::objects["air"]);
+            eraseBlock();
         }
 
         return true;
@@ -324,7 +358,7 @@ class LevelEditorUI: public UIBundle {
 
         if (isHover) {
             isMouseRightDown = true;
-            placeBlock(GameObjectCache::objects["air"]);
+            eraseBlock();
         }
     }
 
@@ -344,6 +378,7 @@ class LevelEditorUI: public UIBundle {
         UIBundle::clickRight();
 
         isMouseRightDown = false;
+        eraseLayer = -1;
     }
 
     void scroll(double xOff, double yOff) override {
@@ -361,7 +396,7 @@ class LevelEditorUI: public UIBundle {
             if (isMouseDown) {
                 placeBlock(picker->getSelectedItem());
             } else if (isMouseRightDown) {
-                placeBlock(GameObjectCache::objects["air"]);
+                eraseBlock();
             }
         } else {
             UIBundle::scroll(xOff, yOff);
@@ -369,6 +404,8 @@ class LevelEditorUI: public UIBundle {
     }
 
     virtual void charInput(int codepoint) override {
+        UIBundle::charInput(codepoint);
+
         if (codepoint == GLFW_KEY_ESCAPE) {
             screen->closeWindow();
         }
@@ -376,24 +413,24 @@ class LevelEditorUI: public UIBundle {
 
     int getLevelBoundButtonX() {
         GameLevel* level = screen->getLevel();
-        int regionW = level->getCurrentRegion()->getWidth() * 16;
+        int zoneW = level->getCurrentZone()->getWidth() * 16;
 
         if (*scrollX > VIEW_WIDTH / 2 - 16) {
             return *scrollX + 16;
-        } else if (*scrollX + regionW < VIEW_WIDTH / 2 + 16) {
-            return *scrollX + regionW - 16;
+        } else if (*scrollX + zoneW < VIEW_WIDTH / 2 + 16) {
+            return *scrollX + zoneW - 16;
         }
         return VIEW_WIDTH / 2;
     }
 
     int getLevelBoundButtonY() {
         GameLevel* level = screen->getLevel();
-        int regionH = level->getCurrentRegion()->getHeight() * 16;
+        int zoneH = level->getCurrentZone()->getHeight() * 16;
 
         if (*scrollY > VIEW_HEIGHT / 2 - 16) {
             return *scrollY + 16;
-        } else if (*scrollY + regionH < VIEW_HEIGHT / 2 + 16) {
-            return *scrollY + regionH - 16;
+        } else if (*scrollY + zoneH < VIEW_HEIGHT / 2 + 16) {
+            return *scrollY + zoneH - 16;
         }
         return VIEW_HEIGHT / 2;
     }
@@ -410,8 +447,8 @@ class LevelEditorUI: public UIBundle {
         return screen->getLevel();
     }
 
-    GameLevelRegion* getCurrentRegion() {
-        return screen->getLevel()->getCurrentRegion();
+    GameLevelZone* getCurrentZone() {
+        return screen->getLevel()->getCurrentZone();
     }
 
     ~LevelEditorUI() {

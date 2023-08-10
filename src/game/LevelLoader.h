@@ -51,7 +51,7 @@ class LevelLoader {
         }
 
         loadLevel(level, file);
-        level.setCurrentRegion(level.getRegions()->at(0));
+        level.setCurrentZone(level.getZones()->at(0));
 
         file.close();
     }
@@ -68,22 +68,37 @@ class LevelLoader {
             objectList[i] = GameObjectCache::objects[stringBuffer];
         }
 
-        int numRegions = readInt(stream);
-        for (int i = 0; i < numRegions; i++) {
-            loadLevelRegion(level, objectList, stream);
+        int numZones = readInt(stream);
+        for (int i = 0; i < numZones; i++) {
+            loadLevelZone(level, objectList, stream);
         }
 
         delete [] objectList;
     }
 
-    void loadLevelRegion(GameLevel& level, GameObject** objectList, std::istream& stream) {
+    void loadLevelZone(GameLevel& level, GameObject** objectList, std::istream& stream) {
         int w = readInt(stream);
         int h = readInt(stream);
 
-        GameLevelRegion* region = level.addRegion(w, h);
-        GameObject** objects = region->getObjectGrid();
+        GameLevelZone* zone = level.addZone(w, h);
 
-        for (int i = 0; i < w * h; i++) {
+        loadMario(zone->getMario(), objectList, stream);
+
+        GameLevelRegion** regions = zone->getRegions();
+        for (int i = 0; i < GameObject::NUM_LAYERS; i++) {
+            loadLevelRegion(*regions[i], objectList, stream);
+        }
+    }
+
+    void loadMario(Mario& mario, GameObject** objectList, std::istream& stream) {
+        mario.setX(readInt(stream));
+        mario.setY(readInt(stream));
+    }
+
+    void loadLevelRegion(GameLevelRegion& region, GameObject** objectList, std::istream& stream) {
+        GameObject** objects = region.getObjectGrid();
+
+        for (int i = 0; i < region.getWidth() * region.getHeight(); i++) {
             objects[i] = objectList[(int) readByte(stream)];
         }
     }

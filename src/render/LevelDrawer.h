@@ -12,20 +12,30 @@ class LevelDrawer {
     private:
     ImageDrawer* drawer;
 
-    public:
-    LevelDrawer(ImageDrawer& drawer): drawer(&drawer) {}
-
-    void drawLevelRegion(GameLevelRegion& level, int x, int y) {
-        for (int i = 0; i < level.getWidth(); i++) {
-            for (int j = 0; j < level.getHeight(); j++) {
-                drawer->drawTile(level.getGridObject(i, j)->getTilePreview(), x + i * 16, y + j * 16);
+    void drawLevelRegion(GameLevelRegion* region, int x, int y) {
+        for (int i = 0; i < region->getWidth(); i++) {
+            for (int j = 0; j < region->getHeight(); j++) {
+                drawer->drawTile(region->getGridObject(i, j)->getTilePreview(), x + i * 16, y + j * 16);
             }
         }
     }
 
-    void drawLevelRegionBoundary(GameLevelRegion& region, int x, int y) {
-        int w = region.getWidth() * 16;
-        int h = region.getHeight() * 16;
+    public:
+    LevelDrawer(ImageDrawer& drawer): drawer(&drawer) {}
+
+    void drawLevelZone(GameLevelZone& zone, int x, int y) {
+        GameLevelRegion** regions = zone.getRegions();
+        for (int i = GameObject::NUM_LAYERS - 1; i >= 0; i--) {
+            drawer->setZPos(ImageDrawer::ZPOS_GAME_TILES[i]);
+            drawLevelRegion(regions[i], x, y);
+        }
+    }
+
+    void drawLevelZoneBoundary(GameLevelZone& zone, int x, int y) {
+        drawer->setZPos(ImageDrawer::ZPOS_BGTILE_UI);
+
+        int w = zone.getWidth() * 16;
+        int h = zone.getHeight() * 16;
 
         drawer->drawTile(LEVELBOUND_BL, x, y);
         drawer->drawTile(LEVELBOUND_BR, x + w - 8, y);
@@ -38,9 +48,11 @@ class LevelDrawer {
         drawer->drawTileStretched(LEVELBOUND_R, x + w - 8, y + 8, 8, h - 16);
     }
 
-    void drawCursor(GameLevelRegion& region, int tileX, int tileY, int x, int y) {
-        int w = region.getWidth();
-        int h = region.getHeight();
+    void drawCursor(GameLevelZone& zone, int tileX, int tileY, int x, int y) {
+        drawer->setZPos(ImageDrawer::ZPOS_TILE_UI);
+
+        int w = zone.getWidth();
+        int h = zone.getHeight();
 
         if (tileX < 0 || tileX >= w || tileY < 0 || tileY >= h) {
             return;
@@ -54,15 +66,17 @@ class LevelDrawer {
     }
 
     void drawLevelBoundButtons(LevelEditorUI& levelEditor) {
+        drawer->setZPos(ImageDrawer::ZPOS_TILE_UI);
+
         int xOffset = 144;
         int yOffset = 0;
 
         int scrollX = levelEditor.getScrollX();
         int scrollY = levelEditor.getScrollY();
 
-        GameLevelRegion* region = levelEditor.getCurrentRegion();
-        int levelW = region->getWidth() * 16;
-        int levelH = region->getHeight() * 16;
+        GameLevelZone* zone = levelEditor.getCurrentZone();
+        int levelW = zone->getWidth() * 16;
+        int levelH = zone->getHeight() * 16;
 
         int viewX;
         int viewY;
