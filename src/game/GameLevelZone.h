@@ -41,6 +41,29 @@ class GameLevelZone {
         for (GameLevelRegion* region : regions) {
             region->resizeGrid(newWidth, newHeight, xOff, yOff);
         }
+
+        boundMario();
+    }
+
+    void boundMario() {
+        int x = mario.getX();
+        int y = mario.getY();
+        int w = getWidth() * 16;
+        int h = getHeight() * 16;
+
+        if (x < -32) {
+            x = -32;
+        } else if (x > w + 16) {
+            x = w + 16;
+        }
+        if (y < -32) {
+            y = -32;
+        } else if (y > h + 16) {
+            y = h + 16;
+        }
+
+        mario.setX(x);
+        mario.setY(y);
     }
 
     void mapUsedObjects(std::set<GameObject*>& objects) {

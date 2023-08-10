@@ -75,12 +75,14 @@ class LevelEditorScreen: public ILevelEditorScreen {
 
         GameLevelZone* zone = level->getCurrentZone();
 
-        window->levelDrawer->drawLevelBoundButtons(*editorUI);
-        window->levelDrawer->drawLevelZone(*zone, 144 + scrollX, scrollY);
         window->levelDrawer->drawLevelZoneBoundary(*zone, WINDOW_WIDTH - VIEW_WIDTH + scrollX, scrollY);
+        window->levelDrawer->drawLevelZone(*zone, 144 + scrollX, scrollY);
         window->levelDrawer->drawMario(*zone, 144 + scrollX, scrollY);
 
+        window->levelDrawer->drawMarioGrabCursor(*editorUI, 144 + scrollX, scrollY);
         window->levelDrawer->drawCursor(*zone, editorUI->getTileHoverX(), editorUI->getTileHoverY(), 144 + scrollX, scrollY);
+        
+        window->levelDrawer->drawLevelBoundButtons(*editorUI);
 
         switch (uiState) {
             case OPEN_DIALOG:

@@ -48,23 +48,6 @@ class LevelDrawer {
         drawer->drawTileStretched(LEVELBOUND_R, x + w - 8, y + 8, 8, h - 16);
     }
 
-    void drawCursor(GameLevelZone& zone, int tileX, int tileY, int x, int y) {
-        drawer->setZPos(ImageDrawer::ZPOS_TILE_UI);
-
-        int w = zone.getWidth();
-        int h = zone.getHeight();
-
-        if (tileX < 0 || tileX >= w || tileY < 0 || tileY >= h) {
-            return;
-        }
-
-        glEnable(GL_COLOR_LOGIC_OP);
-        glLogicOp(GL_EQUIV);
-        drawer->drawTile(SELECT_BLOCK, x + tileX * 16, y + tileY * 16);
-        glLogicOp(GL_COPY);
-        glDisable(GL_COLOR_LOGIC_OP);
-    }
-
     void drawLevelBoundButtons(LevelEditorUI& levelEditor) {
         drawer->setZPos(ImageDrawer::ZPOS_TILE_UI);
 
@@ -116,5 +99,32 @@ class LevelDrawer {
         Mario* mario = &zone.getMario();
         drawer->setZPos(ImageDrawer::ZPOS_GAME_TILES[mario->getZoneLayer()]);
         drawer->drawTile(mario->getGameObject().getLevelTile(), x + mario->getX(), y + mario->getY());
+    }
+
+    void drawMarioGrabCursor(LevelEditorUI& levelEditor, int x, int y) {
+        drawer->setZPos(ImageDrawer::ZPOS_TILE_UI);
+        Mario* mario = &levelEditor.getCurrentZone()->getMario();
+
+        if (levelEditor.isMarioMouseDown() || levelEditor.getHoverMode() == LevelEditorUI::MARIO) {
+            int tile = (levelEditor.isMarioMouseDown()) ? UIHAND_CLOSED : UIHAND_OPEN;
+            drawer->drawTile(tile, x + mario->getX(), y + mario->getY());
+        }
+    }
+
+    void drawCursor(GameLevelZone& zone, int tileX, int tileY, int x, int y) {
+        drawer->setZPos(ImageDrawer::ZPOS_TILE_UI);
+
+        int w = zone.getWidth();
+        int h = zone.getHeight();
+
+        if (tileX < 0 || tileX >= w || tileY < 0 || tileY >= h) {
+            return;
+        }
+
+        glEnable(GL_COLOR_LOGIC_OP);
+        glLogicOp(GL_EQUIV);
+        drawer->drawTile(SELECT_BLOCK, x + tileX * 16, y + tileY * 16);
+        glLogicOp(GL_COPY);
+        glDisable(GL_COLOR_LOGIC_OP);
     }
 };

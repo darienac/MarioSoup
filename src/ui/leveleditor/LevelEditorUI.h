@@ -12,6 +12,13 @@
 using namespace GameObjectCache;
 
 class LevelEditorUI: public UIBundle {
+    public:
+    enum HoverMode {
+        NO_HOVER,
+        TILE,
+        MARIO
+    };
+
     private:
     static const int NUM_BUNDLE_ELEMENTS = 3;
 
@@ -82,7 +89,7 @@ class LevelEditorUI: public UIBundle {
 
     IUIElement* bundleElements[NUM_BUNDLE_ELEMENTS];
 
-    bool isHover = false;
+    HoverMode hoverMode = NO_HOVER;
 
     ILevelEditorScreen* screen;
     int width;
@@ -102,6 +109,10 @@ class LevelEditorUI: public UIBundle {
     GameObject* lastPlacedObject = nullptr;
     bool isMouseDown = false;
     bool isMouseRightDown = false;
+
+    bool marioMouseDown = false;
+    int marioMouseOffsetX = 0;
+    int marioMouseOffsetY = 0;
 
     void placeBlock(GameObject* object, int layer) {
         if (layer == -1) {
@@ -149,13 +160,19 @@ class LevelEditorUI: public UIBundle {
     }
 
     void setTileHover() {
-        if (hoverX < *scrollX || hoverY < *scrollY) {
+        if (marioMouseDown || hoverX < *scrollX || hoverY < *scrollY) {
             tileHoverX = -1;
             tileHoverY = -1;
             return;
         }
         tileHoverX = (hoverX - *scrollX) / 16;
         tileHoverY = (hoverY - *scrollY) / 16;
+
+        if (isMouseDown) {
+            placeBlock(picker->getSelectedItem());
+        } else if (isMouseRightDown) {
+            eraseBlock();
+        }
     }
 
     void boundScroll() {
@@ -173,6 +190,25 @@ class LevelEditorUI: public UIBundle {
         } else if (*scrollY < -h * 16 + 32) {
             *scrollY = -h * 16 + 32;
         }
+    }
+
+    void dragMario() {
+        if (!marioMouseDown || hoverMode == NO_HOVER) {
+            return;
+        }
+
+        Mario* mario = &getCurrentZone()->getMario();
+
+        int x = hoverX - *scrollX - marioMouseOffsetX;
+        int y = hoverY - *scrollY - marioMouseOffsetY;
+        if (!keys[GLFW_KEY_LEFT_SHIFT]) {
+            x -= (x + 40) % 16 - 8;
+            y -= (y + 40) % 16 - 8;
+        }
+        mario->setX(x);
+        mario->setY(y);
+
+        getCurrentZone()->boundMario();
     }
 
     void clickLevelBoundButtons() {
@@ -278,25 +314,29 @@ class LevelEditorUI: public UIBundle {
 
     // Function should run 60 times per second when active
     void tick() {
-        if (!isHover) {
+        if (hoverMode == NO_HOVER) {
             return;
         }
 
         int speed = keys[GLFW_KEY_LEFT_SHIFT] ? 8 : 2;
 
-        if (keys[GLFW_KEY_LEFT]) {
+        if (keys[GLFW_KEY_LEFT] || keys[GLFW_KEY_A]) {
             (*scrollX) += speed;
         }
-        if (keys[GLFW_KEY_RIGHT]) {
+        if (keys[GLFW_KEY_RIGHT] || keys[GLFW_KEY_D]) {
             (*scrollX) -= speed;
         }
-        if (keys[GLFW_KEY_UP]) {
+        if (keys[GLFW_KEY_UP] || keys[GLFW_KEY_W]) {
             (*scrollY) -= speed;
         }
-        if (keys[GLFW_KEY_DOWN]) {
+        if (keys[GLFW_KEY_DOWN] || keys[GLFW_KEY_S]) {
             (*scrollY) += speed;
         }
         boundScroll();
+        dragMario();
+        if (hoverMode == TILE) {
+            setTileHover();
+        }
     }
 
     MenuBar& getMenuBar() {
@@ -319,12 +359,17 @@ class LevelEditorUI: public UIBundle {
         return tileHoverY;
     }
 
-    bool hover(int x, int y, int gameWidth, int gameHeight) override {
-        isHover = !(UIBundle::hover(x, y, gameWidth, gameHeight) || x < 144 || x >= gameWidth || y < 0 || y >= gameHeight - 16);
+    HoverMode getHoverMode() {
+        return hoverMode;
+    }
 
-        if (!isHover) {
-            hoverX = -1;
-            hoverY = -1;
+    bool isMarioMouseDown() {
+        return marioMouseDown;
+    }
+
+    bool hover(int x, int y, int gameWidth, int gameHeight) override {
+        if (UIBundle::hover(x, y, gameWidth, gameHeight) || x < 144 || x >= gameWidth || y < 0 || y >= gameHeight - 16) {
+            hoverMode = NO_HOVER;
             tileHoverX = -1;
             tileHoverY = -1;
             return true;
@@ -333,13 +378,21 @@ class LevelEditorUI: public UIBundle {
         // Hover behavior for level
         hoverX = x - 144;
         hoverY = y;
-        setTileHover();
 
-        if (isMouseDown) {
-            placeBlock(picker->getSelectedItem());
-        } else if (isMouseRightDown) {
-            eraseBlock();
+        Mario* mario = &getCurrentZone()->getMario();
+        if (hoverX - *scrollX >= mario->getX() && hoverX - *scrollX < mario->getX() + 16 && hoverY - *scrollY >= mario->getY() && hoverY - *scrollY < mario->getY() + 16) {
+            hoverMode = MARIO;
+        } else {
+            hoverMode = TILE;
+            setTileHover();
         }
+
+        if (hoverMode != TILE) {
+            tileHoverX = -1;
+            tileHoverY = -1;
+        }
+
+        dragMario();
 
         return true;
     }
@@ -347,16 +400,21 @@ class LevelEditorUI: public UIBundle {
     void mouseDown() override {
         UIBundle::mouseDown();
 
-        if (isHover) {
+        if (hoverMode == TILE) {
             isMouseDown = true;
             placeBlock(picker->getSelectedItem());
+        } else if (hoverMode == MARIO) {
+            Mario* mario = &getCurrentZone()->getMario();
+            marioMouseDown = true;
+            marioMouseOffsetX = hoverX - *scrollX - mario->getX();
+            marioMouseOffsetY = hoverY - *scrollY - mario->getY();
         }
     }
 
     void mouseRightDown() override {
         UIBundle::mouseRightDown();
 
-        if (isHover) {
+        if (hoverMode == TILE) {
             isMouseRightDown = true;
             eraseBlock();
         }
@@ -366,8 +424,9 @@ class LevelEditorUI: public UIBundle {
         UIBundle::click();
 
         isMouseDown = false;
+        marioMouseDown = false;
 
-        if (!isHover) {
+        if (hoverMode != TILE) {
             return;
         }
 
@@ -382,7 +441,7 @@ class LevelEditorUI: public UIBundle {
     }
 
     void scroll(double xOff, double yOff) override {
-        if (isHover) {
+        if (hoverMode != NO_HOVER) {
             int speed = keys[GLFW_KEY_LEFT_SHIFT] ? 32 : 8;
             if (keys[GLFW_KEY_LEFT_CONTROL]) {
                 *scrollX += yOff * -speed;
@@ -392,13 +451,12 @@ class LevelEditorUI: public UIBundle {
                 *scrollY += yOff * -speed;
             }
             boundScroll();
-            setTileHover();
-            if (isMouseDown) {
-                placeBlock(picker->getSelectedItem());
-            } else if (isMouseRightDown) {
-                eraseBlock();
+            if (hoverMode == TILE) {
+                setTileHover();
+            } else if (hoverMode == MARIO) {
+                dragMario();
             }
-        } else {
+        } else if (hoverMode == NO_HOVER) {
             UIBundle::scroll(xOff, yOff);
         }
     }

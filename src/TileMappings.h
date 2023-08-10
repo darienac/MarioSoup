@@ -117,6 +117,7 @@ namespace Tiles {
         UI_X,
         UIREGION_LIGHT, UIREGION_DARK, UIREGION_BLACK,
         UICOLLAPSE, UICOLLAPSE_ARROWUP, UICOLLAPSE_ARROWDOWN, UICOLLAPSE_END,
+        UIHAND_OPEN, UIHAND_CLOSED,
         LEVELBOUND_BL, LEVELBOUND_L, LEVELBOUND_TL, LEVELBOUND_T, LEVELBOUND_TR, LEVELBOUND_R, LEVELBOUND_BR, LEVELBOUND_B,
         LEVEL_PLUS, LEVEL_MINUS,
 
@@ -182,6 +183,8 @@ namespace Tiles {
         tiles[UICOLLAPSE_ARROWUP] = Tile(UI, 0, 40, 16, 8);
         tiles[UICOLLAPSE_ARROWDOWN] = Tile(UI, 0, 48, 16, 8);
         tiles[UICOLLAPSE_END] = Tile(UI, 0, 56, 16, 8);
+        tiles[UIHAND_OPEN] = Tile(UI, 48, 48, 16, 16);
+        tiles[UIHAND_CLOSED] = Tile(UI, 48, 32, 16, 16);
 
         tiles[LEVELBOUND_BL] = Tile(UI, 16, 40, 8, 8);
         tiles[LEVELBOUND_L] = Tile(UI, 16, 36, 8, 8);
