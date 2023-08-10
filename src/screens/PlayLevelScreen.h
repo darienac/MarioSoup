@@ -29,10 +29,14 @@ class PlayLevelScreen: public IPlayLevelScreen {
     }
 
     void renderFrame() override {
+        levelUI->tick();
+        
         glClearColor((float) 0x94 / 0xFF, (float) 0x94 / 0xFF, (float) 0xFF / 0xFF, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        window->levelDrawer->drawLevelZone(*level->getCurrentZone(), scrollX, scrollY);
+        GameLevelZone* zone = level->getCurrentZone();
+        window->levelDrawer->drawLevelZone(*zone, scrollX, scrollY);
+        window->levelDrawer->drawMario(*zone, scrollX, scrollY);
     }
 
     virtual void enable() override {
@@ -46,6 +50,10 @@ class PlayLevelScreen: public IPlayLevelScreen {
 
     virtual void setLevel(GameLevel* level) override {
         this->level = level;
+    }
+
+    virtual GameLevel* getLevel() override {
+        return level;
     }
 
     virtual void exitToEditor() override {

@@ -2,6 +2,7 @@
 
 #include "game/GameObject.h"
 #include "game/GameObjectCache.h"
+#include "controls/IControls.h"
 
 class Mario {
     private:
@@ -45,5 +46,14 @@ class Mario {
 
     void setZoneLayer(int value) {
         zoneLayer = value;
+    }
+
+    void tick(IControls& controls) {
+        if (controls.left()) {
+            x--;
+        }
+        if (controls.right()) {
+            x++;
+        }
     }
 };

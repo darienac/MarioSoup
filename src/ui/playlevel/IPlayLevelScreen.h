@@ -6,6 +6,7 @@
 class IPlayLevelScreen: public IScreen {
     public:
     virtual void exitWindow() = 0;
+    virtual GameLevel* getLevel() = 0;
     virtual void setLevel(GameLevel* level) = 0;
     virtual void exitToEditor() = 0;
 };
