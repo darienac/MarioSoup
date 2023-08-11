@@ -97,7 +97,6 @@ class Mario {
                 if (velY > 112) {
                     velY = 112;
                 }
-                gameObject.setLevelTile(MARIO_JUMP_SMB3);
             } else {
                 velY = -6;
             }
@@ -107,6 +106,9 @@ class Mario {
 
         // Do stuff like collision and checking for new state of player here
         collisions(*collideRegion, controls);
+        if (!grounded) {
+            gameObject.setLevelTile(MARIO_JUMP_SMB3);
+        }
     }
 
     void airMovement(unsigned int numTicks, IControls& controls) {
@@ -128,7 +130,7 @@ class Mario {
         }
 
         if ((xDir < 0 && velX > -10) || (xDir > 0 && velX < 10)) {
-            velX += xDir * (controls.action() ? 2 : 1);
+            velX += xDir * (controls.action() ? 2 : 1) * (xDir * velX > 0 ? 2 : 1);
         }
     }
 
@@ -141,6 +143,9 @@ class Mario {
             xDir++;
         }
         velX += xDir;
+        if (std::abs(velX) < 10) {
+            velX += xDir;
+        }
 
         if (xDir == 0) {
             if (velX < 0 && (velX > -WALK_SPEED || numTicks % 2)) {
@@ -175,7 +180,7 @@ class Mario {
                 gameObject.setLevelTile(MARIO_STAND_SMB3);
             }
         } else {
-            if (velX > RUN_SPEED - 4 || velX < -RUN_SPEED + 4) {
+            if (std::abs(velX) > RUN_SPEED - 4) {
                 gameObject.setLevelTile(MARIO_RUN2_SMB3);
             } else {
                 gameObject.setLevelTile(MARIO_WALK_SMB3);
