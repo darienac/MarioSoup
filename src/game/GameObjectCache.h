@@ -24,7 +24,7 @@ namespace {
 
 namespace GameObjectCache {
     void init() {
-        addObject(new GameObject("air", "air", Tiles::AIR));
+        addObject(new GameObject("air", "air", Tiles::AIR)).unflag(GameObject::SOLID);
         addObject(new GameObject("player", "player", Tiles::MARIO_STAND_SMB3));
 
         addObject(new GameObject("smb:rock", "rock", Tiles::SMB_ROCK));

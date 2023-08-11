@@ -7,9 +7,14 @@ class GameObject {
         MIDGROUND,
         FOREGROUND
     };
+    enum Flag {
+        SOLID
+    };
+
     static const int NUM_LAYERS = 3;
 
     private:
+    bool flags[64] = {};
     const char* id;
     const char* name;
     int tilePreview;
@@ -22,6 +27,7 @@ class GameObject {
     public:
     GameObject(const char* id, const char* name, int tilePreview): id(id), name(name), tilePreview(tilePreview) {
         levelTile = tilePreview;
+        flags[SOLID] = true;
     }
 
     const char* getId() {
@@ -70,6 +76,20 @@ class GameObject {
     GameObject& setPreferredLayer(LevelLayer value) {
         preferredLayer = value;
         return *this;
+    }
+
+    GameObject& flag(Flag flag) {
+        flags[flag] = false;
+        return *this;
+    }
+
+    GameObject& unflag(Flag flag) {
+        flags[flag] = false;
+        return *this;
+    }
+
+    bool isFlag(Flag flag) {
+        return flags[flag];
     }
 
 
