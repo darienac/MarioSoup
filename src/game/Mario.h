@@ -15,6 +15,7 @@ class Mario {
     bool grounded = true;
     int velX = 0;
     int velY = 0;
+    unsigned int numTicks = 0;
 
     public:
     // Mario gets own copy of player object to manipulate
@@ -23,6 +24,7 @@ class Mario {
 
     void resetGameObject() {
         gameObject = *GameObjectCache::objects["player"];
+        numTicks = 0;
     }
 
     GameObject& getGameObject() {
@@ -70,15 +72,44 @@ class Mario {
     }
 
     void tick(IGameLevelZone& zone, IControls& controls) {
+        numTicks++;
         GameLevelRegion** regions = zone.getRegions();
         GameLevelRegion* collideRegion = regions[zoneLayer];
 
         if (grounded) {
-            groundMovement(collideRegion, controls);
+            groundMovement(collideRegion, numTicks, controls);
+            if (controls.jump()) {
+                velY = 60 + (velX < 0 ? -velX : velX) / 4;
+                grounded = false;
+                if (velY > 112) {
+                    velY = 112;
+                }
+                gameObject.setLevelTile(MARIO_JUMP_SMB3);
+            }
+        } else {
+            airMovement(collideRegion, numTicks, controls);
+        }
+
+        x += velX;
+        y += velY;
+
+        // Do stuff like collision and checking for new state of player here
+        if (y < 32 * 16) {
+            y = 32 * 16;
+            grounded = true;
         }
     }
 
-    void groundMovement(GameLevelRegion* region, IControls& controls) {
+    void airMovement(GameLevelRegion* region, unsigned int numTicks, IControls& controls) {
+        if (velY > 0 && controls.jump()) {
+            velY -= 2;
+        } else {
+            velY -= 6;
+        }
+        if (velY < -56) {
+            velY = -56;
+        }
+
         int xDir = 0;
         if (controls.left()) {
             xDir--;
@@ -86,20 +117,36 @@ class Mario {
         if (controls.right()) {
             xDir++;
         }
-        velX += xDir * 2;
+
+        if (xDir * velX < 0) {
+            velX += xDir * (controls.action() ? 2 : 1);
+        }
+    }
+
+    void groundMovement(GameLevelRegion* region, unsigned int numTicks, IControls& controls) {
+        int xDir = 0;
+        if (controls.left()) {
+            xDir--;
+        }
+        if (controls.right()) {
+            xDir++;
+        }
+        velX += xDir;
 
         if (xDir == 0) {
-            if (velX < 0) {
+            if (velX < 0 && (velX > -24 || numTicks % 2)) {
                 velX++;
-            } else if (velX > 0) {
+            } else if (velX > 0 && (velX < 24 || numTicks % 2)) {
                 velX--;
             }
         }
 
-        if (velX < -20) {
-            velX = -20;
-        } else if (velX > 20) {
-            velX = 20;
+        int maxSpeed = (controls.action() && xDir * velX > 0) ? 56 : 24;
+
+        if (velX < -maxSpeed) {
+            velX += 3;
+        } else if (velX > maxSpeed) {
+            velX -= 3;
         }
 
         if (velX < 0) {
@@ -111,12 +158,11 @@ class Mario {
         if (xDir * velX < 0) {
             gameObject.setLevelTile(MARIO_SKID_SMB3);
             gameObject.setFlippedX(!gameObject.isFlippedX());
-        } else if (velX == 0 || (x / 128) % 2 == 1) {
+            velX += xDir;
+        } else if (velX == 0 || (numTicks / ((velX > 9 || velX < -9 || velX == 0) ? 4 : 6)) % 2 == 1) {
             gameObject.setLevelTile(MARIO_STAND_SMB3);
         } else {
             gameObject.setLevelTile(MARIO_WALK_SMB3);
         }
-
-        x += velX;
     }
 };

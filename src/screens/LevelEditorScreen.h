@@ -61,7 +61,7 @@ class LevelEditorScreen: public ILevelEditorScreen {
         // int windowWidth = window->getGameWidth();
         // int windowHeight = window->getGameHeight();
 
-        glClearColor((float) 0x94 / 0xFF, (float) 0x94 / 0xFF, (float) 0xFF / 0xFF, 1.0);
+        glClearColor((float) 0xB5 / 0xFF, (float) 0xEF / 0xFF, (float) 0xEF / 0xFF, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         window->drawer->setZPos(ImageDrawer::ZPOS_UI);

@@ -7,9 +7,6 @@
 
 class PlayLevelScreen: public IPlayLevelScreen {
     private:
-    static const int WINDOW_WIDTH = 256;
-    static const int WINDOW_HEIGHT = 240;
-
     int scrollX = 0;
     int scrollY = 0;
 
@@ -47,7 +44,7 @@ class PlayLevelScreen: public IPlayLevelScreen {
     }
 
     virtual void renderFrame() override {
-        glClearColor((float) 0x94 / 0xFF, (float) 0x94 / 0xFF, (float) 0xFF / 0xFF, 1.0);
+        glClearColor((float) 0xB5 / 0xFF, (float) 0xEF / 0xFF, (float) 0xEF / 0xFF, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         GameLevelZone* zone = level->getCurrentZone();
@@ -81,6 +78,22 @@ class PlayLevelScreen: public IPlayLevelScreen {
         }
         
         manager->setScreen(editorScreen);
+    }
+
+    virtual int getScrollX() {
+        return scrollX;
+    }
+
+    virtual void setScrollX(int value) {
+        scrollX = value;
+    }
+
+    virtual int getScrollY() {
+        return scrollY;
+    }
+
+    virtual void setScrollY(int value) {
+        scrollY = value;
     }
 
     ~PlayLevelScreen() {
