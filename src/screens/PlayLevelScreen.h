@@ -74,7 +74,8 @@ class PlayLevelScreen: public IPlayLevelScreen {
 
     virtual void exitToEditor() override {
         if (editorScreen == nullptr) {
-            throw "No Editor Screen attached";
+            window->exitWindow();
+            return;
         }
         
         manager->setScreen(editorScreen);
