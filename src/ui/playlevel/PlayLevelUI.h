@@ -16,7 +16,8 @@ class PlayLevelUI: public IUIElement {
     }
 
     void tick() {
-        screen->getLevel()->getCurrentZone()->getMario().tick(*controls);
+        GameLevelZone* zone = screen->getLevel()->getCurrentZone();
+        zone->getMario().tick(*zone, *controls);
     }
 
     virtual void charInput(int codepoint) override {

@@ -5,6 +5,8 @@
 
 class ScreenManager {
     private:
+    const double TICK_RATE = 60.0;
+
     GlWindow* window;
     IScreen* screen = nullptr;
     int fps;
@@ -14,16 +16,27 @@ class ScreenManager {
 
     void run() {
         double lastTime = glfwGetTime();
+        double lastTickTime = lastTime;
         int fpsCounter = 0;
         fps = 0;
+        int frameNum = 0;
 
         while (!glfwWindowShouldClose(window->window)) {
+            frameNum++;
             double time = glfwGetTime();
             fpsCounter++;
             if (time - lastTime >= 1.0) {
                 lastTime++;
                 fps = fpsCounter;
                 fpsCounter = 0;
+            }
+
+            if (time - lastTickTime >= (1.0 / TICK_RATE)) {
+                int ticks = (time - lastTickTime) * TICK_RATE;
+                lastTickTime += ticks / TICK_RATE;
+                for (int i = 0; i < ticks; i++) {
+                    screen->tick();
+                }
             }
 
             window->gameFramebuffer->bind();

@@ -50,9 +50,11 @@ class LevelEditorScreen: public ILevelEditorScreen {
         setState(EDITOR);
     }
 
-    void renderFrame() override {
+    virtual void tick() override {
         editorUI->tick();
+    }
 
+    virtual void renderFrame() override {
         double mouseX;
         double mouseY;
         window->getCursorPosLetterboxed(mouseX, mouseY);

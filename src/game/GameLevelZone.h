@@ -2,10 +2,11 @@
 
 #include "game/GameLevelRegion.h"
 #include "game/Mario.h"
+#include "game/IGameLevelZone.h"
 
 
 // An actual sub area in a level, contains multiple regions for the layers, also zone specific info like its own player object
-class GameLevelZone {
+class GameLevelZone: public IGameLevelZone {
     private:
     Mario mario;
     GameLevelRegion* regions[GameObject::NUM_LAYERS];
@@ -21,7 +22,7 @@ class GameLevelZone {
         return mario;
     }
 
-    GameLevelRegion** getRegions() {
+    virtual GameLevelRegion** getRegions() override {
         return regions;
     }
 

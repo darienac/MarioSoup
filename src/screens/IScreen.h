@@ -12,4 +12,5 @@ class IScreen {
     virtual void enable() {}
     virtual void disable() {}
     virtual void renderFrame() {}
+    virtual void tick() {}
 };

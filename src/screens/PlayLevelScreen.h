@@ -3,6 +3,7 @@
 #include "ui/playlevel/IPlayLevelScreen.h"
 #include "ui/playlevel/PlayLevelUI.h"
 #include "screens/ScreenManager.h"
+#include "game/LevelLoader.h"
 
 class PlayLevelScreen: public IPlayLevelScreen {
     private:
@@ -12,7 +13,7 @@ class PlayLevelScreen: public IPlayLevelScreen {
     int scrollX = 0;
     int scrollY = 0;
 
-    GameLevel* level;
+    GameLevel* level = nullptr;
     PlayLevelUI* levelUI;
     ILevelEditorScreen* editorScreen = nullptr;
 
@@ -24,13 +25,28 @@ class PlayLevelScreen: public IPlayLevelScreen {
         levelUI = new PlayLevelUI(this, window.getKeys());
     }
 
+    void loadLevel(const char* filePath) {
+        if (editorScreen != nullptr) {
+            throw "Editor screen already in use";
+        }
+        if (level != nullptr) {
+            delete level;
+        }
+
+        LevelLoader loader = LevelLoader();
+        level = new GameLevel();
+        loader.loadLevel(*level, filePath);
+    }
+
     void setEditorScreen(ILevelEditorScreen* screen) {
         editorScreen = screen;
     }
 
-    void renderFrame() override {
+    virtual void tick() override {
         levelUI->tick();
-        
+    }
+
+    virtual void renderFrame() override {
         glClearColor((float) 0x94 / 0xFF, (float) 0x94 / 0xFF, (float) 0xFF / 0xFF, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -57,12 +73,17 @@ class PlayLevelScreen: public IPlayLevelScreen {
     }
 
     virtual void exitToEditor() override {
-        if (editorScreen != nullptr) {
-            manager->setScreen(editorScreen);
+        if (editorScreen == nullptr) {
+            throw "No Editor Screen attached";
         }
+        
+        manager->setScreen(editorScreen);
     }
 
     ~PlayLevelScreen() {
         delete levelUI;
+        if (editorScreen == nullptr && level != nullptr) {
+            delete level;
+        }
     }
 };
