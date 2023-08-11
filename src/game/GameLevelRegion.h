@@ -20,6 +20,18 @@ class GameLevelRegion {
         }
     }
 
+    GameLevelRegion(GameLevelRegion& orig) {
+        std::printf("New GameLevelRegion clone\n");
+        width = orig.getWidth();
+        height = orig.getHeight();
+        int size = width * height;
+        objectGrid = new GameObject*[size];
+        GameObject** grid = orig.getObjectGrid();
+        for (int i = 0; i < size; i++) {
+            objectGrid[i] = grid[i];
+        }
+    }
+
     int getWidth() {
         return width;
     }

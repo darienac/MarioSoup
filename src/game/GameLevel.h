@@ -15,6 +15,17 @@ class GameLevel {
     public:
     GameLevel() {}
 
+    GameLevel(GameLevel& orig) {
+        std::printf("New GameLevel clone\n");
+        for (GameLevelZone* zone : *orig.getZones()) {
+            GameLevelZone* newZone = new GameLevelZone(*zone);
+            zones.push_back(newZone);
+            if (zone == orig.currentZone) {
+                currentZone = newZone;
+            }
+        }
+    }
+
     GameLevelZone* addZone(int width, int height) {
         GameLevelZone* zone = new GameLevelZone(width, height);
         zones.push_back(zone);

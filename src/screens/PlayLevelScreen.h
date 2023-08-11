@@ -65,7 +65,10 @@ class PlayLevelScreen: public IPlayLevelScreen {
     }
 
     virtual void setLevel(GameLevel* level) override {
-        this->level = level;
+        if (this->level != nullptr) {
+            delete this->level;
+        }
+        this->level = new GameLevel(*level);
     }
 
     virtual GameLevel* getLevel() override {

@@ -98,7 +98,20 @@ class LevelDrawer {
     void drawMario(GameLevelZone& zone, int x, int y) {
         Mario* mario = &zone.getMario();
         drawer->setZPos(ImageDrawer::ZPOS_GAME_TILES[mario->getZoneLayer()]);
-        drawer->drawTile(mario->getGameObject().getLevelTile(), x + mario->getX(), y + mario->getY());
+
+        GameObject* object = &mario->getGameObject();
+        Tile* tile = &Tiles::getTile(object->getLevelTile());
+        int w = tile->cw;
+        int h = tile->ch;
+        if (object->isFlippedX()) {
+            x += w;
+            w = -w;
+        }
+        if (object->isFlippedY()) {
+            y += h;
+            h = -h;
+        }
+        drawer->drawTileStretched(*tile, x + mario->getX(), y + mario->getY(), w, h);
     }
 
     void drawMarioGrabCursor(LevelEditorUI& levelEditor, int x, int y) {

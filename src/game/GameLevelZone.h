@@ -18,6 +18,14 @@ class GameLevelZone: public IGameLevelZone {
         regions[2] = new GameLevelRegion(width, height);
     }
 
+    GameLevelZone(GameLevelZone& orig): mario(orig.getMario()) {
+        std::printf("New GameLevelZone clone\n");
+        GameLevelRegion** origRegions = orig.getRegions();
+        regions[0] = new GameLevelRegion(*origRegions[0]);
+        regions[1] = new GameLevelRegion(*origRegions[1]);
+        regions[2] = new GameLevelRegion(*origRegions[2]);
+    }
+
     Mario& getMario() {
         return mario;
     }

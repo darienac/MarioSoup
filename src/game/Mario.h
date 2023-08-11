@@ -79,13 +79,16 @@ class Mario {
     }
 
     void groundMovement(GameLevelRegion* region, IControls& controls) {
+        int xDir = 0;
         if (controls.left()) {
-            velX -= 2;
+            xDir--;
         }
         if (controls.right()) {
-            velX += 2;
+            xDir++;
         }
-        if (!controls.left() && !controls.right()) {
+        velX += xDir * 2;
+
+        if (xDir == 0) {
             if (velX < 0) {
                 velX++;
             } else if (velX > 0) {
@@ -97,6 +100,21 @@ class Mario {
             velX = -20;
         } else if (velX > 20) {
             velX = 20;
+        }
+
+        if (velX < 0) {
+            gameObject.setFlippedX(false);
+        } else if (velX > 0) {
+            gameObject.setFlippedX(true);
+        }
+
+        if (xDir * velX < 0) {
+            gameObject.setLevelTile(MARIO_SKID_SMB3);
+            gameObject.setFlippedX(!gameObject.isFlippedX());
+        } else if (velX == 0 || (x / 128) % 2 == 1) {
+            gameObject.setLevelTile(MARIO_STAND_SMB3);
+        } else {
+            gameObject.setLevelTile(MARIO_WALK_SMB3);
         }
 
         x += velX;
