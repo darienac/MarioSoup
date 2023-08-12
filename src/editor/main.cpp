@@ -7,13 +7,17 @@ const int WINDOW_WIDTH = 400;
 const int WINDOW_HEIGHT = 256;
 
 int main() {
-	GlWindow window = GlWindow("Level Editor", WINDOW_WIDTH, WINDOW_HEIGHT);
-	ScreenManager manager = ScreenManager(window);
+	try {
+		GlWindow window = GlWindow("Level Editor", WINDOW_WIDTH, WINDOW_HEIGHT);
+		ScreenManager manager = ScreenManager(window);
 
-	PlayLevelScreen playScreen = PlayLevelScreen(window, manager);
-	LevelEditorScreen editorScreen = LevelEditorScreen(window, manager, playScreen);
-	playScreen.setEditorScreen(&editorScreen);
+		PlayLevelScreen playScreen = PlayLevelScreen(window, manager);
+		LevelEditorScreen editorScreen = LevelEditorScreen(window, manager, playScreen);
+		playScreen.setEditorScreen(&editorScreen);
 
-	manager.setScreen(&editorScreen);
-	manager.run();
+		manager.setScreen(&editorScreen);
+		manager.run();
+	} catch (const char* err) {
+		std::cerr << err;
+	}
 }

@@ -13,8 +13,8 @@ class ObjectPickerGroup: public IUIElement {
     int width = 0;
     char* filter = nullptr;
 
-    const char* label;
-    ObjectPickerGroup* groups;
+    char label[256];
+    ObjectPickerGroup** groups;
     int numGroups;
     GameObject** items;
     int numItems;
@@ -30,11 +30,16 @@ class ObjectPickerGroup: public IUIElement {
     GameObject** selectedItemLoc = nullptr;
 
     public:
-    ObjectPickerGroup(const char* label, ObjectPickerGroup* groups, int numGroups, GameObject** items, int numItems): label(label), groups(groups), numGroups(numGroups), items(items), numItems(numItems) {}
+    ObjectPickerGroup(const char* label, ObjectPickerGroup** groups, int numGroups, GameObject** items, int numItems): groups(groups), numGroups(numGroups), items(items), numItems(numItems) {
+        if (strlen(label) > 255) {
+            throw "ObjectPickerGroup label name longer than 255 characters";
+        }
+        strcpy(this->label, label);
+    }
 
     void updateSearchFilter(char* filter) {
         for (int i = 0; i < numGroups; i++) {
-            groups[i].updateSearchFilter(filter);
+            groups[i]->updateSearchFilter(filter);
         }
         if (filter == nullptr || strlen(filter) == 0) {
             this->filter = nullptr;
@@ -54,16 +59,16 @@ class ObjectPickerGroup: public IUIElement {
     void setSelectedItemLoc(GameObject** selectedItemLoc) {
         this->selectedItemLoc = selectedItemLoc;
         for (int i = 0; i < numGroups; i++) {
-            groups[i].setSelectedItemLoc(selectedItemLoc);
+            groups[i]->setSelectedItemLoc(selectedItemLoc);
         }
     }
     
     int getHeight() {
-        ObjectPickerGroup* groups = getGroups();
+        ObjectPickerGroup** groups = getGroups();
         if (open) {
             int height = 32 + ((getNumItems() + 7) / 8) * 16;
             for (int i = 0; i < getNumGroups(); i++) {
-                height += groups[i].getHeight();
+                height += groups[i]->getHeight();
             }
             return height;
         } else {
@@ -87,9 +92,9 @@ class ObjectPickerGroup: public IUIElement {
     void setWidth(int width) {
         this->width = width;
         
-        ObjectPickerGroup* groups = getGroups();
+        ObjectPickerGroup** groups = getGroups();
         for (int i = 0; i < getNumGroups(); i++) {
-            groups[i].setWidth(width);
+            groups[i]->setWidth(width);
         }
     }
     
@@ -97,7 +102,7 @@ class ObjectPickerGroup: public IUIElement {
         return width;
     }
 
-    ObjectPickerGroup* getGroups() {
+    ObjectPickerGroup** getGroups() {
         return groups;
     }
 
@@ -148,11 +153,11 @@ class ObjectPickerGroup: public IUIElement {
         GameObject** items = getItems();
 
         if (isHover) {
-            ObjectPickerGroup* groups = getGroups();
+            ObjectPickerGroup** groups = getGroups();
             int yOffset = 8;
             for (int i = 0; i < getNumGroups(); i++) {
-                int height = groups[i].getHeight();
-                groups[i].hover(hoverX, hoverY + yOffset, gameWidth, gameHeight);
+                int height = groups[i]->getHeight();
+                groups[i]->hover(hoverX, hoverY + yOffset, gameWidth, gameHeight);
                 yOffset += height;
             }
             yOffset += 8;
@@ -178,20 +183,28 @@ class ObjectPickerGroup: public IUIElement {
             return;
         }
 
-        ObjectPickerGroup* groups = getGroups();
+        ObjectPickerGroup** groups = getGroups();
         for (int i = 0; i < getNumGroups(); i++) {
-            groups[i].click();
+            groups[i]->click();
         }
 
         if (hoveredItem != nullptr) {
             selectItem(hoveredItem);
         }
     }
+
+    ~ObjectPickerGroup() {
+        for (int i = 0; i < numGroups; i++) {
+            delete groups[i];
+        }
+        delete[] groups;
+        delete[] items;
+    }
 };
 
 class ObjectPicker: public IUIElement {
     private:
-    ObjectPickerGroup* groups;
+    ObjectPickerGroup** groups;
     int numGroups;
     int width;
     int height;
@@ -216,19 +229,19 @@ class ObjectPicker: public IUIElement {
 
     public:
     // Intervals of 8 pixels for width and height
-    ObjectPicker(ObjectPickerGroup* groups, int numGroups, int width, int height): groups(groups), numGroups(numGroups), width(width), height(height) {
+    ObjectPicker(ObjectPickerGroup** groups, int numGroups, int width, int height): groups(groups), numGroups(numGroups), width(width), height(height) {
         framebufferTexture = new Texture(width * 8 - 4, height * 8);
         framebuffer = new GlFramebuffer(1, framebufferTexture, false);
 
         for (int i = 0; i < numGroups; i++) {
-            groups[i].setWidth(width);
-            groups[i].setSelectedItemLoc(&selectedItem);
+            groups[i]->setWidth(width);
+            groups[i]->setSelectedItemLoc(&selectedItem);
         }
     }
 
     void updateSearchFilter(char* filter) {
         for (int i = 0; i < numGroups; i++) {
-            groups[i].updateSearchFilter(filter);
+            groups[i]->updateSearchFilter(filter);
         }
     }
 
@@ -248,11 +261,11 @@ class ObjectPicker: public IUIElement {
         }
 
         int pxlHeight = height * 8;
-        ObjectPickerGroup* groups = getGroups();
+        ObjectPickerGroup** groups = getGroups();
         int yOffset = 0;
         for (int i = 0; i < getNumGroups(); i++) {
-            int height = groups[i].getHeight();
-            groups[i].hover(hoverX, -(pxlHeight - hoverY - yOffset) - scrollY, gameWidth, gameHeight);
+            int height = groups[i]->getHeight();
+            groups[i]->hover(hoverX, -(pxlHeight - hoverY - yOffset) - scrollY, gameWidth, gameHeight);
             yOffset += height;
         }
 
@@ -264,9 +277,9 @@ class ObjectPicker: public IUIElement {
             return;
         }
 
-        ObjectPickerGroup* groups = getGroups();
+        ObjectPickerGroup** groups = getGroups();
         for (int i = 0; i < getNumGroups(); i++) {
-            groups[i].click();
+            groups[i]->click();
         }
     }
 
@@ -308,7 +321,7 @@ class ObjectPicker: public IUIElement {
         return scrollY;
     }
 
-    ObjectPickerGroup* getGroups() {
+    ObjectPickerGroup** getGroups() {
         return groups;
     }
 
@@ -336,6 +349,10 @@ class ObjectPicker: public IUIElement {
     }
 
     ~ObjectPicker() {
+        for (int i = 0; i < numGroups; i++) {
+            delete groups[i];
+        }
+        delete[] groups;
         delete framebuffer;
         delete framebufferTexture;
     }

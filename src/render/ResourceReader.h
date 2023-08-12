@@ -11,7 +11,8 @@ class ResourceReader {
 		Shader,
 		Model,
 		Texture,
-		World
+		World,
+		UI
 	};
 	const static std::string readResource(ResourceType type, const std::string& path) {
 		std::string fullPath = getFullPath(type, path);
@@ -33,6 +34,10 @@ class ResourceReader {
 			break;
 		case World:
 			path = "worlds/" + path;
+			break;
+		case UI:
+			path = "res/ui/" + path;
+			break;
 		}
 
 		return path;

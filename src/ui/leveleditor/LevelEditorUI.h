@@ -4,8 +4,9 @@
 #include "game/GameObjectCache.h"
 #include "game/LevelSaver.h"
 #include "game/LevelLoader.h"
-#include "ui/leveleditor/ILevelEditorScreen.h"
 #include "ui/ui.h"
+#include "ui/leveleditor/ILevelEditorScreen.h"
+#include "ui/leveleditor/ObjectPickerLoader.h"
 
 #include <GLFW/glfw3.h>
 
@@ -74,17 +75,6 @@ class LevelEditorUI: public UIBundle {
     TextInput* searchBar;
     char searchBarBuffer[32];
 
-    GameObject* objectList1[2] = {objects["smb:rock"], objects["smb:brick"]};
-    GameObject* objectList2[3] = {objects["smb:brick"], objects["smb:rock"], objects["smb:fence"]};
-
-    ObjectPickerGroup groups[2] = {
-        ObjectPickerGroup("group 1", nullptr, 0, objectList1, 2),
-        ObjectPickerGroup("group 2", nullptr, 0, nullptr, 0)
-    };
-    ObjectPickerGroup groups2[2] = {
-        ObjectPickerGroup("group a", groups, 2, objectList2, 3),
-        ObjectPickerGroup("group b", nullptr, 0, nullptr, 0)
-    };
     ObjectPicker* picker;
 
     IUIElement* bundleElements[NUM_BUNDLE_ELEMENTS];
@@ -304,8 +294,9 @@ class LevelEditorUI: public UIBundle {
             button->setToggle(editorScreen->isFullscreen());
         });
 
-        picker = new ObjectPicker(groups2, 2, 18, 28);
-        picker->getGroups()[0].setOpen(true);
+        ObjectPickerLoader loader;
+        picker = loader.loadObjectPicker();
+        picker->getGroups()[0]->setOpen(true);
 
         bundleElements[0] = &menuBar;
         bundleElements[1] = searchBar;

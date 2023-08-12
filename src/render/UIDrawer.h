@@ -268,10 +268,10 @@ class UIDrawer {
         }
 
         int yOffset = 8;
-        ObjectPickerGroup* groups = group.getGroups();
+        ObjectPickerGroup** groups = group.getGroups();
         for (int i = 0; i < group.getNumGroups(); i++) {
-            drawObjectPickerGroup(groups[i], x, y - yOffset);
-            yOffset += groups[i].getHeight();
+            drawObjectPickerGroup(*groups[i], x, y - yOffset);
+            yOffset += groups[i]->getHeight();
         }
 
         GameObject** items = group.getItems();
@@ -305,10 +305,10 @@ class UIDrawer {
         // Render inner section
         // drawer->drawTile(Tiles::ROCK, 0, pxlHeight + scrollY - 16);
         int yOffset = 0;
-        ObjectPickerGroup* groups = picker.getGroups();
+        ObjectPickerGroup** groups = picker.getGroups();
         for (int i = 0; i < picker.getNumGroups(); i++) {
-            drawObjectPickerGroup(groups[i], x, y + pxlHeight + scrollY - yOffset);
-            yOffset += groups[i].getHeight();
+            drawObjectPickerGroup(*groups[i], x, y + pxlHeight + scrollY - yOffset);
+            yOffset += groups[i]->getHeight();
         }
 
         // Return to previous framebuffer

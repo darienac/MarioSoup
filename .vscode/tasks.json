@@ -8,6 +8,7 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "${workspaceFolder}\\src\\main.cpp",
+                "${workspaceFolder}\\include\\jsoncpp.cpp",
                 "-o",
                 "${workspaceFolder}\\Mario.exe",
                 "-I${workspaceFolder}\\include",
@@ -15,6 +16,7 @@
                 "-lglfw3dll",
                 "-lopengl32",
                 "-lglew32",
+                // "-ljsoncpp",
                 "-static",
                 "-Wall",
                 "-Werror"
@@ -34,6 +36,7 @@
             "command": "C:\\msys64\\mingw64\\bin\\g++.exe",
             "args": [
                 "${workspaceFolder}\\src\\editor\\main.cpp",
+                "${workspaceFolder}\\include\\jsoncpp.cpp",
                 "-fdiagnostics-color=always",
                 "-g",
                 "-o",
@@ -43,6 +46,7 @@
                 "-lglfw3dll",
                 "-lopengl32",
                 "-lglew32",
+                // "-ljsoncpp",
                 "-static",
                 "-Wall",
                 "-Werror"

@@ -129,7 +129,7 @@ class Mario {
             xDir++;
         }
 
-        if ((xDir < 0 && velX > -10) || (xDir > 0 && velX < 10)) {
+        if ((xDir < 0 && velX > -16) || (xDir > 0 && velX < 16)) {
             velX += xDir * (controls.action() ? 2 : 1) * (xDir * velX > 0 ? 2 : 1);
         }
     }

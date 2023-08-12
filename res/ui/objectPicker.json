@@ -1,0 +1,11 @@
+{
+    "groups": [
+        {
+            "label": "ground",
+            "groups": [],
+            "items": [
+                "smb:rock", "smb:brick"
+            ]
+        }
+    ]
+}
