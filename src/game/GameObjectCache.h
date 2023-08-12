@@ -40,5 +40,8 @@ namespace GameObjectCache {
 
         addObject(new ConnectedGameObject("smb3:wood_floor", "wood floor", SMB3_WOODF_T))
             .setLevelTile3xTop(SMB3_WOODF_TL);
+        addObject(new ConnectedGameObject("smb3:wood_platform", "wood platform", SMB3_WOODP_M))
+            .setLevelTile3x2(SMB3_WOODP_TL)
+            .setLevelTile3x1(SMB3_WOODP_L);
     }
 }

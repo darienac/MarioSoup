@@ -132,7 +132,9 @@ namespace Tiles {
 
         SMB_ROCK, SMB_BRICK, SMB_FENCE,
 
-        SMB3_WOODF_TL, SMB3_WOODF_T, SMB3_WOODF_TR, SMB3_WOODF_L, SMB3_WOODF_M, SMB3_WOODF_R
+        SMB3_WOODF_TL, SMB3_WOODF_T, SMB3_WOODF_TR, SMB3_WOODF_L, SMB3_WOODF_M, SMB3_WOODF_R,
+        SMB3_WOODP_TL, SMB3_WOODP_T, SMB3_WOODP_TR, SMB3_WOODP_BL, SMB3_WOODP_B, SMB3_WOODP_BR,
+        SMB3_WOODP_L, SMB3_WOODP_M, SMB3_WOODP_R
     };
 
     Tile& getTile(int tile) {
@@ -212,5 +214,6 @@ namespace Tiles {
         tiles[SMB_FENCE] = Tile(TILESET, 34, 67, 16, 16);
 
         initTileGrid(tiles + SMB3_WOODF_TL, SMB3_TILES, 443, 154, 16, 16, 1, 1, 3, 6);
+        initTileGrid(tiles + SMB3_WOODP_TL, SMB3_TILES, 443, 188, 16, 16, 1, 1, 3, 9);
     };
 }

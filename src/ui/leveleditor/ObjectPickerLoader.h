@@ -55,10 +55,11 @@ class ObjectPickerLoader {
     }
 
     GameObject** loadItemList(Json::Value& array) {
-        GameObject** objects = new GameObject*[array.size()];
-        for (Json::Value::ArrayIndex i = 0; i < array.size(); i++) {
-            const char* name = array[i].asString().c_str();
-            objects[i] = GameObjectCache::objects.at(name);
+        Json::Value::ArrayIndex size = array.size();
+        GameObject** objects = new GameObject*[size];
+        for (Json::Value::ArrayIndex i = 0; i < size; i++) {
+            std::string name = array[i].asString();
+            objects[i] = GameObjectCache::objects.at(name.c_str());
         }
         return objects;
     }

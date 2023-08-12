@@ -32,12 +32,24 @@ class ConnectedGameObject: public GameObject {
         std::fill_n(levelTiles, 16, Tiles::AIR);
     }
 
-    GameObject& setLevelTile(bool left, bool right, bool up, bool down, int tile) {
+    ConnectedGameObject& setLevelTile(bool left, bool right, bool up, bool down, int tile) {
         levelTiles[getIndex(left, right, up, down)] = tile;
         return *this;
     }
 
-    GameObject& setLevelTile2x2(int tl, int tr, int bl, int br) {
+    ConnectedGameObject& setLevelTile3x1(int tl, int tm, int tr) {
+        setLevelTile(false, true, false, false, tl);
+        setLevelTile(true, true, false, false, tm);
+        setLevelTile(true, false, false, false, tr);
+
+        return *this;
+    }
+
+    ConnectedGameObject& setLevelTile3x1(int t0) {
+        return setLevelTile3x1(t0, t0 + 1, t0 + 2);
+    }
+
+    ConnectedGameObject& setLevelTile2x2(int tl, int tr, int bl, int br) {
         setLevelTile(false, true, false, true, tl);
         setLevelTile(true, false, false, true, tr);
         setLevelTile(false, true, true, false, bl);
@@ -46,23 +58,34 @@ class ConnectedGameObject: public GameObject {
         return *this;
     }
 
-    GameObject& setLevelTile3x3(int tl, int t, int tr, int l, int m, int r, int bl, int b, int br) {
+    ConnectedGameObject& setLevelTile3x2(int tl, int t, int tr, int bl, int b, int br) {
         setLevelTile2x2(tl, tr, bl, br);
 
         setLevelTile(true, true, false, true, t);
-        setLevelTile(false, true, true, true, l);
-        setLevelTile(true, true, true, true, m);
-        setLevelTile(true, false, true, true, r);
         setLevelTile(true, true, true, false, b);
 
         return *this;
     }
 
-    GameObject& setLevelTile3xTop(int tl, int t, int tr, int l, int m, int r) {
+    ConnectedGameObject& setLevelTile3x2(int t0) {
+        return setLevelTile3x2(t0, t0 + 1, t0 + 2, t0 + 3, t0 + 4, t0 + 5);
+    }
+
+    ConnectedGameObject& setLevelTile3x3(int tl, int t, int tr, int l, int m, int r, int bl, int b, int br) {
+        setLevelTile3x2(tl, t, tr, bl, b, br);
+
+        setLevelTile(false, true, true, true, l);
+        setLevelTile(true, true, true, true, m);
+        setLevelTile(true, false, true, true, r);
+
+        return *this;
+    }
+
+    ConnectedGameObject& setLevelTile3xTop(int tl, int t, int tr, int l, int m, int r) {
         return setLevelTile3x3(tl, t, tr, l, m, r, l, m, r);
     }
 
-    GameObject& setLevelTile3xTop(int t0) {
+    ConnectedGameObject& setLevelTile3xTop(int t0) {
         return setLevelTile3xTop(t0, t0 + 1, t0 + 2, t0 + 3, t0 + 4, t0 + 5);
     }
 
