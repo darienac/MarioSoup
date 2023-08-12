@@ -32,7 +32,7 @@ namespace {
 namespace GameObjectCache {
     void init() {
         addObject(new GameObject("air", "air", AIR)).unflag(GameObject::SOLID);
-        addObject(new GameObject("player", "player", MARIO_STAND_SMB3));
+        addObject(new GameObject("player", "player", MARIO_STAND_SMB3)).setFlippedX(true);
 
         addObject(new GameObject("smb:rock", "rock", SMB_ROCK));
         addObject(new GameObject("smb:brick", "brick", SMB_BRICK));

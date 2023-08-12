@@ -21,6 +21,7 @@ class Mario {
     int velX = 0;
     int velY = 0;
     unsigned int numTicks = 0;
+    bool isJumpHeld = false;
 
     int mod(int v0, int v1) {
         return (v0 + 512) % v1;
@@ -85,13 +86,14 @@ class Mario {
     }
 
     void tick(IGameLevelZone& zone, IControls& controls) {
+
         numTicks++;
         GameLevelRegion** regions = zone.getRegions();
         GameLevelRegion* collideRegion = regions[zoneLayer];
 
         if (grounded) {
             groundMovement(numTicks, controls);
-            if (controls.jump()) {
+            if (controls.jump() && !isJumpHeld) {
                 velY = 64 + (velX < 0 ? -velX : velX) / 4;
                 grounded = false;
                 if (velY > 112) {
@@ -103,6 +105,7 @@ class Mario {
         } else {
             airMovement(numTicks, controls);
         }
+        isJumpHeld = controls.jump();
 
         // Do stuff like collision and checking for new state of player here
         collisions(*collideRegion, controls);
