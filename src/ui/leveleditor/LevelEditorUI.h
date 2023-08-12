@@ -296,7 +296,6 @@ class LevelEditorUI: public UIBundle {
 
         ObjectPickerLoader loader;
         picker = loader.loadObjectPicker();
-        picker->getGroups()[0]->setOpen(true);
 
         bundleElements[0] = &menuBar;
         bundleElements[1] = searchBar;

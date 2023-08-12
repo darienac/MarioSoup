@@ -292,6 +292,7 @@ class ObjectPicker: public IUIElement {
         for (int i = 0; i < getNumGroups(); i++) {
             groups[i]->click();
         }
+        updateInnerHeight();
     }
 
     void scroll(double xOff, double yOff) {
