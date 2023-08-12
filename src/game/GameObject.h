@@ -26,7 +26,7 @@ class GameObject {
 
     public:
     GameObject(const char* id, const char* name, int tilePreview): id(id), name(name), tilePreview(tilePreview) {
-        levelTile = tilePreview;
+        setLevelTile(tilePreview);
         flags[SOLID] = true;
     }
 
@@ -40,6 +40,10 @@ class GameObject {
 
     int getTilePreview() {
         return tilePreview;
+    }
+
+    virtual int getLevelTile(GameObject* left, GameObject* right, GameObject* up, GameObject* down) {
+        return levelTile;
     }
 
     int getLevelTile() {

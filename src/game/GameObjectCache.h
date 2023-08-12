@@ -4,7 +4,10 @@
 #include <string>
 
 #include "game/GameObject.h"
+#include "game/ConnectedGameObject.h"
 #include "TileMappings.h"
+
+using namespace Tiles;
 
 namespace GameObjectCache {
     struct strCompare {
@@ -20,15 +23,22 @@ namespace {
         GameObjectCache::objects[object->getId()] = object;
         return *object;
     }
+    ConnectedGameObject& addObject(ConnectedGameObject* object) {
+        GameObjectCache::objects[object->getId()] = object;
+        return *object;
+    }
 }
 
 namespace GameObjectCache {
     void init() {
-        addObject(new GameObject("air", "air", Tiles::AIR)).unflag(GameObject::SOLID);
-        addObject(new GameObject("player", "player", Tiles::MARIO_STAND_SMB3));
+        addObject(new GameObject("air", "air", AIR)).unflag(GameObject::SOLID);
+        addObject(new GameObject("player", "player", MARIO_STAND_SMB3));
 
-        addObject(new GameObject("smb:rock", "rock", Tiles::SMB_ROCK));
-        addObject(new GameObject("smb:brick", "brick", Tiles::SMB_BRICK));
-        addObject(new GameObject("smb:fence", "fence", Tiles::SMB_FENCE)).setPreferredLayer(GameObject::BACKGROUND);
+        addObject(new GameObject("smb:rock", "rock", SMB_ROCK));
+        addObject(new GameObject("smb:brick", "brick", SMB_BRICK));
+        addObject(new GameObject("smb:fence", "fence", SMB_FENCE)).setPreferredLayer(GameObject::BACKGROUND);
+
+        addObject(new ConnectedGameObject("smb3:wood_floor", "wood floor", SMB3_WOODF_T))
+            .setLevelTile3xTop(SMB3_WOODF_TL);
     }
 }

@@ -56,7 +56,8 @@ namespace {
         MARIO_SMB3,
         TILESET,
         HUD,
-        UI
+        UI,
+        SMB3_TILES
     };
 };
 
@@ -129,7 +130,9 @@ namespace Tiles {
         MARIO_SWIM1_SMB3, MARIO_SWIM2_SMB3, MARIO_SWIM3_SMB3, MARIO_SWIM4_SMB3,
         MARIO_CLIMB_SMB3, MARIO_DIE_SMB3,
 
-        SMB_ROCK, SMB_BRICK, SMB_FENCE
+        SMB_ROCK, SMB_BRICK, SMB_FENCE,
+
+        SMB3_WOODF_TL, SMB3_WOODF_T, SMB3_WOODF_TR, SMB3_WOODF_L, SMB3_WOODF_M, SMB3_WOODF_R
     };
 
     Tile& getTile(int tile) {
@@ -141,6 +144,7 @@ namespace Tiles {
         textures[TextureName::TILESET] = new Texture("smb_misc_tileset.png");
         textures[TextureName::HUD] = new Texture("smb_hud.png");
         textures[TextureName::UI] = new Texture("ui_elements.png");
+        textures[TextureName::SMB3_TILES] = new Texture("smb3_misc_tileset.png");
 
         tiles[AIR] = Tile(HUD, 264, 8, 0, 0);
 
@@ -206,5 +210,7 @@ namespace Tiles {
         tiles[SMB_ROCK] = Tile(TILESET, 0, 16, 16, 16);
         tiles[SMB_BRICK] = Tile(TILESET, 17, 16, 16, 16);
         tiles[SMB_FENCE] = Tile(TILESET, 34, 67, 16, 16);
+
+        initTileGrid(tiles + SMB3_WOODF_TL, SMB3_TILES, 443, 154, 16, 16, 1, 1, 3, 6);
     };
 }

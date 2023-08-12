@@ -4,7 +4,7 @@
             "label": "ground",
             "groups": [],
             "items": [
-                "smb:rock", "smb:brick"
+                "smb:rock", "smb:brick", "smb3:wood_floor"
             ]
         }
     ]

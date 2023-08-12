@@ -220,7 +220,7 @@ class ObjectPicker: public IUIElement {
     GameObject* selectedItem = nullptr;
 
     void limitScroll() {
-        if (scrollY < 0) {
+        if (scrollY < 0 || innerHeight <= height * 8) {
             scrollY = 0;
         } else if (scrollY > innerHeight - height * 8) {
             scrollY = (innerHeight - height * 8);
@@ -237,6 +237,17 @@ class ObjectPicker: public IUIElement {
             groups[i]->setWidth(width);
             groups[i]->setSelectedItemLoc(&selectedItem);
         }
+
+        updateInnerHeight();
+    }
+
+    void updateInnerHeight() {
+        innerHeight = 0;
+        for (int i = 0; i < numGroups; i++) {
+            innerHeight += groups[i]->getHeight();
+        }
+
+        limitScroll();
     }
 
     void updateSearchFilter(char* filter) {

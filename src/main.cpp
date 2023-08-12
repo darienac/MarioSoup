@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "screens/ScreenManager.h"
 #include "screens/PlayLevelScreen.h"
 #include "GlWindow.h"

@@ -15,7 +15,11 @@ class LevelDrawer {
     void drawLevelRegion(GameLevelRegion* region, int x, int y) {
         for (int i = 0; i < region->getWidth(); i++) {
             for (int j = 0; j < region->getHeight(); j++) {
-                drawer->drawTile(region->getGridObject(i, j)->getTilePreview(), x + i * 16, y + j * 16);
+                GameObject* left = region->getGridObject(i - 1, j);
+                GameObject* right = region->getGridObject(i + 1, j);
+                GameObject* up = region->getGridObject(i, j + 1);
+                GameObject* down = region->getGridObject(i, j - 1);
+                drawer->drawTile(region->getGridObject(i, j)->getLevelTile(left, right, up, down), x + i * 16, y + j * 16);
             }
         }
     }
