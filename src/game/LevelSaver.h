@@ -7,7 +7,7 @@
 #include <map>
 
 #include "game/GameLevel.h"
-#include "render/ResourceReader.h"
+#include "ResourceReader.h"
 
 class LevelSaver {
     private:

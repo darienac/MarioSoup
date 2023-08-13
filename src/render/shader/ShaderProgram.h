@@ -5,7 +5,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "render/ResourceReader.h"
+#include "ResourceReader.h"
 #include "render/Texture.h"
 
 class ShaderProgram {

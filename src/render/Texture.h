@@ -1,10 +1,10 @@
 #pragma once
 
 #include <iostream>
-#include <stb_image.h>
+#include <stb/stb_image.h>
 #include <GL/glew.h>
 
-#include "render/ResourceReader.h"
+#include "ResourceReader.h"
 
 class Texture {
     private:

@@ -1,18 +1,28 @@
 #pragma once
 
 #include "GlWindow.h"
+#include "audio/AudioManager.h"
 #include "screens/IScreen.h"
 
 class ScreenManager {
     private:
     const double TICK_RATE = 60.0;
+    
+    AudioManager* audio;
+    AudioSource* source;
+    AudioBuffer* buffer;
 
     GlWindow* window;
     IScreen* screen = nullptr;
     int fps;
 
     public:
-    ScreenManager(GlWindow& window): window(&window) {}
+    ScreenManager(GlWindow& window): window(&window) {
+        audio = new AudioManager();
+        source = new AudioSource(false, true);
+        buffer = new AudioBuffer("test.ogg");
+        source->playBuffer(*buffer);
+    }
 
     void run() {
         double lastTime = glfwGetTime();
@@ -38,6 +48,9 @@ class ScreenManager {
                     screen->tick();
                 }
             }
+
+            // Audio processing
+            source->update();
 
             window->gameFramebuffer->bind();
 
@@ -67,5 +80,11 @@ class ScreenManager {
 
     int getFPS() {
         return fps;
+    }
+
+    ~ScreenManager() {
+        delete audio;
+        delete source;
+        delete buffer;
     }
 };
