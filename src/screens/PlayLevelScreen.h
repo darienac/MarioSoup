@@ -4,6 +4,8 @@
 #include "ui/playlevel/PlayLevelUI.h"
 #include "screens/ScreenManager.h"
 #include "game/LevelLoader.h"
+#include "audio/AudioManager.h"
+#include "audio/AudioCache.h"
 
 class PlayLevelScreen: public IPlayLevelScreen {
     private:
@@ -14,12 +16,13 @@ class PlayLevelScreen: public IPlayLevelScreen {
     PlayLevelUI* levelUI;
     ILevelEditorScreen* editorScreen = nullptr;
 
+
     public:
     PlayLevelScreen(GlWindow& window, ScreenManager& manager) {
         this->window = &window;
         this->manager = &manager;
 
-        levelUI = new PlayLevelUI(this, window.getKeys());
+        levelUI = new PlayLevelUI(this, manager.getAudioManager(), window.getKeys());
     }
 
     void loadLevel(const char* filePath) {

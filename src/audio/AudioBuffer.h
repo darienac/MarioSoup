@@ -10,6 +10,8 @@ class AudioBuffer {
     private:
     static const int CHUNK_SIZE = 65536;
 
+    std::string id;
+
     short audioBuffer[CHUNK_SIZE];
 
     ALuint buffers[2];
@@ -23,7 +25,7 @@ class AudioBuffer {
     bool closed = false;
 
     public:
-    AudioBuffer(std::string fileName) {
+    AudioBuffer(std::string id, std::string fileName): id(id) {
         int error;
         std::string path = ResourceReader::getFullPath(ResourceReader::Audio, fileName);
         stream = stb_vorbis_open_filename(path.c_str(), &error, NULL);
@@ -36,14 +38,29 @@ class AudioBuffer {
         sampleRate = info.sample_rate;
         samples = stb_vorbis_stream_length_in_samples(stream) * channels;
         duration = stb_vorbis_stream_length_in_seconds(stream);
+        std::printf("ID: %s, Channels: %d, Sample rate: %d\n", id.c_str(), channels, sampleRate);
 
+        if (channels > 2) {
+            throw "Too many samples in file " + fileName + " (" + std::to_string(channels) + ")";
+        }
 
-        alGenBuffers(2, buffers);
+        alGenBuffers(channels, buffers);
 
-        bufferData();
-        storeBufferData(buffers[0], CHUNK_SIZE * sizeof(short));
-        bufferData();
-        storeBufferData(buffers[1], CHUNK_SIZE * sizeof(short));
+        int amount;
+        amount = bufferData();
+        storeBufferData(buffers[0], amount * channels * sizeof(short));
+        if (channels == 2) {
+            amount = bufferData();
+            storeBufferData(buffers[1], amount * channels * sizeof(short));
+        }
+    }
+
+    int getNumChannels() {
+        return channels;
+    }
+
+    const char* getId() {
+        return id.c_str();
     }
     
     int bufferData() {
@@ -51,11 +68,15 @@ class AudioBuffer {
     }
 
     void storeBufferData(ALuint bufferId, int size) {
-        alBufferData(bufferId, AL_FORMAT_STEREO16, audioBuffer, size, sampleRate);
+        alBufferData(bufferId, (channels == 2) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, audioBuffer, size, sampleRate);
     }
 
     ALuint* getBuffers() {
         return buffers;
+    }
+
+    void restart() {
+        stb_vorbis_seek_start(stream);
     }
 
     void close() {

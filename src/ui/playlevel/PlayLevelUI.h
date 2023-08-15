@@ -3,10 +3,13 @@
 #include "ui/IUIElement.h"
 #include "ui/playlevel/IPlayLevelScreen.h"
 #include "controls/KeyboardControls.h"
+#include "audio/AudioManager.h"
+#include "audio/AudioCache.h"
 
 class PlayLevelUI: public IUIElement {
     private:
     IPlayLevelScreen* screen;
+    AudioManager* audio;
     IControls* controls;
     bool* keys;
 
@@ -39,16 +42,25 @@ class PlayLevelUI: public IUIElement {
         screen->setScrollY(scrollY);
     }
 
+    void updateAudioListener() {
+        int scrollX = screen->getScrollX();
+        int scrollY = screen->getScrollY();
+
+        float pos[3] = {(float) -scrollX + IPlayLevelScreen::WINDOW_WIDTH / 2, (float) -scrollY + IPlayLevelScreen::WINDOW_HEIGHT / 2, 128};
+        audio->setPos(pos);
+    }
+
     public:
-    PlayLevelUI(IPlayLevelScreen* screen, bool* keys): screen(screen), keys(keys) {
+    PlayLevelUI(IPlayLevelScreen* screen, AudioManager* audio, bool* keys): screen(screen), audio(audio), keys(keys) {
         controls = new KeyboardControls(keys);
     }
 
     void tick() {
         GameLevelZone* zone = screen->getLevel()->getCurrentZone();
-        zone->getMario().tick(*zone, *controls);
+        zone->getMario().tick(*zone, *audio, *controls);
 
         updateScroll();
+        updateAudioListener();
     }
 
     virtual void charInput(int codepoint) override {

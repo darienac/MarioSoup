@@ -6,6 +6,8 @@
 #include "game/GameObjectCache.h"
 #include "game/IGameLevelZone.h"
 #include "controls/IControls.h"
+#include "audio/AudioManager.h"
+#include "audio/AudioCache.h"
 
 class Mario {
     private:
@@ -85,7 +87,7 @@ class Mario {
         zoneLayer = value;
     }
 
-    void tick(IGameLevelZone& zone, IControls& controls) {
+    void tick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) {
 
         numTicks++;
         GameLevelRegion** regions = zone.getRegions();
@@ -99,6 +101,8 @@ class Mario {
                 if (velY > 112) {
                     velY = 112;
                 }
+                float pos[3] = {(float) getX(), (float) getY(), 0.0};
+                audio.playSound(*AudioCache::audio["smb3:jump"], pos);
             } else {
                 velY = -6;
             }

@@ -2,6 +2,7 @@
 
 #include "GlWindow.h"
 #include "audio/AudioManager.h"
+#include "audio/AudioCache.h"
 #include "screens/IScreen.h"
 
 class ScreenManager {
@@ -9,7 +10,6 @@ class ScreenManager {
     const double TICK_RATE = 60.0;
     
     AudioManager* audio;
-    AudioSource* source;
     AudioBuffer* buffer;
 
     GlWindow* window;
@@ -19,9 +19,6 @@ class ScreenManager {
     public:
     ScreenManager(GlWindow& window): window(&window) {
         audio = new AudioManager();
-        source = new AudioSource(false, true);
-        buffer = new AudioBuffer("test.ogg");
-        source->playBuffer(*buffer);
     }
 
     void run() {
@@ -50,7 +47,7 @@ class ScreenManager {
             }
 
             // Audio processing
-            source->update();
+            audio->update();
 
             window->gameFramebuffer->bind();
 
@@ -82,9 +79,11 @@ class ScreenManager {
         return fps;
     }
 
+    AudioManager* getAudioManager() {
+        return audio;
+    }
+
     ~ScreenManager() {
         delete audio;
-        delete source;
-        delete buffer;
     }
 };
