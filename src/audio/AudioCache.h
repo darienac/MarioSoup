@@ -25,5 +25,6 @@ namespace AudioCache {
     void init() {
         addAudio(new AudioBuffer("smb3:jump", "smb3_jump.ogg"));
         addAudio(new AudioBuffer("test", "test.ogg"));
+        addAudio(new AudioBuffer("smb3:overworld", "smb3_overworld.ogg"));
     }
 }

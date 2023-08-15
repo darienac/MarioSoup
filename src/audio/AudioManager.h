@@ -46,8 +46,12 @@ class AudioManager {
         // std::printf("Listener pos: x: %f, y: %f, z: %f\n", pos[0], pos[1], pos[2]);
     }
 
-    void setMusic(AudioBuffer& buffer) {
+    void cancelMusic() {
         musicSource->cancelBuffers();
+    }
+
+    void setMusic(AudioBuffer& buffer) {
+        cancelMusic();
         musicSource->playBuffer(buffer);
     }
 

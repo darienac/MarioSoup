@@ -46,13 +46,7 @@ class AudioBuffer {
 
         alGenBuffers(channels, buffers);
 
-        int amount;
-        amount = bufferData();
-        storeBufferData(buffers[0], amount * channels * sizeof(short));
-        if (channels == 2) {
-            amount = bufferData();
-            storeBufferData(buffers[1], amount * channels * sizeof(short));
-        }
+        restart();
     }
 
     int getNumChannels() {
@@ -73,10 +67,18 @@ class AudioBuffer {
 
     ALuint* getBuffers() {
         return buffers;
-    }
+    } 
 
     void restart() {
         stb_vorbis_seek_start(stream);
+
+        int amount;
+        amount = bufferData();
+        storeBufferData(buffers[0], amount * channels * sizeof(short));
+        if (channels == 2) {
+            amount = bufferData();
+            storeBufferData(buffers[1], amount * channels * sizeof(short));
+        }
     }
 
     void close() {

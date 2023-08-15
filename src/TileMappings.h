@@ -130,11 +130,11 @@ namespace Tiles {
         MARIO_SWIM1_SMB3, MARIO_SWIM2_SMB3, MARIO_SWIM3_SMB3, MARIO_SWIM4_SMB3,
         MARIO_CLIMB_SMB3, MARIO_DIE_SMB3,
 
-        SMB_ROCK, SMB_BRICK, SMB_FENCE,
-
         SMB3_WOODF_TL, SMB3_WOODF_T, SMB3_WOODF_TR, SMB3_WOODF_L, SMB3_WOODF_M, SMB3_WOODF_R,
-        SMB3_WOODP_TL, SMB3_WOODP_T, SMB3_WOODP_TR, SMB3_WOODP_BL, SMB3_WOODP_B, SMB3_WOODP_BR,
-        SMB3_WOODP_L, SMB3_WOODP_M, SMB3_WOODP_R
+        SMB3_WOODP, SMB3_WOODP_TL, SMB3_WOODP_T, SMB3_WOODP_TR, SMB3_WOODP_BL, SMB3_WOODP_B, SMB3_WOODP_BR,
+        SMB3_WOODP_L, SMB3_WOODP_M, SMB3_WOODP_R,
+        SMB3_QBLOCK_1, SMB3_QBLOCK_2, SMB3_QBLOCK_3, SMB3_QBLOCK_4, SMB3_QBLOCK_EMPTY,
+        SMB3_BRICK_1, SMB3_BRICK_2, SMB3_BRICK_3, SMB3_BRICK_4
     };
 
     Tile& getTile(int tile) {
@@ -209,11 +209,12 @@ namespace Tiles {
 
         initTileGrid(tiles + MARIO_STAND_SMB3, MARIO_SMB3, 1, 16, 16, 16, 2, 0, 18, 18);
 
-        tiles[SMB_ROCK] = Tile(TILESET, 0, 16, 16, 16);
-        tiles[SMB_BRICK] = Tile(TILESET, 17, 16, 16, 16);
-        tiles[SMB_FENCE] = Tile(TILESET, 34, 67, 16, 16);
-
         initTileGrid(tiles + SMB3_WOODF_TL, SMB3_TILES, 443, 154, 16, 16, 1, 1, 3, 6);
+        tiles[SMB3_WOODP] = Tile(SMB3_TILES, 1004, 18, 16, 16);
         initTileGrid(tiles + SMB3_WOODP_TL, SMB3_TILES, 443, 188, 16, 16, 1, 1, 3, 9);
+
+        initTileGrid(tiles + SMB3_QBLOCK_1, SMB3_TILES, 1140, 35, 16, 16, 1, 1, 4, 4);
+        tiles[SMB3_QBLOCK_EMPTY] = Tile(SMB3_TILES, 1208, 1, 16, 16);
+        initTileGrid(tiles + SMB3_BRICK_1, SMB3_TILES, 1038, 35, 16, 16, 1, 1, 4, 4);
     };
 }

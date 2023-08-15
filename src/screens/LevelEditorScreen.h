@@ -47,6 +47,7 @@ class LevelEditorScreen: public ILevelEditorScreen {
     void enable() {
         window->resize(WINDOW_WIDTH, WINDOW_HEIGHT);
         window->stageDrawer->setOffset(WINDOW_WIDTH - VIEW_WIDTH, 0);
+        manager->getAudioManager()->cancelMusic();
         setState(EDITOR);
     }
 

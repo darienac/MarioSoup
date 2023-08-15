@@ -4,6 +4,7 @@
 #include "audio/AudioManager.h"
 #include "audio/AudioCache.h"
 #include "screens/IScreen.h"
+#include "game/AnimatedGameObject.h"
 
 class ScreenManager {
     private:
@@ -15,6 +16,7 @@ class ScreenManager {
     GlWindow* window;
     IScreen* screen = nullptr;
     int fps;
+    int tickNum = 0;
 
     public:
     ScreenManager(GlWindow& window): window(&window) {
@@ -42,7 +44,7 @@ class ScreenManager {
                 int ticks = (time - lastTickTime) * TICK_RATE;
                 lastTickTime += ticks / TICK_RATE;
                 for (int i = 0; i < ticks; i++) {
-                    screen->tick();
+                    tick();
                 }
             }
 
@@ -65,6 +67,12 @@ class ScreenManager {
             glFinish();
             glfwPollEvents();
         }
+    }
+
+    void tick() {
+        AnimatedGameObject::setTickNum(tickNum);
+        screen->tick();
+        tickNum++;
     }
 
     void setScreen(IScreen* screen) {

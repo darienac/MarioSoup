@@ -63,6 +63,9 @@ class AudioSource {
     }
 
     void cancelBuffers() {
+        alSourceStop(sourceId);
+        alSourceRewind(sourceId);
+        alSourcei(sourceId, AL_BUFFER, 0);
         for (auto i : buffersPlaying) {
             i.second->restart();
         }
