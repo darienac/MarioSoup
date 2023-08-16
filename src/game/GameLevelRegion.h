@@ -3,8 +3,8 @@
 #include <set>
 #include <vector>
 
-#include "game/GameObject.h"
-#include "game/GameObjectCache.h"
+#include "game/objects/GameObject.h"
+#include "game/objects/GameObjectCache.h"
 
 class GameLevelRegion {
     private:

@@ -2,7 +2,7 @@
 
 #include "game/LevelSaver.h"
 #include "game/GameLevel.h"
-#include "game/GameObjectCache.h"
+#include "game/objects/GameObjectCache.h"
 #include "ResourceReader.h"
 
 class LevelLoader {

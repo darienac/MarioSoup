@@ -5,8 +5,8 @@
 #include "ui/playlevel/IPlayLevelScreen.h"
 
 #include "GlWindow.h"
-#include "game/GameObject.h"
-#include "game/GameObjectCache.h"
+#include "game/objects/GameObject.h"
+#include "game/objects/GameObjectCache.h"
 #include "game/GameLevel.h"
 #include "ui/ui.h"
 #include "ui/leveleditor/LevelEditorUI.h"

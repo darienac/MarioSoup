@@ -2,8 +2,8 @@
 
 #include <algorithm>
 
-#include "game/GameObject.h"
-#include "game/GameObjectCache.h"
+#include "game/objects/GameObject.h"
+#include "game/objects/GameObjectCache.h"
 #include "game/IGameLevelZone.h"
 #include "controls/IControls.h"
 #include "audio/AudioManager.h"

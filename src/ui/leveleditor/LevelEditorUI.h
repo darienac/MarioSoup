@@ -1,7 +1,7 @@
 #pragma once
 
-#include "game/GameObject.h"
-#include "game/GameObjectCache.h"
+#include "game/objects/GameObject.h"
+#include "game/objects/GameObjectCache.h"
 #include "game/LevelSaver.h"
 #include "game/LevelLoader.h"
 #include "ui/ui.h"

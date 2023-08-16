@@ -4,7 +4,7 @@
 #include "audio/AudioManager.h"
 #include "audio/AudioCache.h"
 #include "screens/IScreen.h"
-#include "game/AnimatedGameObject.h"
+#include "game/objects/AnimatedGameObject.h"
 
 class ScreenManager {
     private:

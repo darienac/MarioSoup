@@ -12,7 +12,7 @@ class GlWindow;
 #include <stdlib.h>
 
 #include "TileMappings.h"
-#include "game/GameObjectCache.h"
+#include "game/objects/GameObjectCache.h"
 
 #include "render/shader/ShaderProgram.h"
 #include "render/shader/ImageShader.h"

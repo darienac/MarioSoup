@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "ui/ui.h"
-#include "game/GameObject.h"
+#include "game/objects/GameObject.h"
 
 class ObjectPickerGroup: public IUIElement {
     private:

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <json/json.h>
 
-#include "game/GameObjectCache.h"
+#include "game/objects/GameObjectCache.h"
 #include "ui/ObjectPicker.h"
 
 class ObjectPickerLoader {
