@@ -114,7 +114,7 @@ class Mario {
         // Do stuff like collision and checking for new state of player here
         collisions(*collideRegion, controls);
         if (!grounded) {
-            gameObject.setLevelTile(MARIO_JUMP_SMB3);
+            gameObject.setLevelTile(MARIO_JUMP_SMA4);
         }
     }
 
@@ -177,20 +177,20 @@ class Mario {
         }
 
         if (xDir * velX < 0) {
-            gameObject.setLevelTile(MARIO_SKID_SMB3);
+            gameObject.setLevelTile(MARIO_SKID_SMA4);
             gameObject.setFlippedX(!gameObject.isFlippedX());
             velX += xDir;
         } else if (velX == 0 || (numTicks / ((velX > 9 || velX < -9 || velX == 0) ? 4 : 6)) % 2 == 1) {
             if (velX > RUN_SPEED - 4 || velX < -RUN_SPEED + 4) {
-                gameObject.setLevelTile(MARIO_RUN1_SMB3);
+                gameObject.setLevelTile(MARIO_RUN1_SMA4);
             } else {
-                gameObject.setLevelTile(MARIO_STAND_SMB3);
+                gameObject.setLevelTile(MARIO_STAND_SMA4);
             }
         } else {
             if (std::abs(velX) > RUN_SPEED - 4) {
-                gameObject.setLevelTile(MARIO_RUN2_SMB3);
+                gameObject.setLevelTile(MARIO_RUN2_SMA4);
             } else {
-                gameObject.setLevelTile(MARIO_WALK_SMB3);
+                gameObject.setLevelTile(MARIO_WALK_SMA4);
             }
         }
     }
@@ -201,9 +201,9 @@ class Mario {
 
         int newShift;
         if (velX > 0) {
-            newShift = tileX - (x + 256);
+            newShift = tileX - (x + 208);
         } else {
-            newShift = (tileX + 256) - x;
+            newShift = (tileX + 256) - (x + 48);
         }
 
         if (std::abs(newShift) > std::abs(xShift)) {
@@ -244,27 +244,29 @@ class Mario {
         int xShift = 0;
         int yShift = 0;
 
-        int pTileX = div(x, 256);
+        int pTileX = div(x + 48, 256);
+        int pTileX2 = div(x + 208, 256);
         int pTileY = div(y, 256);
+        int pTileY2 = div(y + 256, 256);
 
         if (region.getGridObject(pTileX, pTileY)->isFlag(s)) {
             stuck = true;
             setXShift(xShift, pTileX, pTileY);
         }
 
-        if (mod(x, 256) != 0 && region.getGridObject(pTileX + 1, pTileY)->isFlag(s)) {
+        if (mod(x + 48, 256) > 96 && region.getGridObject(pTileX2, pTileY)->isFlag(s)) {
             stuck = true;
-            setXShift(xShift, pTileX + 1, pTileY);
+            setXShift(xShift, pTileX2, pTileY);
         }
 
-        if (mod(y, 256) != 0 && region.getGridObject(pTileX, pTileY + 1)->isFlag(s)) {
+        if (mod(y, 256) != 0 && region.getGridObject(pTileX, pTileY2)->isFlag(s)) {
             stuck = true;
-            setXShift(xShift, pTileX, pTileY + 1);
+            setXShift(xShift, pTileX, pTileY2);
         }
 
-        if (mod(x, 256) != 0 && mod(y, 256) != 0 && region.getGridObject(pTileX + 1, pTileY + 1)->isFlag(s)) {
+        if (mod(x + 48, 256) > 96 && mod(y, 256) != 0 && region.getGridObject(pTileX2, pTileY2)->isFlag(s)) {
             stuck = true;
-            setXShift(xShift, pTileX + 1, pTileY + 1);
+            setXShift(xShift, pTileX2, pTileY2);
         }
 
         if (stuck) {
@@ -276,27 +278,29 @@ class Mario {
         stuck = false;
         y += velY;
 
-        pTileX = div(x, 256);
+        pTileX = div(x + 48, 256);
+        pTileX2 = div(x + 208, 256);
         pTileY = div(y, 256);
+        pTileY2 = div(y + 256, 256);
 
         if (region.getGridObject(pTileX, pTileY)->isFlag(s)) {
             stuck = true;
             setYShift(yShift, pTileX, pTileY);
         }
 
-        if (mod(x, 256) != 0 && region.getGridObject(pTileX + 1, pTileY)->isFlag(s)) {
+        if (mod(x + 48, 256) > 96 && region.getGridObject(pTileX2, pTileY)->isFlag(s)) {
             stuck = true;
-            setYShift(yShift, pTileX + 1, pTileY);
+            setYShift(yShift, pTileX2, pTileY);
         }
 
-        if (mod(y, 256) != 0 && region.getGridObject(pTileX, pTileY + 1)->isFlag(s)) {
+        if (mod(y, 256) != 0 && region.getGridObject(pTileX, pTileY2)->isFlag(s)) {
             stuck = true;
-            setYShift(yShift, pTileX, pTileY + 1);
+            setYShift(yShift, pTileX, pTileY2);
         }
 
-        if (mod(x, 256) != 0 && mod(y, 256) != 0 && region.getGridObject(pTileX + 1, pTileY + 1)->isFlag(s)) {
+        if (mod(x + 48, 256) > 96 && mod(y, 256) != 0 && region.getGridObject(pTileX2, pTileY2)->isFlag(s)) {
             stuck = true;
-            setYShift(yShift, pTileX + 1, pTileY + 1);
+            setYShift(yShift, pTileX2, pTileY2);
         }
 
         if (stuck) {

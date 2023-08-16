@@ -39,14 +39,14 @@ namespace GameObjectCache {
         AnimatedGameObject::setTickNum(0);
 
         addObject(new GameObject("air", "air", AIR)).unflag(GameObject::SOLID);
-        addObject(new GameObject("player", "player", MARIO_STAND_SMB3)).setFlippedX(true);
+        addObject(new GameObject("player", "player", MARIO_STAND_SMA4)).setFlippedX(true);
 
-        addObject(new ConnectedGameObject("smb3:wood_floor", "wood floor", SMB3_WOODF_T))
-            .setLevelTile3xTop(SMB3_WOODF_TL);
-        addObject(new ConnectedGameObject("smb3:wood_platform", "wood platform", SMB3_WOODP))
-            .setLevelTile3x2(SMB3_WOODP_TL)
-            .setLevelTile3x1(SMB3_WOODP_L);
-        addObject(new AnimatedGameObject("smb3:qblock", "question block", SMB3_QBLOCK_1, 8)).add(SMB3_QBLOCK_1, 4);
-        addObject(new AnimatedGameObject("smb3:brick", "brick block", SMB3_BRICK_1, 8)).add(SMB3_BRICK_1, 4);
+        addObject(new ConnectedGameObject("sma4:wood_floor", "wood floor", SMA4_WOODF_T))
+            .setLevelTile3xTop(SMA4_WOODF_TL);
+        addObject(new ConnectedGameObject("sma4:wood_platform", "wood platform", SMA4_WOODP))
+            .setLevelTile3x2(SMA4_WOODP_TL)
+            .setLevelTile3x1(SMA4_WOODP_L, SMA4_WOODP_M, SMA4_WOODP_R);
+        addObject(new AnimatedGameObject("sma4:qblock", "question block", SMA4_QBLOCK_1, 8)).add(SMA4_QBLOCK_1, 4);
+        addObject(new AnimatedGameObject("sma4:brick", "brick block", SMA4_BRICK_1, 8)).add(SMA4_BRICK_1, 4);
     }
 }

@@ -54,10 +54,11 @@ namespace Palletes {
 namespace {
     enum TextureName {
         MARIO_SMB3,
+        MARIO_SMA4,
         TILESET,
         HUD,
         UI,
-        SMB3_TILES
+        SMA4_TILES
     };
 };
 
@@ -124,17 +125,14 @@ namespace Tiles {
 
         COIN_ICO, TITLE,
 
-        MARIO_STAND_SMB3, MARIO_WALK_SMB3, MARIO_JUMP_SMB3,
-        MARIO_RUN1_SMB3, MARIO_RUN2_SMB3, MARIO_VAULT_SMB3,
-        MARIO_SKID_SMB3, MARIO_FRONT_SMB3, MARIO_GRAB1_SMB3, MARIO_GRAB2_SMB3, MARIO_KICK_SMB3, MARIO_SLIDE_SMB3,
-        MARIO_SWIM1_SMB3, MARIO_SWIM2_SMB3, MARIO_SWIM3_SMB3, MARIO_SWIM4_SMB3,
-        MARIO_CLIMB_SMB3, MARIO_DIE_SMB3,
+        MARIO_STAND_SMA4, MARIO_RUN2_SMA4, MARIO_WALK_SMA4, MARIO_RUN1_SMA4, MARIO_JUMP_SMA4, MARIO_CARRY2_SMA4, MARIO_CARRY1_SMA4, MARIO_KICK_SMA4, MARIO_CLIMB1_SMA4,
+        MARIO_FRONT_SMA4, MARIO_CLIMB2_SMA4, MARIO_SLIDE_SMA4, MARIO_DIE_SMA4, MARIO_SKID_SMA4,
 
-        SMB3_WOODF_TL, SMB3_WOODF_T, SMB3_WOODF_TR, SMB3_WOODF_L, SMB3_WOODF_M, SMB3_WOODF_R,
-        SMB3_WOODP, SMB3_WOODP_TL, SMB3_WOODP_T, SMB3_WOODP_TR, SMB3_WOODP_BL, SMB3_WOODP_B, SMB3_WOODP_BR,
-        SMB3_WOODP_L, SMB3_WOODP_M, SMB3_WOODP_R,
-        SMB3_QBLOCK_1, SMB3_QBLOCK_2, SMB3_QBLOCK_3, SMB3_QBLOCK_4, SMB3_QBLOCK_EMPTY,
-        SMB3_BRICK_1, SMB3_BRICK_2, SMB3_BRICK_3, SMB3_BRICK_4
+        SMA4_WOODF_TL, SMA4_WOODF_T, SMA4_WOODF_TR, SMA4_WOODF_L, SMA4_WOODF_M, SMA4_WOODF_R,
+        SMA4_WOODP, SMA4_WOODP_TL, SMA4_WOODP_T, SMA4_WOODP_TR, SMA4_WOODP_BL, SMA4_WOODP_B, SMA4_WOODP_BR,
+        SMA4_WOODP_L, SMA4_WOODP_M, SMA4_WOODP_R, SMA4_WOODP_V,
+        SMA4_QBLOCK_1, SMA4_QBLOCK_2, SMA4_QBLOCK_3, SMA4_QBLOCK_4, SMA4_QBLOCK_EMPTY,
+        SMA4_BRICK_1, SMA4_BRICK_2, SMA4_BRICK_3, SMA4_BRICK_4
     };
 
     Tile& getTile(int tile) {
@@ -143,10 +141,11 @@ namespace Tiles {
 
     void initTiles() {
         textures[TextureName::MARIO_SMB3] = new Texture("smb3_mario.png");
+        textures[TextureName::MARIO_SMA4] = new Texture("sma4_mario.png");
         textures[TextureName::TILESET] = new Texture("smb_misc_tileset.png");
         textures[TextureName::HUD] = new Texture("smb_hud.png");
         textures[TextureName::UI] = new Texture("ui_elements.png");
-        textures[TextureName::SMB3_TILES] = new Texture("smb3_misc_tileset.png");
+        textures[TextureName::SMA4_TILES] = new Texture("sma4_misc_tileset.png");
 
         tiles[AIR] = Tile(HUD, 264, 8, 0, 0);
 
@@ -207,14 +206,15 @@ namespace Tiles {
         tiles[COIN_ICO] = Tile(HUD, 264, 76, 8, 8);
         tiles[TITLE] = Tile(HUD, 40, 144, 176, 88);
 
-        initTileGrid(tiles + MARIO_STAND_SMB3, MARIO_SMB3, 1, 16, 16, 16, 2, 0, 18, 18);
+        initTileGrid(tiles + MARIO_STAND_SMA4, MARIO_SMA4, 13, 773, 16, 16, 2, 2, 9, 14);
 
-        initTileGrid(tiles + SMB3_WOODF_TL, SMB3_TILES, 443, 154, 16, 16, 1, 1, 3, 6);
-        tiles[SMB3_WOODP] = Tile(SMB3_TILES, 1004, 18, 16, 16);
-        initTileGrid(tiles + SMB3_WOODP_TL, SMB3_TILES, 443, 188, 16, 16, 1, 1, 3, 9);
+        initTileGrid(tiles + SMA4_WOODF_TL, SMA4_TILES, 290, 110, 16, 16, 2, 2, 3, 6);
+        tiles[SMA4_WOODP] = Tile(SMA4_TILES, 272, 128, 16, 16);
+        initTileGrid(tiles + SMA4_WOODP_TL, SMA4_TILES, 434, 254, 16, 16, 2, 2, 3, 6);
+        initTileGrid(tiles + SMA4_WOODP_L, SMA4_TILES, 488, 254, 16, 16, 2, 2, 2, 4);
 
-        initTileGrid(tiles + SMB3_QBLOCK_1, SMB3_TILES, 1140, 35, 16, 16, 1, 1, 4, 4);
-        tiles[SMB3_QBLOCK_EMPTY] = Tile(SMB3_TILES, 1208, 1, 16, 16);
-        initTileGrid(tiles + SMB3_BRICK_1, SMB3_TILES, 1038, 35, 16, 16, 1, 1, 4, 4);
+        initTileGrid(tiles + SMA4_QBLOCK_1, SMA4_TILES, 182, 92, 16, 16, 2, 2, 4, 4);
+        tiles[SMA4_QBLOCK_EMPTY] = Tile(SMA4_TILES, 254, 128, 16, 16);
+        initTileGrid(tiles + SMA4_BRICK_1, SMA4_TILES, 182, 146, 16, 16, 2, 2, 4, 4);
     };
 }
