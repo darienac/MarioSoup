@@ -47,11 +47,13 @@ class PlayLevelScreen: public IPlayLevelScreen {
     }
 
     virtual void renderFrame() override {
-        glClearColor((float) 0xB5 / 0xFF, (float) 0xEF / 0xFF, (float) 0xEF / 0xFF, 1.0);
+        GameLevelZone* zone = level->getCurrentZone();
+
+        unsigned char* clearColor = zone->getBackgroundColor();
+        glClearColor((float) clearColor[0] / 0xFF, (float) clearColor[1] / 0xFF, (float) clearColor[2] / 0xFF, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        GameLevelZone* zone = level->getCurrentZone();
-        window->levelDrawer->drawLevelZone(*zone, scrollX, scrollY);
+        window->levelDrawer->drawLevelZone(*zone, 0, 0, scrollX, scrollY);
         window->levelDrawer->drawMario(*zone, scrollX, scrollY);
     }
 

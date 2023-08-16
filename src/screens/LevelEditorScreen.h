@@ -62,7 +62,10 @@ class LevelEditorScreen: public ILevelEditorScreen {
         // int windowWidth = window->getGameWidth();
         // int windowHeight = window->getGameHeight();
 
-        glClearColor((float) 0xB5 / 0xFF, (float) 0xEF / 0xFF, (float) 0xEF / 0xFF, 1.0);
+        GameLevelZone* zone = level->getCurrentZone();
+
+        unsigned char* clearColor = zone->getBackgroundColor();
+        glClearColor((float) clearColor[0] / 0xFF, (float) clearColor[1] / 0xFF, (float) clearColor[2] / 0xFF, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         window->drawer->setZPos(ImageDrawer::ZPOS_UI);
@@ -76,10 +79,8 @@ class LevelEditorScreen: public ILevelEditorScreen {
         // window->stageDrawer->drawScoreboard(7654321, 54, 5, 4, -1, manager->getFPS());
 		// window->stageDrawer->drawTitle(0, 7654321);
 
-        GameLevelZone* zone = level->getCurrentZone();
-
+        window->levelDrawer->drawLevelZone(*zone, 144, 0, scrollX, scrollY);
         window->levelDrawer->drawLevelZoneBoundary(*zone, WINDOW_WIDTH - VIEW_WIDTH + scrollX, scrollY);
-        window->levelDrawer->drawLevelZone(*zone, 144 + scrollX, scrollY);
         window->levelDrawer->drawMario(*zone, 144 + scrollX, scrollY);
 
         window->levelDrawer->drawMarioGrabCursor(*editorUI, 144 + scrollX, scrollY);

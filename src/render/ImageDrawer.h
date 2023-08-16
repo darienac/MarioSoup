@@ -40,10 +40,11 @@ const GLint quadFaces[] = {
 
 class ImageDrawer {
     public:
-    static constexpr float ZPOS_BGTILE_UI = 0.0f;
-    static constexpr float ZPOS_GAME_TILES[3] = {0.1f, 0.2f, 0.3f};
-    static constexpr float ZPOS_TILE_UI = 0.4f;
-    static constexpr float ZPOS_UI = 0.5f;
+    static constexpr float ZPOS_BACKGROUND = 0.0f;
+    static constexpr float ZPOS_BGTILE_UI = 0.1f;
+    static constexpr float ZPOS_GAME_TILES[3] = {0.2f, 0.3f, 0.4f};
+    static constexpr float ZPOS_TILE_UI = 0.5f;
+    static constexpr float ZPOS_UI = 0.6f;
     static constexpr float ZPOS_UI_DIALOG = 0.9f;
     static constexpr float ZPOS_TEXTHINT = 1.0f;
 

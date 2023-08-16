@@ -303,6 +303,22 @@ class Mario {
             setYShift(yShift, pTileX2, pTileY2);
         }
 
+        // make gaps harder to fall in if moving
+        if (grounded && mod(y, 256) != 0 && velY < 0 && std::abs(velX) > WALK_SPEED) {
+            pTileX = div(x, 256);
+            pTileX2 = div(x, 256) + 1;
+
+            if (region.getGridObject(pTileX, pTileY)->isFlag(s)) {
+                stuck = true;
+                setYShift(yShift, pTileX, pTileY);
+            }
+
+            if (region.getGridObject(pTileX2, pTileY)->isFlag(s)) {
+                stuck = true;
+                setYShift(yShift, pTileX2, pTileY);
+            }
+        }
+
         if (stuck) {
             y += yShift;
             velY = 0;

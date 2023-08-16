@@ -58,7 +58,8 @@ namespace {
         TILESET,
         HUD,
         UI,
-        SMA4_TILES
+        SMA4_TILES,
+        SMA4_BACKGROUNDS
     };
 };
 
@@ -79,6 +80,14 @@ class Tile {
         cy = texture->getHeight() - sh - sy;
         ch = sh;
     };
+
+    int getWidth() {
+        return cw;
+    }
+
+    int getHeight() {
+        return ch;
+    }
 
     Tile() {}
 };
@@ -125,6 +134,8 @@ namespace Tiles {
 
         COIN_ICO, TITLE,
 
+        BACKGROUND_OVERWORLD1_SMA4,
+
         MARIO_STAND_SMA4, MARIO_RUN2_SMA4, MARIO_WALK_SMA4, MARIO_RUN1_SMA4, MARIO_JUMP_SMA4, MARIO_CARRY2_SMA4, MARIO_CARRY1_SMA4, MARIO_KICK_SMA4, MARIO_CLIMB1_SMA4,
         MARIO_FRONT_SMA4, MARIO_CLIMB2_SMA4, MARIO_SLIDE_SMA4, MARIO_DIE_SMA4, MARIO_SKID_SMA4,
 
@@ -146,6 +157,7 @@ namespace Tiles {
         textures[TextureName::HUD] = new Texture("smb_hud.png");
         textures[TextureName::UI] = new Texture("ui_elements.png");
         textures[TextureName::SMA4_TILES] = new Texture("sma4_misc_tileset.png");
+        textures[TextureName::SMA4_BACKGROUNDS] = new Texture("sma4_backgrounds.png");
 
         tiles[AIR] = Tile(HUD, 264, 8, 0, 0);
 
@@ -205,6 +217,8 @@ namespace Tiles {
 
         tiles[COIN_ICO] = Tile(HUD, 264, 76, 8, 8);
         tiles[TITLE] = Tile(HUD, 40, 144, 176, 88);
+
+        tiles[BACKGROUND_OVERWORLD1_SMA4] = Tile(SMA4_BACKGROUNDS, 2, 2, 512, 160);
 
         initTileGrid(tiles + MARIO_STAND_SMA4, MARIO_SMA4, 13, 773, 16, 16, 2, 2, 9, 14);
 

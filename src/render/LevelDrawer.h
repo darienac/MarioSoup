@@ -24,14 +24,43 @@ class LevelDrawer {
         }
     }
 
+    int mod(int v0, int v1) {
+        return (v0 + 512) % v1;
+    }
+
+    int div(int v0, int v1) {
+        return (v0 - mod(v0, v1)) / v1;
+    }
+
     public:
     LevelDrawer(ImageDrawer& drawer): drawer(&drawer) {}
 
-    void drawLevelZone(GameLevelZone& zone, int x, int y) {
+    void drawZoneBackground(GameLevelZone& zone, int xOff, int yOff, int scrollX, int scrollY) {
+        Tile* tile = zone.getBackgroundTile();
+        int w = tile->getWidth();
+
+        int x0 = mod(scrollX / zone.getBackgroundScrollXDiv(), w);
+        int y0;
+        if (scrollY >= 0) {
+            y0 = 0;
+        } else {
+            y0 = scrollY / zone.getBackgroundScrollYDiv();
+        }
+
+        drawer->drawTile(*tile, x0 + xOff, y0 + yOff);
+        if (x0 > 0) {
+            drawer->drawTile(*tile, x0 - w + xOff, y0 + yOff);
+        }
+    }
+
+    void drawLevelZone(GameLevelZone& zone, int xOff, int yOff, int scrollX, int scrollY) {
+        drawer->setZPos(ImageDrawer::ZPOS_BACKGROUND);
+        drawZoneBackground(zone, xOff, yOff, scrollX, scrollY);
+
         GameLevelRegion** regions = zone.getRegions();
         for (int i = GameObject::NUM_LAYERS - 1; i >= 0; i--) {
             drawer->setZPos(ImageDrawer::ZPOS_GAME_TILES[i]);
-            drawLevelRegion(regions[i], x, y);
+            drawLevelRegion(regions[i], xOff + scrollX, yOff + scrollY);
         }
     }
 
