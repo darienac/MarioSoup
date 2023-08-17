@@ -91,7 +91,7 @@ class GameObject {
     }
 
     GameObject& flag(Flag flag) {
-        flags[flag] = false;
+        flags[flag] = true;
         return *this;
     }
 

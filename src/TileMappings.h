@@ -210,8 +210,8 @@ namespace Tiles {
         tiles[UICOLLAPSE_END] = Tile(UI, 0, 56, 16, 8);
         tiles[UIHAND_OPEN] = Tile(UI, 48, 48, 16, 16);
         tiles[UIHAND_CLOSED] = Tile(UI, 48, 32, 16, 16);
-        tiles[UICRATE_OPEN] = Tile(UI, 64, 48, 16, 16);
-        tiles[UICRATE_CLOSED] = Tile(UI, 80, 48, 16, 16);
+        tiles[UICRATE_OPEN] = Tile(UI, 80, 48, 16, 16);
+        tiles[UICRATE_CLOSED] = Tile(UI, 64, 48, 16, 16);
 
         tiles[LEVELBOUND_BL] = Tile(UI, 16, 40, 8, 8);
         tiles[LEVELBOUND_L] = Tile(UI, 16, 36, 8, 8);

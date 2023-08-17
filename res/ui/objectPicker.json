@@ -11,7 +11,7 @@
             "label": "blocks",
             "groups": [],
             "items": [
-                "sma4:qblock", "sma4:brick", "sma4:coin"
+                "sma4:qblock", "sma4:empty_block", "sma4:brick", "sma4:coin"
             ]
         },
         {

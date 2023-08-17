@@ -58,6 +58,7 @@ class LevelEditorUI: public UIBundle {
     GameObject* lastPlacedObject = nullptr;
     bool isMouseDown = false;
     bool isMouseRightDown = false;
+    bool hoverInsertItem = false;
 
     bool marioMouseDown = false;
     int marioMouseOffsetX = 0;
@@ -78,7 +79,12 @@ class LevelEditorUI: public UIBundle {
             lastLayer = layer;
             lastPlacedObject = object;
 
-            level->getCurrentZone()->getRegions()[layer]->setGridObject(object, tileHoverX, tileHoverY);
+            GameLevelRegion* region = level->getCurrentZone()->getRegions()[layer];
+            if (hoverInsertItem) {
+                region->addGridData(tileHoverX, tileHoverY, {picker->getSelectedItem()});
+            } else {
+                region->setGridObject(object, tileHoverX, tileHoverY);
+            }
         }
     }
 
@@ -93,19 +99,15 @@ class LevelEditorUI: public UIBundle {
         if (eraseLayer == -1) {
             setEraseLayer();
         }
+        if (eraseLayer == -1) {
+            return;
+        }
+        screen->getLevel()->getCurrentZone()->getRegions()[eraseLayer]->removeGridData(tileHoverX, tileHoverY);
         placeBlock(GameObjectCache::objects["air"], eraseLayer);
     }
 
     void setEraseLayer() {
-        GameLevelRegion** regions = screen->getLevel()->getCurrentZone()->getRegions();
-        GameObject* object = GameObjectCache::objects["air"];
-        for (int i = GameObject::NUM_LAYERS - 1; i >= 0; i--) {
-            if (regions[i]->getGridObject(tileHoverX, tileHoverY) != object) {
-                eraseLayer = i;
-                return;
-            }
-        }
-        eraseLayer = -1;
+        screen->getLevel()->getCurrentZone()->getUpperGridObject(tileHoverX, tileHoverY, eraseLayer);
     }
 
     void setTileHover() {
@@ -117,6 +119,9 @@ class LevelEditorUI: public UIBundle {
         tileHoverX = (hoverX - *scrollX) / 16;
         tileHoverY = (hoverY - *scrollY) / 16;
 
+        GameLevelZone* zone = screen->getLevel()->getCurrentZone();
+        int upperLayer;
+        hoverInsertItem = picker->getSelectedItem() && picker->getSelectedItem()->isFlag(GameObject::ITEM) && zone->getUpperGridObject(tileHoverX, tileHoverY, upperLayer)->isFlag(GameObject::CONTAINS_ITEM);
         if (isMouseDown) {
             placeBlock(picker->getSelectedItem());
         } else if (isMouseRightDown) {
@@ -308,6 +313,10 @@ class LevelEditorUI: public UIBundle {
 
     bool isMarioMouseDown() {
         return marioMouseDown;
+    }
+
+    bool isHoverInsertItem() {
+        return hoverInsertItem;
     }
 
     bool hover(int x, int y, int gameWidth, int gameHeight) override {

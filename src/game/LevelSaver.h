@@ -81,5 +81,17 @@ class LevelSaver {
         for (int i = 0; i < region.getWidth() * region.getHeight(); i++) {
             writeByte(stream, objectKey[objects[i]]);
         }
+        std::map<int, GameLevelRegion::ObjectData>* gridData = &region.getGridData();
+        writeInt(stream, gridData->size());
+        for (const auto& [key, value] : *gridData) {
+            writeInt(stream, key);
+
+            int x = key % GameLevelRegion::MAX_WIDTH;
+            int y = key / GameLevelRegion::MAX_WIDTH;
+            GameObject* object = region.getGridObject(x, y);
+            if (object->isFlag(GameObject::CONTAINS_ITEM) && region.getGridData(x, y).containerObject != nullptr) {
+                writeInt(stream, objectKey[region.getGridData(x, y).containerObject]);
+            }
+        }
     }
 };

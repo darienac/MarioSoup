@@ -101,5 +101,17 @@ class LevelLoader {
         for (int i = 0; i < region.getWidth() * region.getHeight(); i++) {
             objects[i] = objectList[(int) readByte(stream)];
         }
+
+        int numGridData = readInt(stream);
+        for (int i = 0; i < numGridData; i++) {
+            int key = readInt(stream);
+            int x = key % GameLevelRegion::MAX_WIDTH;
+            int y = key / GameLevelRegion::MAX_WIDTH;
+
+            GameObject* object = region.getGridObject(x, y);
+            if (object->isFlag(GameObject::CONTAINS_ITEM)) {
+                region.addGridData(x, y, {objectList[readInt(stream)]});
+            }
+        }
     }
 };

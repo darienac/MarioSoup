@@ -19,7 +19,12 @@ class LevelDrawer {
                 GameObject* right = region->getGridObject(i + 1, j);
                 GameObject* up = region->getGridObject(i, j + 1);
                 GameObject* down = region->getGridObject(i, j - 1);
-                drawer->drawTile(region->getGridObject(i, j)->getLevelTile(left, right, up, down), x + i * 16, y + j * 16);
+                GameObject* obj = region->getGridObject(i, j);
+
+                drawer->drawTile(obj->getLevelTile(left, right, up, down), x + i * 16, y + j * 16);
+                if (obj && obj->isFlag(GameObject::CONTAINS_ITEM) && region->getGridData(i, j).containerObject) {
+                    drawer->drawTile(UICRATE_CLOSED, x + i * 16, y + j * 16);
+                }
             }
         }
     }
@@ -157,20 +162,27 @@ class LevelDrawer {
         }
     }
 
-    void drawCursor(GameLevelZone& zone, int tileX, int tileY, int x, int y) {
+    void drawCursor(LevelEditorUI& levelEditor, int x, int y) {
+        GameLevelZone* zone = levelEditor.getCurrentZone();
+        int tileX = levelEditor.getTileHoverX();
+        int tileY = levelEditor.getTileHoverY();
         drawer->setZPos(ImageDrawer::ZPOS_TILE_UI);
 
-        int w = zone.getWidth();
-        int h = zone.getHeight();
+        int w = zone->getWidth();
+        int h = zone->getHeight();
 
         if (tileX < 0 || tileX >= w || tileY < 0 || tileY >= h) {
             return;
         }
 
-        glEnable(GL_COLOR_LOGIC_OP);
-        glLogicOp(GL_EQUIV);
-        drawer->drawTile(SELECT_BLOCK, x + tileX * 16, y + tileY * 16);
-        glLogicOp(GL_COPY);
-        glDisable(GL_COLOR_LOGIC_OP);
+        if (levelEditor.isHoverInsertItem()) {
+            drawer->drawTile(UICRATE_OPEN, x + tileX * 16, y + tileY * 16);
+        } else {
+            glEnable(GL_COLOR_LOGIC_OP);
+            glLogicOp(GL_EQUIV);
+            drawer->drawTile(SELECT_BLOCK, x + tileX * 16, y + tileY * 16);
+            glLogicOp(GL_COPY);
+            glDisable(GL_COLOR_LOGIC_OP);
+        }
     }
 };

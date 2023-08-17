@@ -10,13 +10,12 @@
 
 class GameLevelRegion: public IGameLevelRegion {
     public:
+    static const int MAX_WIDTH = 65536;
     union ObjectData {
         GameObject* containerObject;
     };
 
     private:
-    static const int MAX_WIDTH = 65536;
-
     int width;
     int height;
     GameObject** objectGrid;
@@ -114,9 +113,33 @@ class GameLevelRegion: public IGameLevelRegion {
         gridData.erase(MAX_WIDTH * y + x);
     }
 
+    ObjectData getGridData(int x, int y) {
+        if (x < 0 || x >= width || y < 0 || y >= height) {
+            return {nullptr};
+        }
+
+        if (gridData.find(MAX_WIDTH * y + x) == gridData.end()) {
+            return {nullptr};
+        } else {
+            return gridData[MAX_WIDTH * y + x];
+        }
+    }
+
+    std::map<int, ObjectData>& getGridData() {
+        return gridData;
+    }
+
     void mapUsedObjects(std::set<GameObject*>& objects) {
         for (int i = 0; i < width * height; i++) {
             objects.insert(objectGrid[i]);
+        }
+        for (const auto& [key, value] : gridData) {
+            int x = key % MAX_WIDTH;
+            int y = key / MAX_WIDTH;
+            GameObject* object = getGridObject(x, y);
+            if (object->isFlag(GameObject::CONTAINS_ITEM) && getGridData(x, y).containerObject != nullptr) {
+                objects.insert(getGridData(x, y).containerObject);
+            }
         }
     }
 

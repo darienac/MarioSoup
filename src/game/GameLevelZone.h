@@ -32,6 +32,19 @@ class GameLevelZone: public IGameLevelZone {
         regions[2] = new GameLevelRegion(*origRegions[2]);
     }
 
+    GameObject* getUpperGridObject(int x, int y, int& layer) {
+        GameObject* air = GameObjectCache::objects["air"];
+        for (int i = GameObject::NUM_LAYERS - 1; i >= 0; i--) {
+            GameObject* object = regions[i]->getGridObject(x, y);
+            if (object != air) {
+                layer = i;
+                return object;
+            }
+        }
+        layer = -1;
+        return air;
+    }
+
     unsigned char* getBackgroundColor() {
         return backgroundColor;
     }
