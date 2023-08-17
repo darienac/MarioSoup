@@ -1,16 +1,26 @@
 #pragma once
 
 #include <set>
+#include <map>
 #include <vector>
 
 #include "game/objects/GameObject.h"
 #include "game/objects/GameObjectCache.h"
+#include "game/IGameLevelRegion.h"
 
-class GameLevelRegion {
+class GameLevelRegion: public IGameLevelRegion {
+    public:
+    union ObjectData {
+        GameObject* containerObject;
+    };
+
     private:
+    static const int MAX_WIDTH = 65536;
+
     int width;
     int height;
     GameObject** objectGrid;
+    std::map<int, ObjectData> gridData;
 
     public:
     GameLevelRegion(int width, int height): width(width), height(height) {
@@ -32,33 +42,33 @@ class GameLevelRegion {
         }
     }
 
-    int getWidth() {
+    virtual int getWidth() override {
         return width;
     }
 
-    int getHeight() {
+    virtual int getHeight() override {
         return height;
     }
 
-    GameObject** getObjectGrid() {
+    virtual GameObject** getObjectGrid() override {
         return objectGrid;
     }
 
-    GameObject* getGridObject(int x, int y) {
+    virtual GameObject* getGridObject(int x, int y) override {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             return GameObjectCache::objects["air"];
         }
         return objectGrid[width * y + x];
     }
 
-    void setGridObject(GameObject* object, int x, int y) {
+    virtual void setGridObject(GameObject* object, int x, int y) override {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             return;
         }
         objectGrid[width * y + x] = object;
     }
 
-    void resizeGrid(int newWidth, int newHeight, int xOff, int yOff) {
+    virtual void resizeGrid(int newWidth, int newHeight, int xOff, int yOff) override {
         if (newWidth <= 0 || newHeight <= 0) {
             return;
         }
@@ -76,6 +86,32 @@ class GameLevelRegion {
 
         width = newWidth;
         height = newHeight;
+
+        std::vector<int> badKeys;
+        for (const auto& [key, value] : gridData) {
+            int x = key % MAX_WIDTH;
+            int y = key / MAX_WIDTH;
+            if (x < 0 || x >= width || y < 0 || y >= height) {
+                badKeys.push_back(key);
+            }
+        }
+        for (int key : badKeys) {
+            gridData.erase(key);
+        }
+    }
+
+    void addGridData(int x, int y, ObjectData data) {
+        if (x < 0 || x >= width || y < 0 || y >= height) {
+            return;
+        }
+        gridData[MAX_WIDTH * y + x] = data;
+    }
+
+    void removeGridData(int x, int y) {
+        if (x < 0 || x >= width || y < 0 || y >= height) {
+            return;
+        }
+        gridData.erase(MAX_WIDTH * y + x);
     }
 
     void mapUsedObjects(std::set<GameObject*>& objects) {
@@ -84,7 +120,7 @@ class GameLevelRegion {
         }
     }
 
-    ~GameLevelRegion() {
+    virtual ~GameLevelRegion() {
         delete [] objectGrid;
     }
 };

@@ -1,14 +1,20 @@
 #pragma once
 
+#include "game/IGameLevelRegion.h"
+
 class GameObject {
     public:
+    typedef void (*gameobj_callback)(int tileX, int tileY, IGameLevelRegion& region);
+
     enum LevelLayer {
         BACKGROUND,
         MIDGROUND,
         FOREGROUND
     };
     enum Flag {
-        SOLID
+        SOLID,
+        CONTAINS_ITEM,
+        ITEM
     };
 
     static const int NUM_LAYERS = 3;
@@ -23,6 +29,8 @@ class GameObject {
     bool flippedX = false;
     bool flippedY = false;
     LevelLayer preferredLayer = MIDGROUND;
+
+    gameobj_callback hitUnder = nullptr;
 
     public:
     GameObject(const char* id, const char* name, int tilePreview): id(id), name(name), tilePreview(tilePreview) {
@@ -96,6 +104,16 @@ class GameObject {
         return flags[flag];
     }
 
+    GameObject& setOnHitUnder(gameobj_callback callback) {
+        hitUnder = callback;
+        return *this;
+    }
+
+    void onHitUnder(int tileX, int tileY, IGameLevelRegion& region) {
+        if (hitUnder != nullptr) {
+            hitUnder(tileX, tileY, region);
+        }
+    }
 
     ~GameObject() {
         std::printf("Game Object %s destroyed\n", getId());

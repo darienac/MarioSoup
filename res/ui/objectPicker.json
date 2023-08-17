@@ -11,7 +11,15 @@
             "label": "blocks",
             "groups": [],
             "items": [
-                "sma4:qblock", "sma4:brick"
+                "sma4:qblock", "sma4:brick", "sma4:coin"
+            ]
+        },
+        {
+            "label": "items",
+            "groups": [],
+            "items": [
+                "sma4:item_coin",
+                "sma4:item_mushroom"
             ]
         }
     ]

@@ -3,7 +3,7 @@
 #include "render/Texture.h"
 
 namespace Tiles {
-    const std::string textEncoding = " 0123456789abcdefghijklmnopqrstuvwxyz-X!.C/\\";
+    const std::string textEncoding = " 0123456789abcdefghijklmnopqrstuvwxyz-X!.C/\\()";
     Texture* textures[64];
 };
 
@@ -59,6 +59,7 @@ namespace {
         HUD,
         UI,
         SMA4_TILES,
+        SMA4_NPCS_ITEMS,
         SMA4_BACKGROUNDS
     };
 };
@@ -117,7 +118,7 @@ namespace Tiles {
         AIR,
         D0, D1, D2, D3, D4, D5, D6, D7, D8, D9,
         LA, LB, LC, LD, LE, LF, LG, LH, LI, LJ, LK, LL, LM, LN, LO, LP, LQ, LR, LS, LT, LU, LV, LW, LX, LY, LZ,
-        DA, XX, EX, DO, CO, FS, BS,
+        DA, XX, EX, DO, CO, FS, BS, PL, PR,
 
         TEXT_CURSOR,
         MENU_OFF, MENU_ON, MENULIST_OFF, MENULIST_ON, MENULIST_TOP, MENULIST_BOTTOM, RADIO_OFF, RADIO_ON,
@@ -128,7 +129,7 @@ namespace Tiles {
         UI_X,
         UIREGION_LIGHT, UIREGION_DARK, UIREGION_BLACK,
         UICOLLAPSE, UICOLLAPSE_ARROWUP, UICOLLAPSE_ARROWDOWN, UICOLLAPSE_END,
-        UIHAND_OPEN, UIHAND_CLOSED,
+        UIHAND_OPEN, UIHAND_CLOSED, UICRATE_OPEN, UICRATE_CLOSED,
         LEVELBOUND_BL, LEVELBOUND_L, LEVELBOUND_TL, LEVELBOUND_T, LEVELBOUND_TR, LEVELBOUND_R, LEVELBOUND_BR, LEVELBOUND_B,
         LEVEL_PLUS, LEVEL_MINUS,
 
@@ -143,7 +144,13 @@ namespace Tiles {
         SMA4_WOODP, SMA4_WOODP_TL, SMA4_WOODP_T, SMA4_WOODP_TR, SMA4_WOODP_BL, SMA4_WOODP_B, SMA4_WOODP_BR,
         SMA4_WOODP_L, SMA4_WOODP_M, SMA4_WOODP_R, SMA4_WOODP_V,
         SMA4_QBLOCK_1, SMA4_QBLOCK_2, SMA4_QBLOCK_3, SMA4_QBLOCK_4, SMA4_QBLOCK_EMPTY,
-        SMA4_BRICK_1, SMA4_BRICK_2, SMA4_BRICK_3, SMA4_BRICK_4
+        SMA4_BRICK_1, SMA4_BRICK_2, SMA4_BRICK_3, SMA4_BRICK_4,
+
+        SMA4_COIN_1, SMA4_COIN_2, SMA4_COIN_3, SMA4_COIN_4,
+        SMA4_ITEMCOIN_1, SMA4_ITEMCOIN_2, SMA4_ITEMCOIN_3,
+        SMA4_MUSHROOM, SMA4_1UP, SMA4_FLOWER, SMA4_STAR1, SMA4_STAR2, SMA4_STAR3,
+        SMA4_FEATHER_FALL, SMA4_FEATHER, SMA4_COIN_ALT, SMA4_STAR, SMA4_CHEST_CLOSED, SMA4_CHEST_OPEN,
+        SMA4_FROG, SMA4_TANOOKI, SMA4_HAMMER_SUIT, SMA4_NOTEBOX, SMA4_PWING, SMA4_CAPE_FEATHER
     };
 
     Tile& getTile(int tile) {
@@ -157,11 +164,12 @@ namespace Tiles {
         textures[TextureName::HUD] = new Texture("smb_hud.png");
         textures[TextureName::UI] = new Texture("ui_elements.png");
         textures[TextureName::SMA4_TILES] = new Texture("sma4_misc_tileset.png");
+        textures[TextureName::SMA4_NPCS_ITEMS] = new Texture("sma4_npc_items.png");
         textures[TextureName::SMA4_BACKGROUNDS] = new Texture("sma4_backgrounds.png");
 
         tiles[AIR] = Tile(HUD, 264, 8, 0, 0);
 
-        initTileGrid(tiles + D0, UI, 64, 0, 8, 8, 0, 0, 16, 43);
+        initTileGrid(tiles + D0, UI, 64, 0, 8, 8, 0, 0, 16, 45);
 
         tiles[TEXT_CURSOR] = Tile(UI, 8, 24, 8, 8);
         tiles[MENU_OFF] = Tile(UI, 0, 0, 8, 16);
@@ -202,6 +210,8 @@ namespace Tiles {
         tiles[UICOLLAPSE_END] = Tile(UI, 0, 56, 16, 8);
         tiles[UIHAND_OPEN] = Tile(UI, 48, 48, 16, 16);
         tiles[UIHAND_CLOSED] = Tile(UI, 48, 32, 16, 16);
+        tiles[UICRATE_OPEN] = Tile(UI, 64, 48, 16, 16);
+        tiles[UICRATE_CLOSED] = Tile(UI, 80, 48, 16, 16);
 
         tiles[LEVELBOUND_BL] = Tile(UI, 16, 40, 8, 8);
         tiles[LEVELBOUND_L] = Tile(UI, 16, 36, 8, 8);
@@ -230,5 +240,9 @@ namespace Tiles {
         initTileGrid(tiles + SMA4_QBLOCK_1, SMA4_TILES, 182, 92, 16, 16, 2, 2, 4, 4);
         tiles[SMA4_QBLOCK_EMPTY] = Tile(SMA4_TILES, 254, 128, 16, 16);
         initTileGrid(tiles + SMA4_BRICK_1, SMA4_TILES, 182, 146, 16, 16, 2, 2, 4, 4);
+
+        initTileGrid(tiles + SMA4_COIN_1, SMA4_TILES, 182, 110, 16, 16, 2, 2, 4, 4);
+        initTileGrid(tiles + SMA4_ITEMCOIN_1, SMA4_NPCS_ITEMS, 300, 99, 16, 16, 2, 2, 3, 3);
+        initTileGrid(tiles + SMA4_MUSHROOM, SMA4_NPCS_ITEMS, 300, 189, 16, 16, 2, 2, 6, 24);
     };
 }

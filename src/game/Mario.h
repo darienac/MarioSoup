@@ -296,11 +296,13 @@ class Mario {
         if (mod(y, 256) != 0 && region.getGridObject(pTileX, pTileY2)->isFlag(s)) {
             stuck = true;
             setYShift(yShift, pTileX, pTileY2);
+            region.getGridObject(pTileX, pTileY2)->onHitUnder(pTileX, pTileY2, region);
         }
 
-        if (mod(x + 48, 256) > 96 && mod(y, 256) != 0 && region.getGridObject(pTileX2, pTileY2)->isFlag(s)) {
+        if (pTileX != pTileX2 && mod(x + 48, 256) > 96 && mod(y, 256) != 0 && region.getGridObject(pTileX2, pTileY2)->isFlag(s)) {
             stuck = true;
             setYShift(yShift, pTileX2, pTileY2);
+            region.getGridObject(pTileX2, pTileY2)->onHitUnder(pTileX2, pTileY2, region);
         }
 
         // make gaps harder to fall in if moving
