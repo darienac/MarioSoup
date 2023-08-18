@@ -53,7 +53,7 @@ class PlayLevelScreen: public IPlayLevelScreen {
         glClearColor((float) clearColor[0] / 0xFF, (float) clearColor[1] / 0xFF, (float) clearColor[2] / 0xFF, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        window->levelDrawer->drawLevelZone(*zone, 0, 0, scrollX, scrollY);
+        window->levelDrawer->drawLevelZone(*zone, 0, 0, scrollX, scrollY, false);
         window->levelDrawer->drawMario(*zone, scrollX, scrollY);
     }
 

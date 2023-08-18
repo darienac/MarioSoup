@@ -20,4 +20,6 @@ class IEntity {
     virtual CollisionBox& getCollisionBox() = 0;
     virtual void onCollideMario(Mario& mario) = 0;
     virtual void onCollideEntity(IEntity& entity) = 0;
+
+    virtual ~IEntity() {}
 };

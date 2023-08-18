@@ -3,10 +3,14 @@
 #include <map>
 #include <string>
 
+#include "game/IGameLevelRegion.h"
+
 #include "game/objects/GameObject.h"
 #include "game/objects/ConnectedGameObject.h"
 #include "game/objects/AnimatedGameObject.h"
-#include "game/IGameLevelRegion.h"
+
+#include "game/entities/BumpedItemContainer.h"
+
 #include "TileMappings.h"
 
 using namespace Tiles;
@@ -51,6 +55,8 @@ namespace GameObjectCache {
         addObject(new AnimatedGameObject("sma4:qblock", "question block", SMA4_QBLOCK_1, 8)).add(SMA4_QBLOCK_1, 4).flag(GameObject::CONTAINS_ITEM)
             .setOnHitUnder([](int tileX, int tileY, IGameLevelRegion& region) {
                 std::printf("Tile hit: %d, %d\n", tileX, tileY);
+                region.setGridObject(objects["air"], tileX, tileY);
+                region.addEntity(new BumpedItemContainer(tileX, tileY, region.getZoneLayer(), objects["sma4:empty_block"]));
             });
         addObject(new GameObject("sma4:empty_block", "empty block", SMA4_QBLOCK_EMPTY));
         addObject(new AnimatedGameObject("sma4:brick", "brick block", SMA4_BRICK_1, 8)).add(SMA4_BRICK_1, 4).flag(GameObject::CONTAINS_ITEM);

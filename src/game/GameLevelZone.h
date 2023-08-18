@@ -19,9 +19,9 @@ class GameLevelZone: public IGameLevelZone {
 
     public:
     GameLevelZone(int width, int height) {
-        regions[0] = new GameLevelRegion(width, height);
-        regions[1] = new GameLevelRegion(width, height);
-        regions[2] = new GameLevelRegion(width, height);
+        regions[0] = new GameLevelRegion(width, height, 0);
+        regions[1] = new GameLevelRegion(width, height, 1);
+        regions[2] = new GameLevelRegion(width, height, 2);
     }
 
     GameLevelZone(GameLevelZone& orig): mario(orig.getMario()) {

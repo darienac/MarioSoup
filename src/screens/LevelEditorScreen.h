@@ -79,7 +79,7 @@ class LevelEditorScreen: public ILevelEditorScreen {
         // window->stageDrawer->drawScoreboard(7654321, 54, 5, 4, -1, manager->getFPS());
 		// window->stageDrawer->drawTitle(0, 7654321);
 
-        window->levelDrawer->drawLevelZone(*zone, 144, 0, scrollX, scrollY);
+        window->levelDrawer->drawLevelZone(*zone, 144, 0, scrollX, scrollY, true);
         window->levelDrawer->drawLevelZoneBoundary(*zone, WINDOW_WIDTH - VIEW_WIDTH + scrollX, scrollY);
         window->levelDrawer->drawMario(*zone, 144 + scrollX, scrollY);
 
