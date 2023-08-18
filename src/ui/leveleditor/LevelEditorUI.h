@@ -79,7 +79,7 @@ class LevelEditorUI: public UIBundle {
             lastLayer = layer;
             lastPlacedObject = object;
 
-            GameLevelRegion* region = level->getCurrentZone()->getRegions()[layer];
+            IGameLevelRegion* region = level->getCurrentZone()->getRegions()[layer];
             if (hoverInsertItem) {
                 region->addGridData(tileHoverX, tileHoverY, {picker->getSelectedItem()});
             } else {

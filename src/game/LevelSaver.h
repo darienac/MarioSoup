@@ -65,7 +65,7 @@ class LevelSaver {
         
         saveMario(zone.getMario(), stream);
 
-        GameLevelRegion** regions = zone.getRegions();
+        IGameLevelRegion** regions = zone.getRegions();
         for (int i = 0; i < GameObject::NUM_LAYERS; i++) {
             saveLevelRegion(*regions[i], objectKey, stream);
         }
@@ -76,7 +76,7 @@ class LevelSaver {
         writeInt(stream, mario.getY());
     }
 
-    void saveLevelRegion(GameLevelRegion& region, std::map<GameObject*, int> objectKey, std::ostream& stream) {
+    void saveLevelRegion(IGameLevelRegion& region, std::map<GameObject*, int> objectKey, std::ostream& stream) {
         GameObject** objects = region.getObjectGrid();
         for (int i = 0; i < region.getWidth() * region.getHeight(); i++) {
             writeByte(stream, objectKey[objects[i]]);

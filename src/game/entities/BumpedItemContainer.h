@@ -3,6 +3,7 @@
 #include "game/entities/IEntity.h"
 #include "game/entities/CollisionBox.h"
 #include "game/objects/GameObject.h"
+#include "game/IGameLevelZone.h"
 
 class BumpedItemContainer: public IEntity {
     private:
@@ -11,6 +12,8 @@ class BumpedItemContainer: public IEntity {
     int zoneLayer;
     GameObject* gameObject;
     int ticks = 0;
+    int velY = 4;
+    bool isDone = false;
 
     CollisionBox collision = CollisionBox(0, 0, 16, 16);
 
@@ -42,7 +45,20 @@ class BumpedItemContainer: public IEntity {
         return *gameObject;
     }
     virtual void tick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) override {
-        // TODO: Implement this
+        y += velY;
+        velY--;
+
+        IEntity* mario = &zone.getMario();
+        int mX = mario->getX();
+        int mY = mario->getY();
+        if (collision.pushBoxUp(x, y, mario->getCollisionBox(), mX, mY)) {
+            mario->setY(mY);
+        }
+
+        if (velY == -5) {
+            zone.getRegions()[zoneLayer]->setGridObject(gameObject, div(x, 16), div(y, 16));
+            isDone = true;
+        }
     }
 
     virtual CollisionBox& getCollisionBox() override {
@@ -53,5 +69,9 @@ class BumpedItemContainer: public IEntity {
     }
     virtual void onCollideEntity(IEntity& entity) override {
 
+    }
+
+    virtual bool shouldDelete() {
+        return isDone;
     }
 };

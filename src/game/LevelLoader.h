@@ -84,7 +84,7 @@ class LevelLoader {
 
         loadMario(zone->getMario(), objectList, stream);
 
-        GameLevelRegion** regions = zone->getRegions();
+        IGameLevelRegion** regions = zone->getRegions();
         for (int i = 0; i < GameObject::NUM_LAYERS; i++) {
             loadLevelRegion(*regions[i], objectList, stream);
         }
@@ -95,7 +95,7 @@ class LevelLoader {
         mario.setY(readInt(stream));
     }
 
-    void loadLevelRegion(GameLevelRegion& region, GameObject** objectList, std::istream& stream) {
+    void loadLevelRegion(IGameLevelRegion& region, GameObject** objectList, std::istream& stream) {
         GameObject** objects = region.getObjectGrid();
 
         for (int i = 0; i < region.getWidth() * region.getHeight(); i++) {

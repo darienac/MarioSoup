@@ -13,7 +13,13 @@ class LevelDrawer {
     private:
     ImageDrawer* drawer;
 
-    void drawLevelRegion(GameLevelRegion* region, int x, int y, bool isEditor) {
+    void drawLevelRegion(IGameLevelRegion* region, int x, int y, bool isEditor) {
+        if (!isEditor) {
+            for (IEntity* entity : region->getEntities()) {
+                drawer->drawTile(entity->getGameObject().getLevelTile(), entity->getX(), entity->getY());
+            }
+        }
+        
         for (int i = 0; i < region->getWidth(); i++) {
             for (int j = 0; j < region->getHeight(); j++) {
                 GameObject* left = region->getGridObject(i - 1, j);
@@ -26,12 +32,6 @@ class LevelDrawer {
                 if (isEditor && obj && obj->isFlag(GameObject::CONTAINS_ITEM) && region->getGridData(i, j).containerObject) {
                     drawer->drawTile(UICRATE_CLOSED, x + i * 16, y + j * 16);
                 }
-            }
-        }
-
-        if (!isEditor) {
-            for (IEntity* entity : region->getEntities()) {
-                drawer->drawTile(entity->getGameObject().getLevelTile(), entity->getX(), entity->getY());
             }
         }
     }
@@ -69,7 +69,7 @@ class LevelDrawer {
         drawer->setZPos(ImageDrawer::ZPOS_BACKGROUND);
         drawZoneBackground(zone, xOff, yOff, scrollX, scrollY);
 
-        GameLevelRegion** regions = zone.getRegions();
+        IGameLevelRegion** regions = zone.getRegions();
         for (int i = GameObject::NUM_LAYERS - 1; i >= 0; i--) {
             drawer->setZPos(ImageDrawer::ZPOS_GAME_TILES[i]);
             drawLevelRegion(regions[i], xOff + scrollX, yOff + scrollY, isEditor);

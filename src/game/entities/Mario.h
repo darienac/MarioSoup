@@ -29,14 +29,6 @@ class Mario: public IEntity {
     unsigned int numTicks = 0;
     bool isJumpHeld = false;
 
-    int mod(int v0, int v1) {
-        return (v0 + 512) % v1;
-    }
-
-    int div(int v0, int v1) {
-        return (v0 - mod(v0, v1)) / v1;
-    }
-
     void airMovement(unsigned int numTicks, IControls& controls) {
         if (velY > 0 && controls.jump()) {
             velY -= 2;
@@ -146,7 +138,7 @@ class Mario: public IEntity {
         }
     }
 
-    void collisions(GameLevelRegion& region, IControls& controls) {
+    void collisions(IGameLevelRegion& region, IControls& controls) {
         GameObject::Flag s = GameObject::SOLID;
         bool stuck = false;
 
@@ -340,8 +332,8 @@ class Mario: public IEntity {
 
     virtual void tick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) override {
         numTicks++;
-        GameLevelRegion** regions = zone.getRegions();
-        GameLevelRegion* collideRegion = regions[zoneLayer];
+        IGameLevelRegion** regions = zone.getRegions();
+        IGameLevelRegion* collideRegion = regions[zoneLayer];
 
         if (grounded) {
             groundMovement(numTicks, controls);

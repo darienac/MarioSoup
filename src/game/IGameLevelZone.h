@@ -1,10 +1,12 @@
 #pragma once
 
-#include "game/GameLevelRegion.h"
+class IGameLevelRegion;
+class IEntity;
 
 class IGameLevelZone {
     public:
-    virtual GameLevelRegion** getRegions() = 0;
+    virtual IGameLevelRegion** getRegions() = 0;
+    virtual IEntity& getMario() = 0;
 
     virtual ~IGameLevelZone() {}
 };

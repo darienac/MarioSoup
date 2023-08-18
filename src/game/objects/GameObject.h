@@ -2,6 +2,8 @@
 
 #include "game/IGameLevelRegion.h"
 
+class Entity;
+
 class GameObject {
     public:
     typedef void (*gameobj_callback)(int tileX, int tileY, IGameLevelRegion& region);
@@ -14,7 +16,8 @@ class GameObject {
     enum Flag {
         SOLID,
         CONTAINS_ITEM,
-        ITEM
+        ITEM,
+        ENTITY
     };
 
     static const int NUM_LAYERS = 3;
@@ -31,6 +34,7 @@ class GameObject {
     LevelLayer preferredLayer = MIDGROUND;
 
     gameobj_callback hitUnder = nullptr;
+    gameobj_callback entityReplace = nullptr;
 
     public:
     GameObject(const char* id, const char* name, int tilePreview): id(id), name(name), tilePreview(tilePreview) {
@@ -112,6 +116,18 @@ class GameObject {
     void onHitUnder(int tileX, int tileY, IGameLevelRegion& region) {
         if (hitUnder != nullptr) {
             hitUnder(tileX, tileY, region);
+        }
+    }
+
+    GameObject& setOnEntityReplace(gameobj_callback callback) {
+        flag(ENTITY);
+        entityReplace = callback;
+        return *this;
+    }
+
+    void onEntityReplace(int tileX, int tileY, IGameLevelRegion& region) {
+        if (entityReplace != nullptr) {
+            entityReplace(tileX, tileY, region);
         }
     }
 

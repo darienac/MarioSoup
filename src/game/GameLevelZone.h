@@ -15,7 +15,7 @@ class GameLevelZone: public IGameLevelZone {
     int backgroundScrollYDiv = 2;
 
     Mario mario;
-    GameLevelRegion* regions[GameObject::NUM_LAYERS];
+    IGameLevelRegion* regions[GameObject::NUM_LAYERS];
 
     public:
     GameLevelZone(int width, int height) {
@@ -26,7 +26,7 @@ class GameLevelZone: public IGameLevelZone {
 
     GameLevelZone(GameLevelZone& orig): mario(orig.getMario()) {
         std::printf("New GameLevelZone clone\n");
-        GameLevelRegion** origRegions = orig.getRegions();
+        IGameLevelRegion** origRegions = orig.getRegions();
         regions[0] = new GameLevelRegion(*origRegions[0]);
         regions[1] = new GameLevelRegion(*origRegions[1]);
         regions[2] = new GameLevelRegion(*origRegions[2]);
@@ -61,12 +61,12 @@ class GameLevelZone: public IGameLevelZone {
         return backgroundScrollYDiv;
     }
 
-    Mario& getMario() {
-        return mario;
+    virtual IGameLevelRegion** getRegions() override {
+        return regions;
     }
 
-    virtual GameLevelRegion** getRegions() override {
-        return regions;
+    virtual Mario& getMario() override {
+        return mario;
     }
 
     int getWidth() {
@@ -82,7 +82,7 @@ class GameLevelZone: public IGameLevelZone {
             return;
         }
 
-        for (GameLevelRegion* region : regions) {
+        for (IGameLevelRegion* region : regions) {
             region->resizeGrid(newWidth, newHeight, xOff, yOff);
         }
 
@@ -111,7 +111,7 @@ class GameLevelZone: public IGameLevelZone {
     }
 
     void mapUsedObjects(std::set<GameObject*>& objects) {
-        for (GameLevelRegion* region : regions) {
+        for (IGameLevelRegion* region : regions) {
             region->mapUsedObjects(objects);
         }
     }

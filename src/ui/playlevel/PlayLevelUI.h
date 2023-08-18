@@ -57,6 +57,18 @@ class PlayLevelUI: public IUIElement {
 
     void tick() {
         GameLevelZone* zone = screen->getLevel()->getCurrentZone();
+        for (int i = 0; i < GameObject::NUM_LAYERS; i++) {
+            std::vector<IEntity*> shouldDelete;
+            for (IEntity* entity : zone->getRegions()[i]->getEntities()) {
+                entity->tick(*zone, *audio, *controls);
+                if (entity->shouldDelete()) {
+                    shouldDelete.push_back(entity);
+                }
+            }
+            for (IEntity* entity : shouldDelete) {
+                zone->getRegions()[i]->removeEntity(entity);
+            }
+        }
         zone->getMario().tick(*zone, *audio, *controls);
 
         updateScroll();

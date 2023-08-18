@@ -12,9 +12,6 @@
 class GameLevelRegion: public IGameLevelRegion {
     public:
     static const int MAX_WIDTH = 65536;
-    union ObjectData {
-        GameObject* containerObject;
-    };
 
     private:
     int width;
@@ -22,7 +19,7 @@ class GameLevelRegion: public IGameLevelRegion {
     int zoneLayer;
     GameObject** objectGrid;
     std::map<int, ObjectData> gridData;
-    std::set<IEntity*> entities;
+    std::set<IEntity*, IGameLevelRegion::entityCmp> entities;
 
     public:
     GameLevelRegion(int width, int height, int zoneLayer): width(width), height(height), zoneLayer(zoneLayer) {
@@ -32,7 +29,7 @@ class GameLevelRegion: public IGameLevelRegion {
         }
     }
 
-    GameLevelRegion(GameLevelRegion& orig) {
+    GameLevelRegion(IGameLevelRegion& orig) {
         std::printf("New GameLevelRegion clone\n");
         width = orig.getWidth();
         height = orig.getHeight();
@@ -112,26 +109,31 @@ class GameLevelRegion: public IGameLevelRegion {
     virtual void addEntity(IEntity* entity) override {
         entities.insert(entity);
     }
+
     virtual void removeEntity(IEntity* entity) override {
         entities.erase(entity);
         delete entity;
     }
 
-    void addGridData(int x, int y, ObjectData data) {
+    virtual std::set<IEntity*, IGameLevelRegion::entityCmp>& getEntities() override {
+        return entities;
+    }
+
+    virtual void addGridData(int x, int y, ObjectData data) override {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             return;
         }
         gridData[MAX_WIDTH * y + x] = data;
     }
 
-    void removeGridData(int x, int y) {
+    virtual void removeGridData(int x, int y) override {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             return;
         }
         gridData.erase(MAX_WIDTH * y + x);
     }
 
-    ObjectData getGridData(int x, int y) {
+    virtual ObjectData getGridData(int x, int y) override {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             return {nullptr};
         }
@@ -143,15 +145,11 @@ class GameLevelRegion: public IGameLevelRegion {
         }
     }
 
-    std::map<int, ObjectData>& getGridData() {
+    virtual std::map<int, ObjectData>& getGridData() override {
         return gridData;
     }
 
-    std::set<IEntity*>& getEntities() {
-        return entities;
-    }
-
-    void mapUsedObjects(std::set<GameObject*>& objects) {
+    virtual void mapUsedObjects(std::set<GameObject*>& objects) override {
         for (int i = 0; i < width * height; i++) {
             objects.insert(objectGrid[i]);
         }
