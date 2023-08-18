@@ -14,16 +14,20 @@ namespace AudioCache {
     std::map<const char*, AudioBuffer*, strCompare> audio;
 };
 
+#ifndef MUTE
 namespace {
     AudioBuffer& addAudio(AudioBuffer* object) {
         AudioCache::audio[object->getId()] = object;
         return *object;
     }
 }
+#endif
 
 namespace AudioCache {
     void init() {
+        #ifndef MUTE
         addAudio(new AudioBuffer("smb3:jump", "smb3_jump.ogg"));
         addAudio(new AudioBuffer("sma4:overworld", "sma4_overworld.ogg"));
+        #endif
     }
 }

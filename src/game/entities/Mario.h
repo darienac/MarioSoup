@@ -115,14 +115,14 @@ class Mario: public IEntity {
     }
 
     void setXShift(int& xShift, int tileX, int tileY) {
-        tileX *= 256;
-        tileY *= 256;
+        tileX *= 16;
+        tileY *= 16;
 
         int newShift;
         if (velX > 0) {
-            newShift = tileX - (x + 208);
+            newShift = tileX - (getX() + 13);
         } else {
-            newShift = (tileX + 256) - (x + 48);
+            newShift = (tileX + 16) - (getX() + 3);
         }
 
         if (std::abs(newShift) > std::abs(xShift)) {
@@ -131,14 +131,14 @@ class Mario: public IEntity {
     }
 
     void setYShift(int& yShift, int tileX, int tileY) {
-        tileX *= 256;
-        tileY *= 256;
+        tileX *= 16;
+        tileY *= 16;
 
         int newShift;
         if (velY > 0) {
-            newShift = tileY - (y + 256);
+            newShift = tileY - (getY() + 16);
         } else {
-            newShift = (tileY + 256) - y;
+            newShift = (tileY + 16) - getY();
         }
 
         if (std::abs(newShift) > std::abs(yShift)) {
@@ -147,14 +147,6 @@ class Mario: public IEntity {
     }
 
     void collisions(GameLevelRegion& region, IControls& controls) {
-        if (x < 0) {
-            x = 0;
-            velX = 0;
-        } else if (x > region.getWidth() * 256 - 256) {
-            x = region.getWidth() * 256 - 256;
-            velX = 0;
-        }
-
         GameObject::Flag s = GameObject::SOLID;
         bool stuck = false;
 
@@ -188,8 +180,24 @@ class Mario: public IEntity {
             setXShift(xShift, pTileX2, pTileY2);
         }
 
+        for (IEntity* entity : region.getEntities()) {
+            if (!entity->isSolid()) {
+                continue;
+            }
+            int eX = getX();
+            int eY = getY();
+            if (velX > 0) {
+                stuck |= entity->getCollisionBox().pushBoxLeft(entity->getX(), entity->getY(), getCollisionBox(), eX, eY);
+            } else {
+                stuck |= entity->getCollisionBox().pushBoxRight(entity->getX(), entity->getY(), getCollisionBox(), eX, eY);
+            }
+            if (std::abs(eX - getX()) > std::abs(xShift)) {
+                xShift = eX - getX();
+            }
+        }
+
         if (stuck) {
-            x += xShift;
+            setX(getX() + xShift);
             velX = 0;
         }
 
@@ -240,12 +248,36 @@ class Mario: public IEntity {
             }
         }
 
+        for (IEntity* entity : region.getEntities()) {
+            if (!entity->isSolid()) {
+                continue;
+            }
+            int eX = getX();
+            int eY = getY();
+            if (velY > 0) {
+                stuck |= entity->getCollisionBox().pushBoxDown(entity->getX(), entity->getY(), getCollisionBox(), eX, eY);
+            } else {
+                stuck |= entity->getCollisionBox().pushBoxUp(entity->getX(), entity->getY(), getCollisionBox(), eX, eY);
+            }
+            if (std::abs(eY - getY()) > std::abs(yShift)) {
+                yShift = eY - getY();
+            }
+        }
+
         if (stuck) {
-            y += yShift;
+            setY(getY() + yShift);
             velY = 0;
         }
 
         grounded = (yShift > 0);
+
+        if (x < 0) {
+            x = 0;
+            velX = 0;
+        } else if (x > region.getWidth() * 256 - 256) {
+            x = region.getWidth() * 256 - 256;
+            velX = 0;
+        }
     }
 
     int getXSub() {
@@ -279,7 +311,7 @@ class Mario: public IEntity {
     }
 
     virtual int getX() override {
-        return x / 16;
+        return div(x, 16);
     }
 
     virtual void setX(int value) override {
@@ -287,7 +319,7 @@ class Mario: public IEntity {
     }
 
     virtual int getY() override {
-        return y / 16;
+        return div(y, 16);
     }
 
     virtual void setY(int value) override {
@@ -302,8 +334,11 @@ class Mario: public IEntity {
         zoneLayer = value;
     }
 
-    virtual void tick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) override {
+    virtual int getLayerPriority() const override {
+        return IEntity::MARIO;
+    }
 
+    virtual void tick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) override {
         numTicks++;
         GameLevelRegion** regions = zone.getRegions();
         GameLevelRegion* collideRegion = regions[zoneLayer];
@@ -336,8 +371,6 @@ class Mario: public IEntity {
     virtual CollisionBox& getCollisionBox() override {
         return collisionSmall;
     }
-    virtual void onCollideMario(Mario& mario) override {
-        // future multiplayer support?
-    }
+    virtual void onCollideMario(Mario& mario) override {}
     virtual void onCollideEntity(IEntity& entity) override {}
 };

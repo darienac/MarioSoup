@@ -25,6 +25,7 @@ class AudioManager {
 
     public:
     AudioManager() {
+        #ifndef MUTE
         device = alcOpenDevice(NULL);
         if (device == NULL) {
             throw "Unable to use default OpenAL device";
@@ -39,23 +40,31 @@ class AudioManager {
         alListenerfv(AL_ORIENTATION, ori);
 
         musicSource = new AudioSource(true, false);
+        #endif
     }
 
     void setPos(const float pos[3]) {
+        #ifndef MUTE
         alListenerfv(AL_POSITION, pos);
         // std::printf("Listener pos: x: %f, y: %f, z: %f\n", pos[0], pos[1], pos[2]);
+        #endif
     }
 
     void cancelMusic() {
+        #ifndef MUTE
         musicSource->cancelBuffers();
+        #endif
     }
 
     void setMusic(AudioBuffer& buffer) {
+        #ifndef MUTE
         cancelMusic();
         musicSource->playBuffer(buffer);
+        #endif
     }
 
     void playSound(AudioBuffer& buffer, float pos[3]) {
+        #ifndef MUTE
         AudioSource* source = new AudioSource(false, false);
         source->setMaxDistance(soundMaxDistance);
         source->setReferenceDistance(referenceDistance);
@@ -63,9 +72,11 @@ class AudioManager {
         source->playBuffer(buffer);
 
         soundSources.insert(source);
+        #endif
     }
 
     void update() {
+        #ifndef MUTE
         musicSource->update();
         auto it = soundSources.begin();
         while (it != soundSources.end()) {
@@ -78,8 +89,10 @@ class AudioManager {
                 soundSources.erase(it++);
             }
         }
+        #endif
     }
     
+    #ifndef MUTE
     ~AudioManager() {
         delete musicSource;
         for (AudioSource* source : soundSources) {
@@ -90,4 +103,5 @@ class AudioManager {
         alcDestroyContext(context);
         alcCloseDevice(device);
     }
+    #endif
 };

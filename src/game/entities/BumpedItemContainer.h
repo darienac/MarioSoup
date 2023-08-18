@@ -23,6 +23,9 @@ class BumpedItemContainer: public IEntity {
     virtual void setZoneLayer(int value) override {
         zoneLayer = value;
     }
+    virtual int getLayerPriority() const override {
+        return IEntity::ITEM_CONTAINER;
+    }
     virtual int getX() override {
         return x;
     }

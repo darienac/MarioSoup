@@ -1,3 +1,5 @@
+#define MUTE
+
 #include <iostream>
 
 #include "screens/ScreenManager.h"
