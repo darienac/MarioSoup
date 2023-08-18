@@ -1,7 +1,7 @@
 #pragma once
 
 #include "game/GameLevelRegion.h"
-#include "game/Mario.h"
+#include "game/entities/Mario.h"
 #include "game/IGameLevelZone.h"
 #include "TileMappings.h"
 
