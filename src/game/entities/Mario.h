@@ -17,6 +17,7 @@ class Mario: public IEntity {
     static const int RUN_SPEED = 56;
 
     CollisionBox collisionSmall = CollisionBox(3, 0, 10, 16);
+    CollisionBox collisionStride = CollisionBox(-1, 0, 18, 1);
 
     GameObject gameObject;
     int x = 0;
@@ -139,129 +140,48 @@ class Mario: public IEntity {
     }
 
     void collisions(IGameLevelRegion& region, IControls& controls) {
-        GameObject::Flag s = GameObject::SOLID;
-        bool stuck = false;
-
         // X Movement
         x += velX;
-        int xShift = 0;
-        int yShift = 0;
-
-        int pTileX = div(x + 48, 256);
-        int pTileX2 = div(x + 208, 256);
-        int pTileY = div(y, 256);
-        int pTileY2 = div(y + 256, 256);
-
-        if (region.getGridObject(pTileX, pTileY)->isFlag(s)) {
-            stuck = true;
-            setXShift(xShift, pTileX, pTileY);
-        }
-
-        if (mod(x + 48, 256) > 96 && region.getGridObject(pTileX2, pTileY)->isFlag(s)) {
-            stuck = true;
-            setXShift(xShift, pTileX2, pTileY);
-        }
-
-        if (mod(y, 256) != 0 && region.getGridObject(pTileX, pTileY2)->isFlag(s)) {
-            stuck = true;
-            setXShift(xShift, pTileX, pTileY2);
-        }
-
-        if (mod(x + 48, 256) > 96 && mod(y, 256) != 0 && region.getGridObject(pTileX2, pTileY2)->isFlag(s)) {
-            stuck = true;
-            setXShift(xShift, pTileX2, pTileY2);
-        }
-
-        for (IEntity* entity : region.getEntities()) {
-            if (!entity->isSolid()) {
-                continue;
-            }
-            int eX = getX();
-            int eY = getY();
-            if (velX > 0) {
-                stuck |= entity->getCollisionBox().pushBoxLeft(entity->getX(), entity->getY(), getCollisionBox(), eX, eY);
-            } else {
-                stuck |= entity->getCollisionBox().pushBoxRight(entity->getX(), entity->getY(), getCollisionBox(), eX, eY);
-            }
-            if (std::abs(eX - getX()) > std::abs(xShift)) {
-                xShift = eX - getX();
-            }
-        }
-
-        if (stuck) {
-            setX(getX() + xShift);
+        
+        int bX = getX();
+        int bY = getY();
+        if (getCollisionBox().collideWithBlocksEntitiesX(bX, bY, velX, &region, this)) {
+            setX(bX);
             velX = 0;
         }
 
         // Y Movement
-        stuck = false;
         y += velY;
 
-        pTileX = div(x + 48, 256);
-        pTileX2 = div(x + 208, 256);
-        pTileY = div(y, 256);
-        pTileY2 = div(y + 256, 256);
+        bX = getX();
+        bY = getY();
 
-        if (region.getGridObject(pTileX, pTileY)->isFlag(s)) {
-            stuck = true;
-            setYShift(yShift, pTileX, pTileY);
-        }
-
-        if (mod(x + 48, 256) > 96 && region.getGridObject(pTileX2, pTileY)->isFlag(s)) {
-            stuck = true;
-            setYShift(yShift, pTileX2, pTileY);
-        }
-
-        if (mod(y, 256) != 0 && region.getGridObject(pTileX, pTileY2)->isFlag(s)) {
-            stuck = true;
-            setYShift(yShift, pTileX, pTileY2);
-            region.getGridObject(pTileX, pTileY2)->onHitUnder(pTileX, pTileY2, region);
-        }
-
-        if (pTileX != pTileX2 && mod(x + 48, 256) > 96 && mod(y, 256) != 0 && region.getGridObject(pTileX2, pTileY2)->isFlag(s)) {
-            stuck = true;
-            setYShift(yShift, pTileX2, pTileY2);
-            region.getGridObject(pTileX2, pTileY2)->onHitUnder(pTileX2, pTileY2, region);
-        }
-
-        // make gaps harder to fall in if moving
+        CollisionBox* box;
         if (grounded && mod(y, 256) != 0 && velY < 0 && std::abs(velX) > WALK_SPEED) {
-            pTileX = div(x, 256);
-            pTileX2 = div(x, 256) + 1;
-
-            if (region.getGridObject(pTileX, pTileY)->isFlag(s)) {
-                stuck = true;
-                setYShift(yShift, pTileX, pTileY);
-            }
-
-            if (region.getGridObject(pTileX2, pTileY)->isFlag(s)) {
-                stuck = true;
-                setYShift(yShift, pTileX2, pTileY);
-            }
+            box = &collisionStride;
+            std::printf("running\n");
+        } else {
+            box = &getCollisionBox();
         }
 
-        for (IEntity* entity : region.getEntities()) {
-            if (!entity->isSolid()) {
-                continue;
-            }
-            int eX = getX();
-            int eY = getY();
+        if (box->collideWithBlocksEntitiesY(bX, bY, velY, &region, this)) {
+            setY(bY);
+            grounded = velY < 0;
             if (velY > 0) {
-                stuck |= entity->getCollisionBox().pushBoxDown(entity->getX(), entity->getY(), getCollisionBox(), eX, eY);
-            } else {
-                stuck |= entity->getCollisionBox().pushBoxUp(entity->getX(), entity->getY(), getCollisionBox(), eX, eY);
+                int tileX0 = div(getX() + getCollisionBox().getXOff(), 16);
+                int tileX1 = div(getX() + getCollisionBox().getXOff() + getCollisionBox().getWidth(), 16);
+                int tileY = div(getY() + getCollisionBox().getYOff() + getCollisionBox().getHeight(), 16);
+                if (region.getGridObject(tileX0, tileY)->isFlag(GameObject::SOLID)) {
+                    region.getGridObject(tileX0, tileY)->onHitUnder(tileX0, tileY, region);
+                }
+                if (tileX0 != tileX1 && region.getGridObject(tileX1, tileY)->isFlag(GameObject::SOLID)) {
+                    region.getGridObject(tileX1, tileY)->onHitUnder(tileX1, tileY, region);
+                }
             }
-            if (std::abs(eY - getY()) > std::abs(yShift)) {
-                yShift = eY - getY();
-            }
-        }
-
-        if (stuck) {
-            setY(getY() + yShift);
             velY = 0;
+        } else {
+            grounded = false;
         }
-
-        grounded = (yShift > 0);
 
         if (x < 0) {
             x = 0;
