@@ -96,6 +96,12 @@ class Powerup: public IEntity {
         return collision;
     }
 
+    virtual void onPushed(IEntity& entity, int dx, int dy) {
+        if (dy > 0) {
+            velY = 64;
+        }
+    }
+
     virtual bool isPushable() {
         return !emerge;
     }

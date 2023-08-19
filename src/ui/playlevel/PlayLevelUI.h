@@ -85,8 +85,11 @@ class PlayLevelUI: public IUIElement {
                     int eX = entityPushed->getX();
                     int eY = entityPushed->getY();
                     if (entity->getCollisionBox().pushBoxAway(entity->getX(), entity->getY(), entityPushed->getCollisionBox(), eX, eY)) {
+                        int eXPrev = entityPushed->getX();
+                        int eYPrev = entityPushed->getY();
                         entityPushed->setX(eX);
                         entityPushed->setY(eY);
+                        entityPushed->onPushed(*entity, eX - eXPrev, eY - eYPrev);
                     }
                 }
                 if (mario->getZoneLayer() != i) {

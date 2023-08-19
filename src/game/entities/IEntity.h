@@ -36,6 +36,8 @@ class IEntity {
     virtual bool shouldDelete() {return false;}
 
     virtual CollisionBox& getCollisionBox() = 0;
+
+    virtual void onPushed(IEntity& entity, int dx, int dy) {}
     virtual void onCollideMario(Mario& mario) {}
     virtual void onCollideEntity(IEntity& entity) {}
 
