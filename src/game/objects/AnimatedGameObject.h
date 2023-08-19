@@ -31,7 +31,11 @@ class AnimatedGameObject: public GameObject {
     }
 
     virtual int getLevelTile(GameObject* left, GameObject* right, GameObject* up, GameObject* down) override {
-        return tiles.at((tick / frameTime) % tiles.size());
+        return getLevelTile();
+    }
+
+    virtual int getLevelTile() override {
+        return tiles.at((tick / frameTime) % tiles.size());;
     }
 };
 

@@ -58,7 +58,7 @@ class GameObject {
         return levelTile;
     }
 
-    int getLevelTile() {
+    virtual int getLevelTile() {
         return levelTile;
     }
 
