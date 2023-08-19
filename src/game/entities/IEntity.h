@@ -39,7 +39,8 @@ class IEntity {
     virtual void onCollideMario(Mario& mario) {}
     virtual void onCollideEntity(IEntity& entity) {}
 
-    virtual bool isSolid() {return true;}
+    virtual bool isSolid() {return false;}
+    virtual bool isPushable() {return false;}
 
     virtual ~IEntity() {}
 };

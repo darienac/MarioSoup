@@ -13,13 +13,39 @@ class Powerup: public IEntity {
     GameObject* gameObject;
     bool emerge = false;
     int ticks = 0;
+    int velX = 8;
+    int velY = 0;
 
     CollisionBox collision = CollisionBox(0, 0, 16, 16);
+
+    void movement(IGameLevelZone& zone) {
+        IGameLevelRegion* region = zone.getRegions()[zoneLayer];
+        velY -= 6;
+        if (velY < -56) {
+            velY = -56;
+        }
+
+        x += velX;
+        int bX = getX();
+        int bY = getY();
+        if (collision.collideWithBlocksEntitiesX(bX, bY, velX, region, this)) {
+            setX(bX);
+            velX = -velX;
+        }
+
+        y += velY;
+        bX = getX();
+        bY = getY();
+        if (collision.collideWithBlocksEntitiesY(bX, bY, velY, region, this)) {
+            setY(bY);
+            velY = 0;
+        }
+    }
 
     public:
     static GameObject* air;
 
-    Powerup(int x, int y, int zoneLayer, GameObject* object, bool emerge): x(x), y(y), zoneLayer(zoneLayer), gameObject(object), emerge(emerge) {}
+    Powerup(int x, int y, int zoneLayer, GameObject* object, bool emerge): x(x * 16), y(y * 16), zoneLayer(zoneLayer), gameObject(object), emerge(emerge) {}
 
     virtual int getZoneLayer() override {
         return zoneLayer;
@@ -31,16 +57,16 @@ class Powerup: public IEntity {
         return IEntity::ITEM;
     }
     virtual int getX() override {
-        return x;
+        return div(x, 16);
     }
     virtual void setX(int value) override {
-        x = value;
+        x = value * 16;
     }
     virtual int getY() override {
-        return y;
+        return div(y, 16);
     }
     virtual void setY(int value) override {
-        y = value;
+        y = value * 16;
     }
     virtual GameObject& getGameObject() override {
         if (ticks < 16) {
@@ -54,18 +80,23 @@ class Powerup: public IEntity {
             if (ticks == 64) {
                 emerge = false;
             } else if (ticks >= 16 && ticks % 3 == 0) {
-                y++;
+                setY(getY() + 1);
             }
         } else {
-            // Start moving and stuff
+            movement(zone);
         }
         ticks++;
     }
+
     virtual bool shouldDelete() {
         return false;
     }
 
     virtual CollisionBox& getCollisionBox() override {
         return collision;
+    }
+
+    virtual bool isPushable() {
+        return !emerge;
     }
 };

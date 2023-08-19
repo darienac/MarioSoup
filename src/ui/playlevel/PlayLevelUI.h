@@ -57,6 +57,7 @@ class PlayLevelUI: public IUIElement {
 
     void tick() {
         GameLevelZone* zone = screen->getLevel()->getCurrentZone();
+        Mario* mario = &zone->getMario();
         for (int i = 0; i < GameObject::NUM_LAYERS; i++) {
             std::vector<IEntity*> shouldDelete;
             for (IEntity* entity : zone->getRegions()[i]->getEntities()) {
@@ -69,7 +70,36 @@ class PlayLevelUI: public IUIElement {
                 zone->getRegions()[i]->removeEntity(entity);
             }
         }
-        zone->getMario().tick(*zone, *audio, *controls);
+        mario->tick(*zone, *audio, *controls);
+
+        for (int i = 0; i < GameObject::NUM_LAYERS; i++) {
+            IGameLevelRegion* region = zone->getRegions()[i];
+            for (IEntity* entity : region->getEntities()) {
+                if (!entity->isSolid()) {
+                    continue;
+                }
+                for (IEntity* entityPushed : region->getEntities()) {
+                    if (!entityPushed->isPushable()) {
+                        continue;
+                    }
+                    int eX = entityPushed->getX();
+                    int eY = entityPushed->getY();
+                    if (entity->getCollisionBox().pushBoxAway(entity->getX(), entity->getY(), entityPushed->getCollisionBox(), eX, eY)) {
+                        entityPushed->setX(eX);
+                        entityPushed->setY(eY);
+                    }
+                }
+                if (mario->getZoneLayer() != i) {
+                    continue;
+                }
+                int mX = mario->getX();
+                int mY = mario->getY();
+                if (entity->getCollisionBox().pushBoxAway(entity->getX(), entity->getY(), mario->getCollisionBox(), mX, mY)) {
+                    mario->setX(mX);
+                    mario->setY(mY);
+                }
+            }
+        }
 
         updateScroll();
         updateAudioListener();

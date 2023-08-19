@@ -363,6 +363,11 @@ class Mario: public IEntity {
     virtual CollisionBox& getCollisionBox() override {
         return collisionSmall;
     }
+
     virtual void onCollideMario(Mario& mario) override {}
     virtual void onCollideEntity(IEntity& entity) override {}
+
+    virtual bool isPushable() {
+        return true;
+    }
 };

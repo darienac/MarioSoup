@@ -48,13 +48,6 @@ class BumpedItemContainer: public IEntity {
         y += velY;
         velY--;
 
-        IEntity* mario = &zone.getMario();
-        int mX = mario->getX();
-        int mY = mario->getY();
-        if (collision.pushBoxUp(x, y, mario->getCollisionBox(), mX, mY)) {
-            mario->setY(mY);
-        }
-
         if (velY == -5) {
             zone.getRegions()[zoneLayer]->setGridObject(gameObject, div(x, 16), div(y, 16));
             isDone = true;
@@ -73,5 +66,9 @@ class BumpedItemContainer: public IEntity {
 
     virtual bool shouldDelete() {
         return isDone;
+    }
+
+    virtual bool isSolid() {
+        return true;
     }
 };

@@ -57,7 +57,6 @@ namespace GameObjectCache {
         
         addObject(new AnimatedGameObject("sma4:qblock", "question block", SMA4_QBLOCK_1, 8)).add(SMA4_QBLOCK_1, 4).flag(GameObject::CONTAINS_ITEM)
             .setOnHitUnder([](int tileX, int tileY, IGameLevelRegion& region) {
-                std::printf("Tile hit: %d, %d\n", tileX, tileY);
                 region.setGridObject(objects["air"], tileX, tileY);
                 region.addEntity(new BumpedItemContainer(tileX, tileY, region.getZoneLayer(), objects["sma4:empty_block"]));
                 
@@ -68,7 +67,17 @@ namespace GameObjectCache {
                 objData.containerObject->onEntityReplace(tileX, tileY, region);
             });
         addObject(new GameObject("sma4:empty_block", "empty block", SMA4_QBLOCK_EMPTY));
-        addObject(new AnimatedGameObject("sma4:brick", "brick block", SMA4_BRICK_1, 8)).add(SMA4_BRICK_1, 4).flag(GameObject::CONTAINS_ITEM);
+        addObject(new AnimatedGameObject("sma4:brick", "brick block", SMA4_BRICK_1, 8)).add(SMA4_BRICK_1, 4).flag(GameObject::CONTAINS_ITEM)
+            .setOnHitUnder([](int tileX, int tileY, IGameLevelRegion& region) {
+                region.setGridObject(objects["air"], tileX, tileY);
+                region.addEntity(new BumpedItemContainer(tileX, tileY, region.getZoneLayer(), objects["sma4:brick"]));
+
+                IGameLevelRegion::ObjectData objData = region.getGridData(tileX, tileY);
+                if (objData.containerObject == nullptr) {
+                    return;
+                }
+                objData.containerObject->onEntityReplace(tileX, tileY, region);
+            });
         addObject(new AnimatedGameObject("sma4:coin", "coin", SMA4_COIN_1, 8)).add(SMA4_COIN_1, 4).unflag(GameObject::SOLID); // Only sort of an item, qblocks have coins by default
 
         addObject(new AnimatedGameObject("sma4:item_coin", "coin (item)", SMA4_ITEMCOIN_1, 4)).add(SMA4_ITEMCOIN_1, 3).add(SMA4_ITEMCOIN_2).flag(GameObject::ITEM)

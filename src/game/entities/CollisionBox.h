@@ -1,5 +1,8 @@
 #pragma once
 
+#include "game/entities/IEntity.h"
+#include "game/IGameLevelRegion.h"
+
 class CollisionBox {
     private:
     int xOff;
@@ -66,5 +69,156 @@ class CollisionBox {
         }
         boxY = y + yOff + height - box.getYOff();
         return true;
+    }
+
+    bool pushBoxAway(int x, int y, CollisionBox& box, int& boxX, int& boxY) {
+        if (!collidesWith(box, boxX - x, boxY - y)) {
+            return false;
+        }
+        int insetLeft = boxX + box.getXOff() + box.getWidth() - (x + xOff);
+        int insetRight = x + xOff + width - (boxX + box.getXOff());
+        int insetDown = boxY + box.getYOff() + box.getHeight() - (y + yOff);
+        int insetUp = y + yOff + height - (boxY + box.getYOff());
+        int minInset = insetLeft;
+        if (insetRight > 0 && insetRight < minInset) {
+            minInset = insetRight;
+        }
+        if (insetDown > 0 && insetDown < minInset) {
+            minInset = insetDown;
+        }
+        if (insetUp > 0 && insetUp < minInset) {
+            minInset = insetUp;
+        }
+
+        if (minInset == insetLeft) {
+            return pushBoxLeft(x, y, box, boxX, boxY);
+        }
+        if (minInset == insetRight) {
+            return pushBoxRight(x, y, box, boxX, boxY);
+        }
+        if (minInset == insetDown) {
+            return pushBoxDown(x, y, box, boxX, boxY);
+        }
+        if (minInset == insetUp) {
+            return pushBoxUp(x, y, box, boxX, boxY);
+        }
+        throw "Unreachable code reached in pushing box away";
+        return false;
+    }
+
+    bool collideWithRegionX(int& x, int& y, int velX, IGameLevelRegion* region) {
+        bool collide = false;
+        CollisionBox regionBox = CollisionBox(0, 0, 16, 16);
+        int xShift = 0;
+        for (int i = IEntity::div(x + xOff, 16); i * 16 < x + xOff + width; i++) {
+            for (int j = IEntity::div(y + yOff, 16); j * 16 < y + yOff + height; j++) {
+                if (!region->getGridObject(i, j)->isFlag(GameObject::SOLID)) {
+                    continue;
+                }
+                int bX = x;
+                int bY = y;
+                if (velX > 0) {
+                    collide |= regionBox.pushBoxLeft(i * 16, j * 16, *this, bX, bY);
+                } else {
+                    collide |= regionBox.pushBoxRight(i * 16, j * 16, *this, bX, bY);
+                }
+                if (std::abs(bX - x) > std::abs(xShift)) {
+                    xShift = bX - x;
+                }
+            }
+        }
+        x += xShift;
+        return collide;
+    }
+
+    bool collideWithRegionY(int& x, int& y, int velY, IGameLevelRegion* region) {
+        bool collide = false;
+        CollisionBox regionBox = CollisionBox(0, 0, 16, 16);
+        int yShift = 0;
+        for (int i = IEntity::div(x + xOff, 16); i * 16 < x + xOff + width; i++) {
+            for (int j = IEntity::div(y + yOff, 16); j * 16 < y + yOff + height; j++) {
+                if (!region->getGridObject(i, j)->isFlag(GameObject::SOLID)) {
+                    continue;
+                }
+                int bX = x;
+                int bY = y;
+                if (velY > 0) {
+                    collide |= regionBox.pushBoxDown(i * 16, j * 16, *this, bX, bY);
+                } else {
+                    collide |= regionBox.pushBoxUp(i * 16, j * 16, *this, bX, bY);
+                }
+                if (std::abs(bY - y) > std::abs(yShift)) {
+                    yShift = bY - y;
+                }
+            }
+        }
+        y += yShift;
+        return collide;
+    }
+
+    bool collideWithEntitiesX(int& x, int& y, int velX, IGameLevelRegion* region, IEntity* ignore) {
+        bool collide = false;
+        int xShift = 0;
+        for (IEntity* entity : region->getEntities()) {
+            if (entity == ignore || !entity->isSolid()) {
+                continue;
+            }
+            int bX = x;
+            int bY = y;
+            if (velX > 0) {
+                collide |= entity->getCollisionBox().pushBoxLeft(entity->getX(), entity->getY(), *this, bX, bY);
+            } else {
+                collide |= entity->getCollisionBox().pushBoxRight(entity->getX(), entity->getY(), *this, bX, bY);
+            }
+            if (std::abs(bX - x) > std::abs(xShift)) {
+                xShift = bX - x;
+            }
+        }
+        x += xShift;
+        return collide;
+    }
+
+    bool collideWithEntitiesY(int& x, int& y, int velY, IGameLevelRegion* region, IEntity* ignore) {
+        bool collide = false;
+        int yShift = 0;
+        for (IEntity* entity : region->getEntities()) {
+            if (entity == ignore || !entity->isSolid()) {
+                continue;
+            }
+            int bX = x;
+            int bY = y;
+            if (velY > 0) {
+                collide |= entity->getCollisionBox().pushBoxDown(entity->getX(), entity->getY(), *this, bX, bY);
+            } else {
+                collide |= entity->getCollisionBox().pushBoxUp(entity->getX(), entity->getY(), *this, bX, bY);
+            }
+            if (std::abs(bY - y) > std::abs(yShift)) {
+                yShift = bY - y;
+            }
+        }
+        y += yShift;
+        return collide;
+    }
+    
+    bool collideWithBlocksEntitiesX(int& x, int& y, int velX, IGameLevelRegion* region, IEntity* ignore) {
+        int bX = x;
+        int bY = y;
+        int eX = x;
+        int eY = y;
+        bool collides = collideWithRegionX(bX, bY, velX, region) || collideWithEntitiesX(eX, eY, velX, region, ignore);
+
+        x = std::abs(bX - x) > std::abs(eX - x) ? bX : eX;
+        return collides;
+    }
+
+    bool collideWithBlocksEntitiesY(int& x, int& y, int velY, IGameLevelRegion* region, IEntity* ignore) {
+        int bX = x;
+        int bY = y;
+        int eX = x;
+        int eY = y;
+        bool collides = collideWithRegionY(bX, bY, velY, region) || collideWithEntitiesY(eX, eY, velY, region, ignore);
+
+        y = std::abs(bY - y) > std::abs(eY - y) ? bY : eY;
+        return collides;
     }
 };
