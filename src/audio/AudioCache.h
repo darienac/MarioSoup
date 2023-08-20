@@ -20,6 +20,9 @@ namespace {
         AudioCache::audio[object->getId()] = object;
         return *object;
     }
+    void addAudioBatch(std::string path, std::string prefix) {
+        
+    }
 }
 #endif
 
