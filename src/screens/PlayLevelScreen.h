@@ -36,6 +36,8 @@ class PlayLevelScreen: public IPlayLevelScreen {
         LevelLoader loader = LevelLoader();
         level = new GameLevel();
         loader.loadLevel(*level, filePath);
+
+        levelUI->loadLevelZone();
     }
 
     void setEditorScreen(ILevelEditorScreen* screen) {
@@ -72,6 +74,8 @@ class PlayLevelScreen: public IPlayLevelScreen {
             delete this->level;
         }
         this->level = new GameLevel(*level);
+
+        levelUI->loadLevelZone();
     }
 
     virtual GameLevel* getLevel() override {

@@ -55,6 +55,22 @@ class PlayLevelUI: public IUIElement {
         controls = new KeyboardControls(keys);
     }
 
+    void loadLevelZone() {
+        GameLevelZone* zone = screen->getLevel()->getCurrentZone();
+        for (int i = 0; i < GameObject::NUM_LAYERS; i++) {
+            IGameLevelRegion* region = zone->getRegions()[i];
+            for (int x = 0; x < region->getWidth(); x++) {
+                for (int y = 0; y < region->getHeight(); y++) {
+                    GameObject* obj = region->getGridObject(x, y);
+                    if (obj->isFlag(GameObject::ENTITY)) {
+                        region->setGridObject(GameObjectCache::objects["air"], x, y);
+                        obj->onEntityReplace(x, y, *region);
+                    }
+                }
+            }
+        }
+    }
+
     void tick() {
         GameLevelZone* zone = screen->getLevel()->getCurrentZone();
         Mario* mario = &zone->getMario();

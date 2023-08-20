@@ -70,13 +70,16 @@ namespace GameObjectCache {
         addObject(new AnimatedGameObject("sma4:brick", "brick block", SMA4_BRICK_1, 8)).add(SMA4_BRICK_1, 4).flag(GameObject::CONTAINS_ITEM)
             .setOnHitUnder([](int tileX, int tileY, IGameLevelRegion& region) {
                 region.setGridObject(objects["air"], tileX, tileY);
-                region.addEntity(new BumpedItemContainer(tileX, tileY, region.getZoneLayer(), objects["sma4:brick"]));
 
                 IGameLevelRegion::ObjectData objData = region.getGridData(tileX, tileY);
+                GameObject* newObj;
                 if (objData.containerObject == nullptr) {
-                    return;
+                    newObj = objects["sma4:brick"];
+                } else {
+                    newObj = objects["sma4:empty_block"];
+                    objData.containerObject->onEntityReplace(tileX, tileY, region);
                 }
-                objData.containerObject->onEntityReplace(tileX, tileY, region);
+                region.addEntity(new BumpedItemContainer(tileX, tileY, region.getZoneLayer(), newObj));
             });
         addObject(new AnimatedGameObject("sma4:coin", "coin", SMA4_COIN_1, 8)).add(SMA4_COIN_1, 4).unflag(GameObject::SOLID); // Only sort of an item, qblocks have coins by default
 
