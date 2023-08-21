@@ -2,8 +2,12 @@
 
 #include <map>
 #include <string>
+#include <filesystem>
 
 #include "audio/AudioBuffer.h"
+#include "ResourceReader.h"
+
+namespace fs = std::filesystem;
 
 namespace AudioCache {
     struct strCompare {
@@ -21,7 +25,10 @@ namespace {
         return *object;
     }
     void addAudioBatch(std::string path, std::string prefix) {
-        
+        std::string fullPath = ResourceReader::getFullPath(ResourceReader::Audio, path);
+        for (auto const& dir_entry : fs::directory_iterator(fullPath)) {
+            addAudio(new AudioBuffer(prefix + dir_entry.path().stem().string(), dir_entry));
+        }
     }
 }
 #endif
@@ -29,6 +36,7 @@ namespace {
 namespace AudioCache {
     void init() {
         #ifndef MUTE
+        addAudioBatch("smas", "smas:");
         addAudio(new AudioBuffer("smb3:jump", "smb3_jump.ogg"));
         addAudio(new AudioBuffer("sma4:overworld", "sma4_overworld.ogg"));
         #endif

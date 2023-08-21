@@ -81,6 +81,8 @@ class Powerup: public IEntity {
                 emerge = false;
             } else if (ticks >= 16 && ticks % 3 == 0) {
                 setY(getY() + 1);
+            } else if (ticks == 16) {
+                audio.playSound(*AudioCache::audio["smas:ItemSprout"], getX(), getY());
             }
         } else {
             movement(zone);

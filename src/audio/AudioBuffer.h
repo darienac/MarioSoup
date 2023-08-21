@@ -3,6 +3,7 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <stb/stb_vorbis.c>
+#include <filesystem>
 
 #include "ResourceReader.h"
 
@@ -24,6 +25,23 @@ class AudioBuffer {
     stb_vorbis* stream;
     bool closed = false;
 
+    void setupBuffer(stb_vorbis* stream) {
+        stb_vorbis_info info = stb_vorbis_get_info(stream);
+        channels = info.channels;
+        sampleRate = info.sample_rate;
+        samples = stb_vorbis_stream_length_in_samples(stream) * channels;
+        duration = stb_vorbis_stream_length_in_seconds(stream);
+        std::printf("ID: %s, Channels: %d, Sample rate: %d\n", id.c_str(), channels, sampleRate);
+
+        if (channels > 2) {
+            throw "Too many samples, id: " + id + " (" + std::to_string(channels) + ")";
+        }
+
+        alGenBuffers(channels, buffers);
+
+        restart();
+    }
+
     public:
     AudioBuffer(std::string id, std::string fileName): id(id) {
         int error;
@@ -33,20 +51,17 @@ class AudioBuffer {
             throw "Couldn't open file";
         }
 
-        stb_vorbis_info info = stb_vorbis_get_info(stream);
-        channels = info.channels;
-        sampleRate = info.sample_rate;
-        samples = stb_vorbis_stream_length_in_samples(stream) * channels;
-        duration = stb_vorbis_stream_length_in_seconds(stream);
-        std::printf("ID: %s, Channels: %d, Sample rate: %d\n", id.c_str(), channels, sampleRate);
+        setupBuffer(stream);
+    }
 
-        if (channels > 2) {
-            throw "Too many samples in file " + fileName + " (" + std::to_string(channels) + ")";
+    AudioBuffer(std::string id, std::filesystem::directory_entry dir): id(id) {
+        int error;
+        stream = stb_vorbis_open_filename(dir.path().string().c_str(), &error, NULL);
+        if (!stream) {
+            throw "Couldn't open file " + dir.path().string();
         }
 
-        alGenBuffers(channels, buffers);
-
-        restart();
+        setupBuffer(stream);
     }
 
     int getNumChannels() {

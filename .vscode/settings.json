@@ -72,6 +72,19 @@
         "map": "cpp",
         "set": "cpp",
         "xtree": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "filesystem": "cpp",
+        "charconv": "cpp",
+        "chrono": "cpp",
+        "codecvt": "cpp",
+        "condition_variable": "cpp",
+        "format": "cpp",
+        "forward_list": "cpp",
+        "mutex": "cpp",
+        "optional": "cpp",
+        "ratio": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
     }
 }

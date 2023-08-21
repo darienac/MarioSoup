@@ -16,7 +16,7 @@ class LevelDrawer {
     void drawLevelRegion(IGameLevelRegion* region, int x, int y, bool isEditor) {
         if (!isEditor) {
             for (IEntity* entity : region->getEntities()) {
-                drawer->drawTile(entity->getGameObject().getLevelTile(nullptr, nullptr, nullptr, nullptr), entity->getX(), entity->getY());
+                drawer->drawTile(entity->getGameObject().getLevelTile(nullptr, nullptr, nullptr, nullptr), entity->getX() + x, entity->getY() + y);
             }
         }
         

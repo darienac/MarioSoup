@@ -1,5 +1,15 @@
 // #define MUTE
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/gtx/string_cast.hpp>
+
 #include <iostream>
 
 #include "screens/ScreenManager.h"

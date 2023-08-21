@@ -72,6 +72,8 @@ class Tile {
     int cy;
     int cw;
     int ch;
+    int xCenter = 0;
+    int yCenter = 0;
 
     // Initialization based on selection coordinates (what paint.net uses)
     Tile(TextureName texName, int sx, int sy, int sw, int sh) {
@@ -88,6 +90,24 @@ class Tile {
 
     int getHeight() {
         return ch;
+    }
+
+    Tile& setXCenter(int value) {
+        xCenter = value;
+        return *this;
+    }
+    
+    Tile& setYCenter(int value) {
+        yCenter = value;
+        return *this;
+    }
+
+    int getXCenter() {
+        return xCenter;
+    }
+    
+    int getYCenter() {
+        return yCenter;
     }
 
     Tile() {}
@@ -109,6 +129,13 @@ namespace {
                 x += w + paddingX;
             }
             y0 += h + paddingY;
+        }
+    }
+
+    void recenterTiles(Tile* tiles, int numTiles, int xCenter, int yCenter) {
+        for (int i = 0 ; i < numTiles; i++) {
+            tiles->setXCenter(xCenter).setYCenter(yCenter);
+            tiles++;
         }
     }
 };
@@ -139,6 +166,11 @@ namespace Tiles {
 
         MARIO_STAND_SMA4, MARIO_RUN2_SMA4, MARIO_WALK_SMA4, MARIO_RUN1_SMA4, MARIO_JUMP_SMA4, MARIO_CARRY2_SMA4, MARIO_CARRY1_SMA4, MARIO_KICK_SMA4, MARIO_CLIMB1_SMA4,
         MARIO_FRONT_SMA4, MARIO_CLIMB2_SMA4, MARIO_SLIDE_SMA4, MARIO_DIE_SMA4, MARIO_SKID_SMA4,
+
+        SMARIO_WALK2_SMA4, SMARIO_WALK1_SMA4, SMARIO_STAND_SMA4, SMARIO_FIRE1_SMA4, SMARIO_FIRE2_SMA4, SMARIO_CLIMB_SMA4, SMARIO_SLIDE_SMA4,
+        SMARIO_CARRY2_SMA4, SMARIO_CARRY1_SMA4, SMARIO_CARRY_SMA4, SMARIO_KICK_SMA4, SMARIO_JUMP_SMA4,
+        SMARIO_RUN2_SMA4, SMARIO_RUN1_SMA4, SMARIO_RUN_SMA4, SMARIO_SKID_SMA4,
+        SMARIO_PULL1_SMA4, SMARIO_PULL2_SMA4, SMARIO_LIFT_SMA4, SMARIO_HOLD2_SMA4, SMARIO_HOLD1_SMA4, SMARIO_HOLD_SMA4, SMARIO_SQUAT_SMA4, SMARIO_GROW_SMA4,
 
         SMA4_WOODF_TL, SMA4_WOODF_T, SMA4_WOODF_TR, SMA4_WOODF_L, SMA4_WOODF_M, SMA4_WOODF_R,
         SMA4_WOODP, SMA4_WOODP_TL, SMA4_WOODP_T, SMA4_WOODP_TR, SMA4_WOODP_BL, SMA4_WOODP_B, SMA4_WOODP_BR,
@@ -231,6 +263,15 @@ namespace Tiles {
         tiles[BACKGROUND_OVERWORLD1_SMA4] = Tile(SMA4_BACKGROUNDS, 2, 2, 512, 160);
 
         initTileGrid(tiles + MARIO_STAND_SMA4, MARIO_SMA4, 13, 773, 16, 16, 2, 2, 9, 14);
+
+        initTileGrid(tiles + SMARIO_WALK2_SMA4, MARIO_SMA4, 38, 20, 16, 27, 2, 2, 7, 7);
+        initTileGrid(tiles + SMARIO_CARRY2_SMA4, MARIO_SMA4, 38, 49, 16, 27, 2, 2, 3, 3);
+        initTileGrid(tiles + SMARIO_RUN2_SMA4, MARIO_SMA4, 38, 77, 19, 28, 2, 2, 3, 3);
+        tiles[SMARIO_SKID_SMA4] = Tile(MARIO_SMA4, 102, 77, 16, 28);
+        tiles[SMARIO_KICK_SMA4] = Tile(MARIO_SMA4, 91, 49, 21, 27);
+        tiles[SMARIO_JUMP_SMA4] = Tile(MARIO_SMA4, 114, 49, 16, 27);
+        initTileGrid(tiles + SMARIO_PULL1_SMA4, MARIO_SMA4, 76, 106, 16, 32, 2, 2, 6, 6);
+        initTileGrid(tiles + SMARIO_SQUAT_SMA4, MARIO_SMA4, 206, 106, 16, 32, 2, 2, 2, 2);
 
         initTileGrid(tiles + SMA4_WOODF_TL, SMA4_TILES, 290, 110, 16, 16, 2, 2, 3, 6);
         tiles[SMA4_WOODP] = Tile(SMA4_TILES, 272, 128, 16, 16);

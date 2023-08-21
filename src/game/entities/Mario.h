@@ -12,6 +12,12 @@
 #include "audio/AudioCache.h"
 
 class Mario: public IEntity {
+    public:
+    enum PowerupState {
+        SMALL,
+        SUPER
+    };
+    
     private:
     static const int WALK_SPEED = 24;
     static const int RUN_SPEED = 56;
@@ -29,6 +35,33 @@ class Mario: public IEntity {
     int velY = 0;
     unsigned int numTicks = 0;
     bool isJumpHeld = false;
+    PowerupState powerupState = SUPER;
+
+    int getRunTile(unsigned int numTicks) {
+        static const int MARIO_WALK[] = {MARIO_STAND_SMA4, MARIO_WALK_SMA4};
+        static const int MARIO_RUN[] = {MARIO_RUN1_SMA4, MARIO_RUN2_SMA4};
+        static const int SMARIO_WALK[] = {SMARIO_STAND_SMA4, SMARIO_WALK1_SMA4, SMARIO_WALK2_SMA4, SMARIO_WALK1_SMA4};
+        static const int SMARIO_RUN[] = {SMARIO_RUN_SMA4, SMARIO_RUN1_SMA4, SMARIO_RUN2_SMA4, SMARIO_RUN1_SMA4};
+
+        int numWalkStages = (powerupState == SMALL) ? 2 : 4;
+        int numRunStages = (powerupState == SMALL) ? 2 : 4;
+        int frameTime = std::abs(velX) > 9 ? 4 : 6;
+        if (std::abs(velX) > RUN_SPEED - 4) {
+            int runStage = (numTicks / frameTime) % numRunStages;
+            if (powerupState == SMALL) {
+                return MARIO_RUN[runStage];
+            } else {
+                return SMARIO_RUN[runStage];
+            }
+        } else {
+            int walkStage = (velX == 0) ? 0 : ((numTicks / frameTime) % numWalkStages);
+            if (powerupState == SMALL) {
+                return MARIO_WALK[walkStage];
+            } else {
+                return SMARIO_WALK[walkStage];
+            }
+        }
+    }
 
     void airMovement(unsigned int numTicks, IControls& controls) {
         if (velY > 0 && controls.jump()) {
@@ -92,18 +125,8 @@ class Mario: public IEntity {
             gameObject.setLevelTile(MARIO_SKID_SMA4);
             gameObject.setFlippedX(!gameObject.isFlippedX());
             velX += xDir;
-        } else if (velX == 0 || (numTicks / ((velX > 9 || velX < -9 || velX == 0) ? 4 : 6)) % 2 == 1) {
-            if (velX > RUN_SPEED - 4 || velX < -RUN_SPEED + 4) {
-                gameObject.setLevelTile(MARIO_RUN1_SMA4);
-            } else {
-                gameObject.setLevelTile(MARIO_STAND_SMA4);
-            }
         } else {
-            if (std::abs(velX) > RUN_SPEED - 4) {
-                gameObject.setLevelTile(MARIO_RUN2_SMA4);
-            } else {
-                gameObject.setLevelTile(MARIO_WALK_SMA4);
-            }
+            gameObject.setLevelTile(getRunTile(numTicks));
         }
     }
 
@@ -263,8 +286,7 @@ class Mario: public IEntity {
                 if (velY > 112) {
                     velY = 112;
                 }
-                float pos[3] = {(float) getX(), (float) getY(), 0.0};
-                audio.playSound(*AudioCache::audio["smb3:jump"], pos);
+                audio.playSound(*AudioCache::audio["smas:jump"], getX(), getY());
             } else {
                 velY = -6;
             }

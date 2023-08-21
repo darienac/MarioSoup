@@ -4,14 +4,15 @@
 #include "game/entities/CollisionBox.h"
 #include "game/objects/GameObject.h"
 #include "game/IGameLevelZone.h"
+#include "audio/AudioManager.h"
 
 class BumpedItemContainer: public IEntity {
     private:
     int x;
     int y;
     int zoneLayer;
-    GameObject* gameObject;
     int ticks = 0;
+    GameObject* gameObject;
     int velY = 4;
     bool isDone = false;
 
@@ -45,6 +46,9 @@ class BumpedItemContainer: public IEntity {
         return *gameObject;
     }
     virtual void tick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) override {
+        if (ticks == 0) {
+            audio.playSound(*AudioCache::audio["smas:Bump"], getX(), getY());
+        }
         y += velY;
         velY--;
 
@@ -52,6 +56,7 @@ class BumpedItemContainer: public IEntity {
             zone.getRegions()[zoneLayer]->setGridObject(gameObject, div(x, 16), div(y, 16));
             isDone = true;
         }
+        ticks++;
     }
 
     virtual CollisionBox& getCollisionBox() override {

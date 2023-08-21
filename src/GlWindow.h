@@ -1,7 +1,5 @@
 #pragma once
 
-#define STB_IMAGE_IMPLEMENTATION
-
 class GlWindow;
 
 #include <GL/glew.h>

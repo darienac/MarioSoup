@@ -72,7 +72,13 @@ class AudioManager {
         source->playBuffer(buffer);
 
         soundSources.insert(source);
+        std::printf("Sound played: %s\n", buffer.getId());
         #endif
+    }
+
+    void playSound(AudioBuffer& buffer, int x, int y) {
+        float pos[3] = {(float) x, (float) y, 0.0};
+        playSound(buffer, pos);
     }
 
     void update() {
