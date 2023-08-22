@@ -149,11 +149,11 @@ class LevelDrawer {
         int w = tile->cw;
         int h = tile->ch;
         if (object->isFlippedX()) {
-            x += w;
+            // x += w;
             w = -w;
         }
         if (object->isFlippedY()) {
-            y += h;
+            // y += h;
             h = -h;
         }
         drawer->drawTileStretched(*tile, x + mario->getX(), y + mario->getY(), w, h);

@@ -92,6 +92,14 @@ class PlayLevelUI: public IUIElement {
             IGameLevelRegion* region = zone->getRegions()[i];
             for (IEntity* entity : region->getEntities()) {
                 if (!entity->isSolid()) {
+                    for (IEntity* entityTouched : region->getEntities()) {
+                        if (entity->getCollisionBox().collidesWith(entityTouched->getCollisionBox(), entityTouched->getX() - entity->getX(), entityTouched->getY() - entity->getY())) {
+                            entity->onCollideEntity(*entityTouched);
+                        }
+                    }
+                    if (entity->getCollisionBox().collidesWith(mario->getCollisionBox(), mario->getX() - entity->getX(), mario->getY() - entity->getY())) {
+                        entity->onCollideMario(*mario);
+                    }
                     continue;
                 }
                 for (IEntity* entityPushed : region->getEntities()) {

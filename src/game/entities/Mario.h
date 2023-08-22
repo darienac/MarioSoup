@@ -5,24 +5,19 @@
 #include "game/objects/GameObject.h"
 #include "game/objects/GameObjectCache.h"
 #include "game/IGameLevelZone.h"
-#include "game/entities/IEntity.h"
+#include "game/entities/IMario.h"
 #include "game/entities/CollisionBox.h"
 #include "controls/IControls.h"
 #include "audio/AudioManager.h"
 #include "audio/AudioCache.h"
 
-class Mario: public IEntity {
-    public:
-    enum PowerupState {
-        SMALL,
-        SUPER
-    };
-    
+class Mario: public IMario {
     private:
     static const int WALK_SPEED = 24;
     static const int RUN_SPEED = 56;
 
     CollisionBox collisionSmall = CollisionBox(3, 0, 10, 16);
+    CollisionBox collisionSuper = CollisionBox(3, 0, 10, 28);
     CollisionBox collisionStride = CollisionBox(-1, 0, 18, 1);
 
     GameObject gameObject;
@@ -31,11 +26,69 @@ class Mario: public IEntity {
     int zoneLayer = 1;
 
     bool grounded = true;
+    bool crouching = false;
     int velX = 0;
     int velY = 0;
     unsigned int numTicks = 0;
     bool isJumpHeld = false;
-    PowerupState powerupState = SUPER;
+    int powerupStart;
+    PowerupState powerupState = SMALL;
+    PowerupState powerupStatePrev;
+    PlayState playState = PLAY;
+
+    void playTick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) {
+        IGameLevelRegion** regions = zone.getRegions();
+        IGameLevelRegion* collideRegion = regions[zoneLayer];
+
+        if (grounded) {
+            groundMovement(*collideRegion, numTicks, controls);
+            if (controls.jump() && !isJumpHeld) {
+                velY = 64 + (velX < 0 ? -velX : velX) / 4;
+                grounded = false;
+                if (velY > 112) {
+                    velY = 112;
+                }
+                audio.playSound(*AudioCache::audio["smas:jump"], getX(), getY());
+            } else {
+                velY = -6;
+            }
+        } else {
+            airMovement(numTicks, controls);
+        }
+        isJumpHeld = controls.jump();
+
+        // Do stuff like collision and checking for new state of player here
+        collisions(*collideRegion, controls);
+        if (!grounded) {
+            if (powerupState == SMALL) {
+                gameObject.setLevelTile(MARIO_JUMP_SMA4);
+            } else if (!crouching) {
+                gameObject.setLevelTile(SMARIO_JUMP_SMA4);
+            }
+            
+        }
+    }
+
+    void powerupTick(int numTicks, AudioManager& audio) {
+        if (powerupStart == -1) {
+            powerupStart = numTicks;
+            audio.playSound(*AudioCache::audio["smas:Powerup"], getX(), getY());
+        }
+        int ticks = numTicks - powerupStart;
+        if (powerupState == SUPER && powerupStatePrev == SMALL) {
+            if (ticks >= 46) {
+                playState = PLAY;
+                return;
+            }
+            if (ticks < 28) {
+                gameObject.setLevelTile((ticks / 4) % 2 == 0 ? SMARIO_GROW_SMA4 : MARIO_STAND_SMA4);
+            } else {
+                gameObject.setLevelTile((ticks / 4) % 2 == 0 ? SMARIO_STAND_SMA4 : SMARIO_GROW_SMA4);
+            }
+        } else {
+            playState = PLAY;
+        }
+    }
 
     int getRunTile(unsigned int numTicks) {
         static const int MARIO_WALK[] = {MARIO_STAND_SMA4, MARIO_WALK_SMA4};
@@ -86,7 +139,7 @@ class Mario: public IEntity {
         }
     }
 
-    void groundMovement(unsigned int numTicks, IControls& controls) {
+    void groundMovement(IGameLevelRegion& region, unsigned int numTicks, IControls& controls) {
         int xDir = 0;
         if (controls.left()) {
             xDir--;
@@ -94,12 +147,15 @@ class Mario: public IEntity {
         if (controls.right()) {
             xDir++;
         }
-        velX += xDir;
-        if (std::abs(velX) < 10) {
+        if (true) {
             velX += xDir;
+            if (std::abs(velX) < 10) {
+                velX += xDir;
+            }
         }
+        
 
-        if (xDir == 0) {
+        if (crouching || xDir == 0) {
             if (velX < 0 && (velX > -WALK_SPEED || numTicks % 2)) {
                 velX++;
             } else if (velX > 0 && (velX < WALK_SPEED || numTicks % 2)) {
@@ -121,11 +177,26 @@ class Mario: public IEntity {
             gameObject.setFlippedX(true);
         }
 
-        if (xDir * velX < 0) {
-            gameObject.setLevelTile(MARIO_SKID_SMA4);
+        if (crouching && (xDir != 0 || !controls.down())) {
+            int bX = getX();
+            int bY = getY();
+            if (!collisionSuper.collideWithBlocksEntitiesX(bX, bY, velX, &region, this)) {
+                crouching = false;
+            }
+        }
+
+        if (!crouching && xDir * velX < 0) {
+            if (powerupState == SMALL) {
+                gameObject.setLevelTile(MARIO_SKID_SMA4);
+            } else {
+                gameObject.setLevelTile(SMARIO_SKID_SMA4);
+            }
             gameObject.setFlippedX(!gameObject.isFlippedX());
             velX += xDir;
-        } else {
+        } else if (powerupState != SMALL && xDir == 0 && controls.down()) {
+            crouching = true;
+            gameObject.setLevelTile(SMARIO_SQUAT_SMA4);
+        } else if (!crouching) {
             gameObject.setLevelTile(getRunTile(numTicks));
         }
     }
@@ -236,6 +307,13 @@ class Mario: public IEntity {
     // Mario itself is also copied with the level when the level is played
     Mario(): gameObject(*GameObjectCache::objects["player"]) {}
 
+    virtual void triggerPowerupState(PowerupState state) override {
+        powerupStatePrev = powerupState;
+        powerupState = state;
+        playState = POWERUP;
+        powerupStart = -1;
+    }
+
     void resetGameObject() {
         gameObject = *GameObjectCache::objects["player"];
         numTicks = 0;
@@ -275,38 +353,26 @@ class Mario: public IEntity {
 
     virtual void tick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) override {
         numTicks++;
-        IGameLevelRegion** regions = zone.getRegions();
-        IGameLevelRegion* collideRegion = regions[zoneLayer];
-
-        if (grounded) {
-            groundMovement(numTicks, controls);
-            if (controls.jump() && !isJumpHeld) {
-                velY = 64 + (velX < 0 ? -velX : velX) / 4;
-                grounded = false;
-                if (velY > 112) {
-                    velY = 112;
-                }
-                audio.playSound(*AudioCache::audio["smas:jump"], getX(), getY());
-            } else {
-                velY = -6;
-            }
-        } else {
-            airMovement(numTicks, controls);
+        switch (playState) {
+            case PLAY:
+                playTick(zone, audio, controls);
+                break;
+            case POWERUP:
+                powerupTick(numTicks, audio);
+                break;
         }
-        isJumpHeld = controls.jump();
-
-        // Do stuff like collision and checking for new state of player here
-        collisions(*collideRegion, controls);
-        if (!grounded) {
-            gameObject.setLevelTile(MARIO_JUMP_SMA4);
-        }
+        
     }
 
     virtual CollisionBox& getCollisionBox() override {
-        return collisionSmall;
+        if (crouching || powerupState == SMALL) {
+            return collisionSmall;
+        } else {
+            return collisionSuper;
+        }   
     }
 
-    virtual void onCollideMario(Mario& mario) override {}
+    virtual void onCollideMario(IMario& mario) override {}
     virtual void onCollideEntity(IEntity& entity) override {}
 
     virtual bool isPushable() {

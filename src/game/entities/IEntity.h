@@ -4,7 +4,7 @@ class IGameLevelZone;
 class AudioManager;
 class IControls;
 class CollisionBox;
-class Mario;
+class IMario;
 class GameObject;
 
 class IEntity {
@@ -38,7 +38,7 @@ class IEntity {
     virtual CollisionBox& getCollisionBox() = 0;
 
     virtual void onPushed(IEntity& entity, int dx, int dy) {}
-    virtual void onCollideMario(Mario& mario) {}
+    virtual void onCollideMario(IMario& mario) {}
     virtual void onCollideEntity(IEntity& entity) {}
 
     virtual bool isSolid() {return false;}

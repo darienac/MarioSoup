@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game/entities/IEntity.h"
+#include "game/entities/IMario.h"
 #include "game/entities/CollisionBox.h"
 #include "game/objects/GameObject.h"
 #include "game/IGameLevelZone.h"
@@ -15,6 +16,7 @@ class Powerup: public IEntity {
     int ticks = 0;
     int velX = 8;
     int velY = 0;
+    bool isDone = false;
 
     CollisionBox collision = CollisionBox(0, 0, 16, 16);
 
@@ -91,11 +93,16 @@ class Powerup: public IEntity {
     }
 
     virtual bool shouldDelete() {
-        return false;
+        return isDone;
     }
 
     virtual CollisionBox& getCollisionBox() override {
         return collision;
+    }
+
+    virtual void onCollideMario(IMario& mario) override {
+        mario.triggerPowerupState(IMario::SUPER);
+        isDone = true;
     }
 
     virtual void onPushed(IEntity& entity, int dx, int dy) {

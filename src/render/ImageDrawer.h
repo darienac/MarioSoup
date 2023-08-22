@@ -175,6 +175,10 @@ class ImageDrawer {
     }
 
     void drawTileStretched(const Tile& tile, int x, int y, int w, int h) {
+        int stretchedXCenter = tile.getXCenter() * w / tile.getWidth();
+        x -= (stretchedXCenter - tile.getXCenter());
+        int stretchedYCenter = tile.getYCenter() * h / tile.getHeight();
+        y -= (stretchedYCenter - tile.getYCenter());
         drawImageStretched(*tile.texture, x, y, w, h, tile.cx, tile.cy, tile.cw, tile.ch);
     }
 

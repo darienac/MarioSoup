@@ -84,11 +84,11 @@ class Tile {
         ch = sh;
     };
 
-    int getWidth() {
+    int getWidth() const {
         return cw;
     }
 
-    int getHeight() {
+    int getHeight() const {
         return ch;
     }
 
@@ -102,11 +102,11 @@ class Tile {
         return *this;
     }
 
-    int getXCenter() {
+    int getXCenter() const {
         return xCenter;
     }
     
-    int getYCenter() {
+    int getYCenter() const {
         return yCenter;
     }
 
@@ -132,12 +132,19 @@ namespace {
         }
     }
 
-    void recenterTiles(Tile* tiles, int numTiles, int xCenter, int yCenter) {
+    void recenterTilesX(Tile* tiles, int numTiles, int xCenter) {
         for (int i = 0 ; i < numTiles; i++) {
-            tiles->setXCenter(xCenter).setYCenter(yCenter);
+            tiles->setXCenter(xCenter);
             tiles++;
         }
     }
+
+    // void recenterTilesY(Tile* tiles, int numTiles, int yCenter) {
+    //     for (int i = 0 ; i < numTiles; i++) {
+    //         tiles->setXCenter(yCenter);
+    //         tiles++;
+    //     }
+    // }
 };
 
 namespace Tiles {
@@ -272,6 +279,8 @@ namespace Tiles {
         tiles[SMARIO_JUMP_SMA4] = Tile(MARIO_SMA4, 114, 49, 16, 27);
         initTileGrid(tiles + SMARIO_PULL1_SMA4, MARIO_SMA4, 76, 106, 16, 32, 2, 2, 6, 6);
         initTileGrid(tiles + SMARIO_SQUAT_SMA4, MARIO_SMA4, 206, 106, 16, 32, 2, 2, 2, 2);
+
+        recenterTilesX(tiles + MARIO_STAND_SMA4, SMARIO_GROW_SMA4 - MARIO_STAND_SMA4 + 1, 8);
 
         initTileGrid(tiles + SMA4_WOODF_TL, SMA4_TILES, 290, 110, 16, 16, 2, 2, 3, 6);
         tiles[SMA4_WOODP] = Tile(SMA4_TILES, 272, 128, 16, 16);

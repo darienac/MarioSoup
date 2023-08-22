@@ -62,7 +62,7 @@ class BumpedItemContainer: public IEntity {
     virtual CollisionBox& getCollisionBox() override {
         return collision;
     }
-    virtual void onCollideMario(Mario& mario) override {
+    virtual void onCollideMario(IMario& mario) override {
 
     }
     virtual void onCollideEntity(IEntity& entity) override {
