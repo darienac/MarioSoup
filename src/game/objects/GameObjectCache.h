@@ -11,6 +11,7 @@
 
 #include "game/entities/BumpedItemContainer.h"
 #include "game/entities/Powerup.h"
+#include "game/entities/Particle.h"
 
 #include "TileMappings.h"
 
@@ -56,7 +57,7 @@ namespace GameObjectCache {
             .setLevelTile3x1(SMA4_WOODP_L, SMA4_WOODP_M, SMA4_WOODP_R);
         
         addObject(new AnimatedGameObject("sma4:qblock", "question block", SMA4_QBLOCK_1, 8)).add(SMA4_QBLOCK_1, 4).flag(GameObject::CONTAINS_ITEM)
-            .setOnHitUnder([](int tileX, int tileY, IGameLevelRegion& region) {
+            .setOnHitUnder([](int tileX, int tileY, IEntity* hitter, IGameLevelRegion& region) {
                 region.setGridObject(objects["air"], tileX, tileY);
                 region.addEntity(new BumpedItemContainer(tileX, tileY, region.getZoneLayer(), objects["sma4:empty_block"]));
                 
@@ -68,12 +69,21 @@ namespace GameObjectCache {
             });
         addObject(new GameObject("sma4:empty_block", "empty block", SMA4_QBLOCK_EMPTY));
         addObject(new AnimatedGameObject("sma4:brick", "brick block", SMA4_BRICK_1, 8)).add(SMA4_BRICK_1, 4).flag(GameObject::CONTAINS_ITEM)
-            .setOnHitUnder([](int tileX, int tileY, IGameLevelRegion& region) {
+            .setOnHitUnder([](int tileX, int tileY, IEntity* hitter, IGameLevelRegion& region) {
                 region.setGridObject(objects["air"], tileX, tileY);
 
                 IGameLevelRegion::ObjectData objData = region.getGridData(tileX, tileY);
                 GameObject* newObj;
                 if (objData.containerObject == nullptr) {
+                    if (hitter->getLayerPriority() == IEntity::MARIO && ((IMario*) hitter)->getPowerupState() != IMario::SMALL) {
+                        int x = tileX * 16;
+                        int y = tileY * 16;
+                        region.addEntity(new Particle(x, y, -20, 40, region.getZoneLayer(), GameObjectCache::objects["sma4:brick_break"], "smas:BrickShatter"));
+                        region.addEntity(new Particle(x + 8, y, 20, 40, region.getZoneLayer(), GameObjectCache::objects["sma4:brick_break"]));
+                        region.addEntity(new Particle(x, y + 8, -20, 80, region.getZoneLayer(), GameObjectCache::objects["sma4:brick_break"]));
+                        region.addEntity(new Particle(x + 8, y + 8, 20, 80, region.getZoneLayer(), GameObjectCache::objects["sma4:brick_break"]));
+                        return;
+                    }
                     newObj = objects["sma4:brick"];
                 } else {
                     newObj = objects["sma4:empty_block"];
@@ -81,6 +91,8 @@ namespace GameObjectCache {
                 }
                 region.addEntity(new BumpedItemContainer(tileX, tileY, region.getZoneLayer(), newObj));
             });
+        addObject(new GameObject("sma4:brick_break", "brick break", SMA4_BRICK_BREAK));
+
         addObject(new AnimatedGameObject("sma4:coin", "coin", SMA4_COIN_1, 8)).add(SMA4_COIN_1, 4).unflag(GameObject::SOLID); // Only sort of an item, qblocks have coins by default
 
         addObject(new AnimatedGameObject("sma4:item_coin", "coin (item)", SMA4_ITEMCOIN_1, 4)).add(SMA4_ITEMCOIN_1, 3).add(SMA4_ITEMCOIN_2).flag(GameObject::ITEM)

@@ -6,6 +6,7 @@ class Entity;
 
 class GameObject {
     public:
+    typedef void (*interact_callback)(int tileX, int tileY, IEntity* entity, IGameLevelRegion& region);
     typedef void (*gameobj_callback)(int tileX, int tileY, IGameLevelRegion& region);
 
     enum LevelLayer {
@@ -33,7 +34,7 @@ class GameObject {
     bool flippedY = false;
     LevelLayer preferredLayer = MIDGROUND;
 
-    gameobj_callback hitUnder = nullptr;
+    interact_callback hitUnder = nullptr;
     gameobj_callback entityReplace = nullptr;
 
     public:
@@ -108,14 +109,14 @@ class GameObject {
         return flags[flag];
     }
 
-    GameObject& setOnHitUnder(gameobj_callback callback) {
+    GameObject& setOnHitUnder(interact_callback callback) {
         hitUnder = callback;
         return *this;
     }
 
-    void onHitUnder(int tileX, int tileY, IGameLevelRegion& region) {
+    void onHitUnder(int tileX, int tileY, IEntity* entity, IGameLevelRegion& region) {
         if (hitUnder != nullptr) {
-            hitUnder(tileX, tileY, region);
+            hitUnder(tileX, tileY, entity, region);
         }
     }
 

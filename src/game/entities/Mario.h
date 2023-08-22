@@ -266,10 +266,10 @@ class Mario: public IMario {
                 int tileX1 = div(getX() + getCollisionBox().getXOff() + getCollisionBox().getWidth(), 16);
                 int tileY = div(getY() + getCollisionBox().getYOff() + getCollisionBox().getHeight(), 16);
                 if (region.getGridObject(tileX0, tileY)->isFlag(GameObject::SOLID)) {
-                    region.getGridObject(tileX0, tileY)->onHitUnder(tileX0, tileY, region);
+                    region.getGridObject(tileX0, tileY)->onHitUnder(tileX0, tileY, this, region);
                 }
                 if (tileX0 != tileX1 && region.getGridObject(tileX1, tileY)->isFlag(GameObject::SOLID)) {
-                    region.getGridObject(tileX1, tileY)->onHitUnder(tileX1, tileY, region);
+                    region.getGridObject(tileX1, tileY)->onHitUnder(tileX1, tileY, this, region);
                 }
             }
             velY = 0;
@@ -306,6 +306,10 @@ class Mario: public IMario {
     // Mario gets own copy of player object to manipulate
     // Mario itself is also copied with the level when the level is played
     Mario(): gameObject(*GameObjectCache::objects["player"]) {}
+
+    virtual PowerupState getPowerupState() override {
+        return powerupState;
+    }
 
     virtual void triggerPowerupState(PowerupState state) override {
         powerupStatePrev = powerupState;

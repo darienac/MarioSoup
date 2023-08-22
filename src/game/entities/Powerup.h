@@ -5,6 +5,7 @@
 #include "game/entities/CollisionBox.h"
 #include "game/objects/GameObject.h"
 #include "game/IGameLevelZone.h"
+#include "audio/AudioManager.h"
 
 class Powerup: public IEntity {
     private:

@@ -13,5 +13,6 @@ class IMario: public IEntity {
         SUPER
     };
 
+    virtual PowerupState getPowerupState() = 0;
     virtual void triggerPowerupState(PowerupState state) = 0;
 };

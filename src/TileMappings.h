@@ -185,6 +185,8 @@ namespace Tiles {
         SMA4_QBLOCK_1, SMA4_QBLOCK_2, SMA4_QBLOCK_3, SMA4_QBLOCK_4, SMA4_QBLOCK_EMPTY,
         SMA4_BRICK_1, SMA4_BRICK_2, SMA4_BRICK_3, SMA4_BRICK_4,
 
+        SMA4_BRICK_BREAK,
+
         SMA4_COIN_1, SMA4_COIN_2, SMA4_COIN_3, SMA4_COIN_4,
         SMA4_ITEMCOIN_1, SMA4_ITEMCOIN_2, SMA4_ITEMCOIN_3,
         SMA4_MUSHROOM, SMA4_1UP, SMA4_FLOWER, SMA4_STAR1, SMA4_STAR2, SMA4_STAR3,
@@ -290,6 +292,8 @@ namespace Tiles {
         initTileGrid(tiles + SMA4_QBLOCK_1, SMA4_TILES, 182, 92, 16, 16, 2, 2, 4, 4);
         tiles[SMA4_QBLOCK_EMPTY] = Tile(SMA4_TILES, 254, 128, 16, 16);
         initTileGrid(tiles + SMA4_BRICK_1, SMA4_TILES, 182, 146, 16, 16, 2, 2, 4, 4);
+
+        tiles[SMA4_BRICK_BREAK] = Tile(SMA4_NPCS_ITEMS, 484, 120, 8, 8).setXCenter(4).setYCenter(4);
 
         initTileGrid(tiles + SMA4_COIN_1, SMA4_TILES, 182, 110, 16, 16, 2, 2, 4, 4);
         initTileGrid(tiles + SMA4_ITEMCOIN_1, SMA4_NPCS_ITEMS, 300, 99, 16, 16, 2, 2, 3, 3);

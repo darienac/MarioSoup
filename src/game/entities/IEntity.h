@@ -13,7 +13,8 @@ class IEntity {
     enum Priority {
         ITEM,
         ITEM_CONTAINER,
-        MARIO
+        MARIO,
+        PARTICLE
     };
 
     static int mod(int v0, int v1) {

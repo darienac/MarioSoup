@@ -16,7 +16,17 @@ class LevelDrawer {
     void drawLevelRegion(IGameLevelRegion* region, int x, int y, bool isEditor) {
         if (!isEditor) {
             for (IEntity* entity : region->getEntities()) {
-                drawer->drawTile(entity->getGameObject().getLevelTile(nullptr, nullptr, nullptr, nullptr), entity->getX() + x, entity->getY() + y);
+                GameObject* object = &entity->getGameObject();
+                Tile* tile = &Tiles::getTile(object->getLevelTile());
+                int w = tile->cw;
+                int h = tile->ch;
+                if (object->isFlippedX()) {
+                    w = -w;
+                }
+                if (object->isFlippedY()) {
+                    h = -h;
+                }
+                drawer->drawTileStretched(*tile, entity->getX() + x, entity->getY() + y, w, h);
             }
         }
         
@@ -149,11 +159,9 @@ class LevelDrawer {
         int w = tile->cw;
         int h = tile->ch;
         if (object->isFlippedX()) {
-            // x += w;
             w = -w;
         }
         if (object->isFlippedY()) {
-            // y += h;
             h = -h;
         }
         drawer->drawTileStretched(*tile, x + mario->getX(), y + mario->getY(), w, h);
