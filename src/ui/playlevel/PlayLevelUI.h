@@ -74,10 +74,13 @@ class PlayLevelUI: public IUIElement {
     void tick() {
         GameLevelZone* zone = screen->getLevel()->getCurrentZone();
         Mario* mario = &zone->getMario();
+        IMario::PlayState playState = mario->getPlayState();
         for (int i = 0; i < GameObject::NUM_LAYERS; i++) {
             std::vector<IEntity*> shouldDelete;
             for (IEntity* entity : zone->getRegions()[i]->getEntities()) {
-                entity->tick(*zone, *audio, *controls);
+                if (playState == IMario::PLAY) {
+                    entity->tick(*zone, *audio, *controls);
+                }
                 if (entity->shouldDelete()) {
                     shouldDelete.push_back(entity);
                 }
@@ -86,44 +89,47 @@ class PlayLevelUI: public IUIElement {
                 zone->getRegions()[i]->removeEntity(entity);
             }
         }
+
         mario->tick(*zone, *audio, *controls);
 
-        for (int i = 0; i < GameObject::NUM_LAYERS; i++) {
-            IGameLevelRegion* region = zone->getRegions()[i];
-            for (IEntity* entity : region->getEntities()) {
-                if (!entity->isSolid()) {
-                    for (IEntity* entityTouched : region->getEntities()) {
-                        if (entity->getCollisionBox().collidesWith(entityTouched->getCollisionBox(), entityTouched->getX() - entity->getX(), entityTouched->getY() - entity->getY())) {
-                            entity->onCollideEntity(*entityTouched);
+        if (playState == IMario::PLAY) {
+            for (int i = 0; i < GameObject::NUM_LAYERS; i++) {
+                IGameLevelRegion* region = zone->getRegions()[i];
+                for (IEntity* entity : region->getEntities()) {
+                    if (!entity->isSolid()) {
+                        for (IEntity* entityTouched : region->getEntities()) {
+                            if (entity->getCollisionBox().collidesWith(entityTouched->getCollisionBox(), entityTouched->getX() - entity->getX(), entityTouched->getY() - entity->getY())) {
+                                entity->onCollideEntity(*entityTouched);
+                            }
                         }
-                    }
-                    if (entity->getCollisionBox().collidesWith(mario->getCollisionBox(), mario->getX() - entity->getX(), mario->getY() - entity->getY())) {
-                        entity->onCollideMario(*mario);
-                    }
-                    continue;
-                }
-                for (IEntity* entityPushed : region->getEntities()) {
-                    if (!entityPushed->isPushable()) {
+                        if (entity->getCollisionBox().collidesWith(mario->getCollisionBox(), mario->getX() - entity->getX(), mario->getY() - entity->getY())) {
+                            entity->onCollideMario(*mario);
+                        }
                         continue;
                     }
-                    int eX = entityPushed->getX();
-                    int eY = entityPushed->getY();
-                    if (entity->getCollisionBox().pushBoxAway(entity->getX(), entity->getY(), entityPushed->getCollisionBox(), eX, eY)) {
-                        int eXPrev = entityPushed->getX();
-                        int eYPrev = entityPushed->getY();
-                        entityPushed->setX(eX);
-                        entityPushed->setY(eY);
-                        entityPushed->onPushed(*entity, eX - eXPrev, eY - eYPrev);
+                    for (IEntity* entityPushed : region->getEntities()) {
+                        if (!entityPushed->isPushable()) {
+                            continue;
+                        }
+                        int eX = entityPushed->getX();
+                        int eY = entityPushed->getY();
+                        if (entity->getCollisionBox().pushBoxAway(entity->getX(), entity->getY(), entityPushed->getCollisionBox(), eX, eY)) {
+                            int eXPrev = entityPushed->getX();
+                            int eYPrev = entityPushed->getY();
+                            entityPushed->setX(eX);
+                            entityPushed->setY(eY);
+                            entityPushed->onPushed(*entity, eX - eXPrev, eY - eYPrev);
+                        }
                     }
-                }
-                if (mario->getZoneLayer() != i) {
-                    continue;
-                }
-                int mX = mario->getX();
-                int mY = mario->getY();
-                if (entity->getCollisionBox().pushBoxAway(entity->getX(), entity->getY(), mario->getCollisionBox(), mX, mY)) {
-                    mario->setX(mX);
-                    mario->setY(mY);
+                    if (mario->getZoneLayer() != i) {
+                        continue;
+                    }
+                    int mX = mario->getX();
+                    int mY = mario->getY();
+                    if (entity->getCollisionBox().pushBoxAway(entity->getX(), entity->getY(), mario->getCollisionBox(), mX, mY)) {
+                        mario->setX(mX);
+                        mario->setY(mY);
+                    }
                 }
             }
         }

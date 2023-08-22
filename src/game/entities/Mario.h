@@ -35,6 +35,7 @@ class Mario: public IMario {
     PowerupState powerupState = SMALL;
     PowerupState powerupStatePrev;
     PlayState playState = PLAY;
+    int coins = 0;
 
     void playTick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) {
         IGameLevelRegion** regions = zone.getRegions();
@@ -58,7 +59,7 @@ class Mario: public IMario {
         isJumpHeld = controls.jump();
 
         // Do stuff like collision and checking for new state of player here
-        collisions(*collideRegion, controls);
+        collisions(*collideRegion, controls, audio);
         if (!grounded) {
             if (powerupState == SMALL) {
                 gameObject.setLevelTile(MARIO_JUMP_SMA4);
@@ -69,7 +70,7 @@ class Mario: public IMario {
         }
     }
 
-    void powerupTick(int numTicks, AudioManager& audio) {
+    void powerupTick(IGameLevelZone& zone, int numTicks, AudioManager& audio) {
         if (powerupStart == -1) {
             powerupStart = numTicks;
             audio.playSound(*AudioCache::audio["smas:Powerup"], getX(), getY());
@@ -78,6 +79,12 @@ class Mario: public IMario {
         if (powerupState == SUPER && powerupStatePrev == SMALL) {
             if (ticks >= 46) {
                 playState = PLAY;
+                int bX = getX();
+                int bY = getY();
+                if (collisionSuper.collideWithBlocksEntitiesX(bX, bY, velX, zone.getRegions()[getZoneLayer()], this, nullptr)) {
+                    crouching = true;
+                    gameObject.setLevelTile(SMARIO_SQUAT_SMA4);
+                }
                 return;
             }
             if (ticks < 28) {
@@ -180,7 +187,7 @@ class Mario: public IMario {
         if (crouching && (xDir != 0 || !controls.down())) {
             int bX = getX();
             int bY = getY();
-            if (!collisionSuper.collideWithBlocksEntitiesX(bX, bY, velX, &region, this)) {
+            if (!collisionSuper.collideWithBlocksEntitiesX(bX, bY, velX, &region, this, nullptr)) {
                 crouching = false;
             }
         }
@@ -233,13 +240,16 @@ class Mario: public IMario {
         }
     }
 
-    void collisions(IGameLevelRegion& region, IControls& controls) {
+    void collisions(IGameLevelRegion& region, IControls& controls, AudioManager& audio) {
+        CollisionBox::collide_block_callback block_callback = [this, &region, &audio](int tileX, int tileY, GameObject* object) {
+            object->onPlayerCollide(tileX, tileY, this, region, audio);
+        };
         // X Movement
         x += velX;
         
         int bX = getX();
         int bY = getY();
-        if (getCollisionBox().collideWithBlocksEntitiesX(bX, bY, velX, &region, this)) {
+        if (getCollisionBox().collideWithBlocksEntitiesX(bX, bY, velX, &region, this, block_callback)) {
             setX(bX);
             velX = 0;
         }
@@ -258,7 +268,7 @@ class Mario: public IMario {
             box = &getCollisionBox();
         }
 
-        if (box->collideWithBlocksEntitiesY(bX, bY, velY, &region, this)) {
+        if (box->collideWithBlocksEntitiesY(bX, bY, velY, &region, this, block_callback)) {
             setY(bY);
             grounded = velY < 0;
             if (velY > 0) {
@@ -311,11 +321,24 @@ class Mario: public IMario {
         return powerupState;
     }
 
+    virtual PlayState getPlayState() override {
+        return playState;
+    }
+
     virtual void triggerPowerupState(PowerupState state) override {
         powerupStatePrev = powerupState;
         powerupState = state;
         playState = POWERUP;
         powerupStart = -1;
+    }
+
+    virtual int getNumCoins() override {
+        return coins;
+    }
+
+    virtual void setNumCoins(int value) override {
+        coins = value;
+        std::printf("Coins: %d\n", value);
     }
 
     void resetGameObject() {
@@ -358,11 +381,13 @@ class Mario: public IMario {
     virtual void tick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) override {
         numTicks++;
         switch (playState) {
+            case POWERUP:
+                powerupTick(zone, numTicks, audio);
+                if (playState == POWERUP) {
+                    break;
+                }
             case PLAY:
                 playTick(zone, audio, controls);
-                break;
-            case POWERUP:
-                powerupTick(numTicks, audio);
                 break;
         }
         

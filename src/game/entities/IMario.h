@@ -14,5 +14,8 @@ class IMario: public IEntity {
     };
 
     virtual PowerupState getPowerupState() = 0;
+    virtual PlayState getPlayState() = 0;
     virtual void triggerPowerupState(PowerupState state) = 0;
+    virtual int getNumCoins() = 0;
+    virtual void setNumCoins(int value) = 0;
 };

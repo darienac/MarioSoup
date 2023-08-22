@@ -12,6 +12,9 @@
 #include "game/entities/BumpedItemContainer.h"
 #include "game/entities/Powerup.h"
 #include "game/entities/Particle.h"
+#include "game/entities/CoinItem.h"
+
+#include "audio/AudioManager.h"
 
 #include "TileMappings.h"
 
@@ -78,10 +81,10 @@ namespace GameObjectCache {
                     if (hitter->getLayerPriority() == IEntity::MARIO && ((IMario*) hitter)->getPowerupState() != IMario::SMALL) {
                         int x = tileX * 16;
                         int y = tileY * 16;
-                        region.addEntity(new Particle(x, y, -20, 40, region.getZoneLayer(), GameObjectCache::objects["sma4:brick_break"], "smas:BrickShatter"));
-                        region.addEntity(new Particle(x + 8, y, 20, 40, region.getZoneLayer(), GameObjectCache::objects["sma4:brick_break"]));
-                        region.addEntity(new Particle(x, y + 8, -20, 80, region.getZoneLayer(), GameObjectCache::objects["sma4:brick_break"]));
-                        region.addEntity(new Particle(x + 8, y + 8, 20, 80, region.getZoneLayer(), GameObjectCache::objects["sma4:brick_break"]));
+                        region.addEntity(new Particle(x, y, -20, 40, region.getZoneLayer(), objects["sma4:brick_break"], "smas:BrickShatter"));
+                        region.addEntity(new Particle(x + 8, y, 20, 40, region.getZoneLayer(), objects["sma4:brick_break"]));
+                        region.addEntity(new Particle(x, y + 8, -20, 80, region.getZoneLayer(), objects["sma4:brick_break"]));
+                        region.addEntity(new Particle(x + 8, y + 8, 20, 80, region.getZoneLayer(), objects["sma4:brick_break"]));
                         return;
                     }
                     newObj = objects["sma4:brick"];
@@ -93,11 +96,16 @@ namespace GameObjectCache {
             });
         addObject(new GameObject("sma4:brick_break", "brick break", SMA4_BRICK_BREAK));
 
-        addObject(new AnimatedGameObject("sma4:coin", "coin", SMA4_COIN_1, 8)).add(SMA4_COIN_1, 4).unflag(GameObject::SOLID); // Only sort of an item, qblocks have coins by default
+        addObject(new AnimatedGameObject("sma4:coin", "coin", SMA4_COIN_1, 8)).add(SMA4_COIN_1, 4).unflag(GameObject::SOLID)
+            .setOnPlayerCollide([](int tileX, int tileY, IMario* mario, IGameLevelRegion& region, AudioManager& audio) {
+                region.setGridObject(objects["air"], tileX, tileY);
+                mario->setNumCoins(mario->getNumCoins() + 1);
+                audio.playSound(*AudioCache::audio["smas:Coin"], tileX, tileY);
+            });
 
         addObject(new AnimatedGameObject("sma4:item_coin", "coin (item)", SMA4_ITEMCOIN_1, 4)).add(SMA4_ITEMCOIN_1, 3).add(SMA4_ITEMCOIN_2).flag(GameObject::ITEM)
             .setOnEntityReplace([](int tileX, int tileY, IGameLevelRegion& region) {
-                // TODO: make this
+                region.addEntity(new CoinItem(tileX * 16, tileY * 16 + 15, region.getZoneLayer(), objects["sma4:item_coin"]));
             });
         addObject(new GameObject("sma4:item_mushroom", "mushroom", SMA4_MUSHROOM)).flag(GameObject::ITEM)
             .setOnEntityReplace([](int tileX, int tileY, IGameLevelRegion& region) {

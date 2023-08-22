@@ -31,7 +31,7 @@ class Powerup: public IEntity {
         x += velX;
         int bX = getX();
         int bY = getY();
-        if (collision.collideWithBlocksEntitiesX(bX, bY, velX, region, this)) {
+        if (collision.collideWithBlocksEntitiesX(bX, bY, velX, region, this, nullptr)) {
             setX(bX);
             velX = -velX;
         }
@@ -39,7 +39,7 @@ class Powerup: public IEntity {
         y += velY;
         bX = getX();
         bY = getY();
-        if (collision.collideWithBlocksEntitiesY(bX, bY, velY, region, this)) {
+        if (collision.collideWithBlocksEntitiesY(bX, bY, velY, region, this, nullptr)) {
             setY(bY);
             velY = 0;
         }

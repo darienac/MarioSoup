@@ -3,10 +3,12 @@
 #include "game/IGameLevelRegion.h"
 
 class Entity;
+class AudioManager;
 
 class GameObject {
     public:
     typedef void (*interact_callback)(int tileX, int tileY, IEntity* entity, IGameLevelRegion& region);
+    typedef void (*player_interact_callback)(int tileX, int tileY, IMario* mario, IGameLevelRegion& region, AudioManager& audio);
     typedef void (*gameobj_callback)(int tileX, int tileY, IGameLevelRegion& region);
 
     enum LevelLayer {
@@ -35,6 +37,7 @@ class GameObject {
     LevelLayer preferredLayer = MIDGROUND;
 
     interact_callback hitUnder = nullptr;
+    player_interact_callback playerCollide = nullptr;
     gameobj_callback entityReplace = nullptr;
 
     public:
@@ -117,6 +120,17 @@ class GameObject {
     void onHitUnder(int tileX, int tileY, IEntity* entity, IGameLevelRegion& region) {
         if (hitUnder != nullptr) {
             hitUnder(tileX, tileY, entity, region);
+        }
+    }
+
+    GameObject& setOnPlayerCollide(player_interact_callback callback) {
+        playerCollide = callback;
+        return *this;
+    }
+
+    void onPlayerCollide(int tileX, int tileY, IMario* mario, IGameLevelRegion& region, AudioManager& audio) {
+        if (playerCollide != nullptr) {
+            playerCollide(tileX, tileY, mario, region, audio);
         }
     }
 

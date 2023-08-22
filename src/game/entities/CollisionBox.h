@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "game/entities/IEntity.h"
 #include "game/IGameLevelRegion.h"
 
@@ -11,6 +13,9 @@ class CollisionBox {
     int height;
     
     public:
+    // typedef void (*collide_block_callback)(int tileX, int tileY, GameObject* object);
+    typedef std::function<void(int, int, GameObject*)> collide_block_callback;
+
     CollisionBox(int xOff, int yOff, int width, int height): xOff(xOff), yOff(yOff), width(width), height(height) {}
 
     int getXOff() {
@@ -106,23 +111,29 @@ class CollisionBox {
         return false;
     }
 
-    bool collideWithRegionX(int& x, int& y, int velX, IGameLevelRegion* region) {
+    bool collideWithRegionX(int& x, int& y, int velX, IGameLevelRegion* region, collide_block_callback callback) {
         bool collide = false;
         CollisionBox regionBox = CollisionBox(0, 0, 16, 16);
         int xShift = 0;
         for (int i = IEntity::div(x + xOff, 16); i * 16 < x + xOff + width; i++) {
             for (int j = IEntity::div(y + yOff, 16); j * 16 < y + yOff + height; j++) {
-                if (!region->getGridObject(i, j)->isFlag(GameObject::SOLID)) {
+                GameObject* object = region->getGridObject(i, j);
+                if (callback == nullptr && !object->isFlag(GameObject::SOLID)) {
                     continue;
                 }
+                bool thisCollide = false;
                 int bX = x;
                 int bY = y;
                 if (velX > 0) {
-                    collide |= regionBox.pushBoxLeft(i * 16, j * 16, *this, bX, bY);
+                    thisCollide = regionBox.pushBoxLeft(i * 16, j * 16, *this, bX, bY);
                 } else {
-                    collide |= regionBox.pushBoxRight(i * 16, j * 16, *this, bX, bY);
+                    thisCollide = regionBox.pushBoxRight(i * 16, j * 16, *this, bX, bY);
                 }
-                if (std::abs(bX - x) > std::abs(xShift)) {
+                if (callback != nullptr && thisCollide) {
+                    callback(i, j, object);
+                }
+                if (object->isFlag(GameObject::SOLID) && std::abs(bX - x) > std::abs(xShift)) {
+                    collide |= thisCollide;
                     xShift = bX - x;
                 }
             }
@@ -131,23 +142,29 @@ class CollisionBox {
         return collide;
     }
 
-    bool collideWithRegionY(int& x, int& y, int velY, IGameLevelRegion* region) {
+    bool collideWithRegionY(int& x, int& y, int velY, IGameLevelRegion* region, collide_block_callback callback) {
         bool collide = false;
         CollisionBox regionBox = CollisionBox(0, 0, 16, 16);
         int yShift = 0;
         for (int i = IEntity::div(x + xOff, 16); i * 16 < x + xOff + width; i++) {
             for (int j = IEntity::div(y + yOff, 16); j * 16 < y + yOff + height; j++) {
-                if (!region->getGridObject(i, j)->isFlag(GameObject::SOLID)) {
+                GameObject* object = region->getGridObject(i, j);
+                if (callback == nullptr && !object->isFlag(GameObject::SOLID)) {
                     continue;
                 }
+                bool thisCollide = false;
                 int bX = x;
                 int bY = y;
                 if (velY > 0) {
-                    collide |= regionBox.pushBoxDown(i * 16, j * 16, *this, bX, bY);
+                    thisCollide = regionBox.pushBoxDown(i * 16, j * 16, *this, bX, bY);
                 } else {
-                    collide |= regionBox.pushBoxUp(i * 16, j * 16, *this, bX, bY);
+                    thisCollide = regionBox.pushBoxUp(i * 16, j * 16, *this, bX, bY);
                 }
-                if (std::abs(bY - y) > std::abs(yShift)) {
+                if (callback != nullptr && thisCollide) {
+                    callback(i, j, object);
+                }
+                if (object->isFlag(GameObject::SOLID) && std::abs(bY - y) > std::abs(yShift)) {
+                    collide |= thisCollide;
                     yShift = bY - y;
                 }
             }
@@ -200,23 +217,23 @@ class CollisionBox {
         return collide;
     }
     
-    bool collideWithBlocksEntitiesX(int& x, int& y, int velX, IGameLevelRegion* region, IEntity* ignore) {
+    bool collideWithBlocksEntitiesX(int& x, int& y, int velX, IGameLevelRegion* region, IEntity* ignore, collide_block_callback callbackBlock) {
         int bX = x;
         int bY = y;
         int eX = x;
         int eY = y;
-        bool collides = collideWithRegionX(bX, bY, velX, region) || collideWithEntitiesX(eX, eY, velX, region, ignore);
+        bool collides = collideWithRegionX(bX, bY, velX, region, callbackBlock) || collideWithEntitiesX(eX, eY, velX, region, ignore);
 
         x = std::abs(bX - x) > std::abs(eX - x) ? bX : eX;
         return collides;
     }
 
-    bool collideWithBlocksEntitiesY(int& x, int& y, int velY, IGameLevelRegion* region, IEntity* ignore) {
+    bool collideWithBlocksEntitiesY(int& x, int& y, int velY, IGameLevelRegion* region, IEntity* ignore, collide_block_callback callbackBlock) {
         int bX = x;
         int bY = y;
         int eX = x;
         int eY = y;
-        bool collides = collideWithRegionY(bX, bY, velY, region) || collideWithEntitiesY(eX, eY, velY, region, ignore);
+        bool collides = collideWithRegionY(bX, bY, velY, region, callbackBlock) || collideWithEntitiesY(eX, eY, velY, region, ignore);
 
         y = std::abs(bY - y) > std::abs(eY - y) ? bY : eY;
         return collides;
