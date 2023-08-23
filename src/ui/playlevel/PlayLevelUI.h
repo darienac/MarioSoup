@@ -23,6 +23,11 @@ class PlayLevelUI: public IUIElement {
         } else if (mario->getX() + scrollX < 112) {
             scrollX = 112 - mario->getX();
         }
+        if (mario->getY() + scrollY > 160) {
+            scrollY = 160 - mario->getY();
+        } else if (mario->getY() + scrollY < 80) {
+            scrollY = 80 - mario->getY();
+        }
 
         if (scrollX < IPlayLevelScreen::WINDOW_WIDTH - zone->getWidth() * 16) {
             scrollX = IPlayLevelScreen::WINDOW_WIDTH - zone->getWidth() * 16;
