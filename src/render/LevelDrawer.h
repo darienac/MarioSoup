@@ -6,6 +6,7 @@
 #include "TileMappings.h"
 #include "ui/ui.h"
 #include "ui/leveleditor/LevelEditorUI.h"
+#include "ui/playlevel/IPlayLevelScreen.h"
 
 using namespace Tiles;
 
@@ -13,7 +14,9 @@ class LevelDrawer {
     private:
     ImageDrawer* drawer;
 
-    void drawLevelRegion(IGameLevelRegion* region, int x, int y, bool isEditor) {
+    void drawLevelRegion(IGameLevelRegion* region, int xOff, int yOff, int scrollX, int scrollY, bool isEditor) {
+        int x = scrollX + xOff;
+        int y = scrollY + yOff;
         if (!isEditor) {
             for (IEntity* entity : region->getEntities()) {
                 GameObject* object = &entity->getGameObject();
@@ -30,8 +33,13 @@ class LevelDrawer {
             }
         }
         
-        for (int i = 0; i < region->getWidth(); i++) {
-            for (int j = 0; j < region->getHeight(); j++) {
+        int tileLeft = IEntity::div(-scrollX, 16);
+        int tileBottom = IEntity::div(-scrollY, 16);
+        int tilesWide = IEntity::div(IPlayLevelScreen::WINDOW_WIDTH, 16) + 1;
+        int tilesTall = IEntity::div(IPlayLevelScreen::WINDOW_HEIGHT, 16) + 1;
+        // TODO: Finish this area
+        for (int i = std::max(tileLeft, 0); i < std::min(tileLeft + tilesWide, region->getWidth()); i++) {
+            for (int j = std::max(tileBottom, 0); j < std::min(tileBottom + tilesTall, region->getHeight()); j++) {
                 GameObject* left = region->getGridObject(i - 1, j);
                 GameObject* right = region->getGridObject(i + 1, j);
                 GameObject* up = region->getGridObject(i, j + 1);
@@ -82,7 +90,7 @@ class LevelDrawer {
         IGameLevelRegion** regions = zone.getRegions();
         for (int i = GameObject::NUM_LAYERS - 1; i >= 0; i--) {
             drawer->setZPos(ImageDrawer::ZPOS_GAME_TILES[i]);
-            drawLevelRegion(regions[i], xOff + scrollX, yOff + scrollY, isEditor);
+            drawLevelRegion(regions[i], xOff, yOff, scrollX, scrollY, isEditor);
         }
     }
 
