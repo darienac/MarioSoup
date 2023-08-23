@@ -66,9 +66,9 @@ class AudioSource {
         alSourceStop(sourceId);
         alSourceRewind(sourceId);
         alSourcei(sourceId, AL_BUFFER, 0);
-        for (auto i : buffersPlaying) {
-            i.second->restart();
-        }
+        // for (auto i : buffersPlaying) {
+        //     i.second->restart();
+        // }
         buffersPlaying.clear();
         playing = false;
     }
@@ -87,16 +87,20 @@ class AudioSource {
             int channels = alBuffer->getNumChannels();
             int amount = alBuffer->bufferData();
             if (amount > 0) {
+                std::printf("Audio buffered: %d\n", amount);
                 alBuffer->storeBufferData(buffer, amount * channels * sizeof(short));
                 alSourceQueueBuffers(sourceId, 1, &buffer);
-            } else if (loop) {
-                alBuffer->restart();
-                int amount = alBuffer->bufferData();
-                if (amount > 0) {
-                    alBuffer->storeBufferData(buffer, amount * channels * sizeof(short));
-                    alSourceQueueBuffers(sourceId, 1, &buffer);
-                }
             }
+            // else if (loop) {
+            //     alBuffer->restart();
+            //     int amount = alBuffer->bufferData();
+            //     if (amount > 0) {
+            //         alBuffer->storeBufferData(buffer, amount * channels * sizeof(short));
+            //         alSourceQueueBuffers(sourceId, 1, &buffer);
+            //     }
+            //     alSourceRewind(sourceId);
+            //     alSourcePlay(sourceId);
+            // }
         }
 
         ALint state;
@@ -105,7 +109,12 @@ class AudioSource {
             return;
         }
         
-        cancelBuffers();
+        if (state == AL_STOPPED && loop) {
+            alSourceRewind(sourceId);
+            alSourcePlay(sourceId);
+        } else if (state == AL_STOPPED) {
+            cancelBuffers();
+        }
     }
 
     ~AudioSource() {

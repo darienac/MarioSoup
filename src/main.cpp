@@ -9,6 +9,10 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <AL/al.h>
+#include <AL/alc.h>
+#include <stb/stb_image.h>
+#include <stb/stb_vorbis.c>
 
 #include <iostream>
 

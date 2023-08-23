@@ -16,6 +16,7 @@ namespace AudioCache {
         }
     };
     std::map<const char*, AudioBuffer*, strCompare> audio;
+    std::map<std::string, std::string> music;
 };
 
 #ifndef MUTE
@@ -30,12 +31,17 @@ namespace {
             addAudio(new AudioBuffer(prefix + dir_entry.path().stem().string(), dir_entry));
         }
     }
+    void addMusic(std::string id, std::string path) {
+        AudioCache::music[id] = path;
+    }
 }
 #endif
 
 namespace AudioCache {
     void init() {
         #ifndef MUTE
+        addMusic("testsong", "testsong.ogg");
+
         addAudioBatch("smas", "smas:");
         addAudio(new AudioBuffer("smb3:jump", "smb3_jump.ogg"));
         addAudio(new AudioBuffer("sma4:overworld", "sma4_overworld.ogg"));

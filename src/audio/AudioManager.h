@@ -1,11 +1,10 @@
 #pragma once
 
-#include <AL/al.h>
-#include <AL/alc.h>
 #include <set>
 
 #include "audio/AudioBuffer.h"
 #include "audio/AudioSource.h"
+#include "audio/MusicPlayer.h"
 #include "audio/AudioCache.h"
 
 class AudioManager {
@@ -17,7 +16,7 @@ class AudioManager {
     ALCdevice* device;
     ALCcontext* context;
 
-    AudioSource* musicSource;
+    MusicPlayer* musicPlayer;
     std::set<AudioSource*> soundSources;
 
     float soundMaxDistance = 1.0;
@@ -39,7 +38,7 @@ class AudioManager {
         alListenerfv(AL_VELOCITY, vel);
         alListenerfv(AL_ORIENTATION, ori);
 
-        musicSource = new AudioSource(true, false);
+        musicPlayer = new MusicPlayer();
         #endif
     }
 
@@ -52,14 +51,13 @@ class AudioManager {
 
     void cancelMusic() {
         #ifndef MUTE
-        musicSource->cancelBuffers();
+        musicPlayer->stopAudio();
         #endif
     }
 
-    void setMusic(AudioBuffer& buffer) {
+    void playMusic(std::string path) {
         #ifndef MUTE
-        cancelMusic();
-        musicSource->playBuffer(buffer);
+        musicPlayer->playAudio(path);
         #endif
     }
 
@@ -83,7 +81,7 @@ class AudioManager {
 
     void update() {
         #ifndef MUTE
-        musicSource->update();
+        musicPlayer->update();
         auto it = soundSources.begin();
         while (it != soundSources.end()) {
             AudioSource* source = *it;
@@ -100,7 +98,7 @@ class AudioManager {
     
     #ifndef MUTE
     ~AudioManager() {
-        delete musicSource;
+        delete musicPlayer;
         for (AudioSource* source : soundSources) {
             delete source;
         }

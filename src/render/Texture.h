@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include <stb/stb_image.h>
 #include <GL/glew.h>
 
 #include "ResourceReader.h"

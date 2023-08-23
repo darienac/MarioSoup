@@ -1,8 +1,5 @@
 #pragma once
 
-#include <AL/al.h>
-#include <AL/alc.h>
-#include <stb/stb_vorbis.c>
 #include <filesystem>
 
 #include "ResourceReader.h"
