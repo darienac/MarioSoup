@@ -2,41 +2,37 @@
 
 #include <AL/al.h>
 #include <AL/alc.h>
-#include <map>
 
 #include "audio/AudioBuffer.h"
 
 class AudioSource {
     private:
-    const ALfloat pos[3] = {0.0, 0.0, 0.0};
-    const ALfloat vel[3] = {0.0, 0.0, 0.0};
-    const ALfloat dir[3] = {0.0, 0.0, 1.0};
-
     ALuint sourceId;
-    bool playing = false;
-    std::map<ALuint, AudioBuffer*> buffersPlaying;
-
-    bool loop;
-    bool relative;
 
     public:
-    AudioSource(bool loop, bool relative): loop(loop), relative(relative) {
+    AudioSource(bool loop, bool relative) {
         alGenSources(1, &sourceId);
-        if (loop) {
-            // alSourcei(sourceId, AL_LOOPING, AL_TRUE);
-        }
-        if (relative) {
-            alSourcei(sourceId, AL_SOURCE_RELATIVE, AL_TRUE);
-        }
+        alSourcei(sourceId, AL_LOOPING, loop);
+        alSourcei(sourceId, AL_SOURCE_RELATIVE, relative);
 
-        alSourcefv(sourceId, AL_POSITION, pos);
-        alSourcefv(sourceId, AL_VELOCITY, vel);
-        alSourcefv(sourceId, AL_DIRECTION, dir);
+        setMaxDistance(1.0f);
+        setReferenceDistance(1.0f);
+
+        setPos(0.0f, 0.0f, 0.0f);
+        setVel(0.0f, 0.0f, 0.0f);
+        setDir(0.0f, 0.0f, 1.0f);
     }
 
-    void setPos(float pos[3]) {
-        alSourcefv(sourceId, AL_POSITION, pos);
-        std::printf("Source pos: x: %f, y: %f, z: %f\n", pos[0], pos[1], pos[2]);
+    void setPos(float x, float y, float z) {
+        alSource3f(sourceId, AL_POSITION, 0.0f, 0.0f, 0.0f);
+    }
+
+    void setVel(float dx, float dy, float dz) {
+        alSource3f(sourceId, AL_VELOCITY, dx, dy, dz);
+    }
+
+    void setDir(float dx, float dy, float dz) {
+        alSource3f(sourceId, AL_DIRECTION, dx, dy, dz);
     }
 
     void setMaxDistance(float value) {
@@ -47,74 +43,22 @@ class AudioSource {
         alSourcef(sourceId, AL_REFERENCE_DISTANCE, value);
     }
 
-    bool isPlaying() {
-        return playing;
-    }
-
-    void playBuffer(AudioBuffer& buffer) {
-        int channels = buffer.getNumChannels();
-        alSourceQueueBuffers(sourceId, channels, buffer.getBuffers());
+    void playBuffer(AudioBuffer* buffer) {
+        stopBuffer();
+        ALuint bufferId = buffer->getBufferId();
+        alSourcei(sourceId, AL_BUFFER, bufferId);
         alSourcePlay(sourceId);
-        buffersPlaying[buffer.getBuffers()[0]] = &buffer;
-        if (channels == 2) {
-            buffersPlaying[buffer.getBuffers()[1]] = &buffer;
-        }
-        playing = true;
     }
 
-    void cancelBuffers() {
-        alSourceStop(sourceId);
+    void stopBuffer() {
         alSourceRewind(sourceId);
         alSourcei(sourceId, AL_BUFFER, 0);
-        // for (auto i : buffersPlaying) {
-        //     i.second->restart();
-        // }
-        buffersPlaying.clear();
-        playing = false;
     }
 
-    void update() {
-        if (!playing) {
-            return;
-        }
-
-        ALint processed;
-        ALuint buffer;
-        alGetSourcei(sourceId, AL_BUFFERS_PROCESSED, &processed);
-        if (processed) {
-            alSourceUnqueueBuffers(sourceId, 1, &buffer);
-            AudioBuffer* alBuffer = buffersPlaying[buffer];
-            int channels = alBuffer->getNumChannels();
-            int amount = alBuffer->bufferData();
-            if (amount > 0) {
-                std::printf("Audio buffered: %d\n", amount);
-                alBuffer->storeBufferData(buffer, amount * channels * sizeof(short));
-                alSourceQueueBuffers(sourceId, 1, &buffer);
-            }
-            // else if (loop) {
-            //     alBuffer->restart();
-            //     int amount = alBuffer->bufferData();
-            //     if (amount > 0) {
-            //         alBuffer->storeBufferData(buffer, amount * channels * sizeof(short));
-            //         alSourceQueueBuffers(sourceId, 1, &buffer);
-            //     }
-            //     alSourceRewind(sourceId);
-            //     alSourcePlay(sourceId);
-            // }
-        }
-
+    bool isPlaying() {
         ALint state;
         alGetSourcei(sourceId, AL_SOURCE_STATE, &state);
-        if (state == AL_PLAYING) {
-            return;
-        }
-        
-        if (state == AL_STOPPED && loop) {
-            alSourceRewind(sourceId);
-            alSourcePlay(sourceId);
-        } else if (state == AL_STOPPED) {
-            cancelBuffers();
-        }
+        return state == AL_PLAYING;
     }
 
     ~AudioSource() {

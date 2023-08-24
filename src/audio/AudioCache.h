@@ -10,12 +10,7 @@
 namespace fs = std::filesystem;
 
 namespace AudioCache {
-    struct strCompare {
-        bool operator()(const char* a, const char* b) const {
-            return strcmp(a, b) < 0;
-        }
-    };
-    std::map<const char*, AudioBuffer*, strCompare> audio;
+    std::map<std::string, AudioBuffer*> audio;
     std::map<std::string, std::string> music;
 };
 
@@ -41,10 +36,10 @@ namespace AudioCache {
     void init() {
         #ifndef MUTE
         addMusic("testsong", "testsong.ogg");
+        addMusic("sma4:overworld", "sma4_overworld.ogg");
 
         addAudioBatch("smas", "smas:");
         addAudio(new AudioBuffer("smb3:jump", "smb3_jump.ogg"));
-        addAudio(new AudioBuffer("sma4:overworld", "sma4_overworld.ogg"));
         #endif
     }
 }

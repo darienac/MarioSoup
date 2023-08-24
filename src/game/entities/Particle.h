@@ -51,7 +51,7 @@ class Particle: public IEntity {
     }
     virtual void tick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) override {
         if (numTicks == 0 && sound.size() != 0) {
-            audio.playSound(*AudioCache::audio[sound.c_str()], getX(), getY());
+            audio.playSound(AudioCache::audio[sound], getX(), getY());
         }
         velY -= 6;
         // if (velY < -56) {

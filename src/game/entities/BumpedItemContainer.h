@@ -47,7 +47,7 @@ class BumpedItemContainer: public IEntity {
     }
     virtual void tick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) override {
         if (ticks == 0) {
-            audio.playSound(*AudioCache::audio["smas:Bump"], getX(), getY());
+            audio.playSound(AudioCache::audio["smas:Bump"], getX(), getY());
         }
         y += velY;
         velY--;

@@ -49,7 +49,7 @@ class CoinItem: public IEntity {
     }
     virtual void tick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) override {
         if (numTicks == 0) {
-            audio.playSound(*AudioCache::audio["smas:Coin"], getX(), getY());
+            audio.playSound(AudioCache::audio["smas:Coin"], getX(), getY());
             yStart = y;
             zone.getMario().setNumCoins(zone.getMario().getNumCoins() + 1);
         }

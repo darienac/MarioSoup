@@ -100,7 +100,7 @@ namespace GameObjectCache {
             .setOnPlayerCollide([](int tileX, int tileY, IMario* mario, IGameLevelRegion& region, AudioManager& audio) {
                 region.setGridObject(objects["air"], tileX, tileY);
                 mario->setNumCoins(mario->getNumCoins() + 1);
-                audio.playSound(*AudioCache::audio["smas:Coin"], tileX, tileY);
+                audio.playSound(AudioCache::audio["smas:Coin"], tileX, tileY);
             });
 
         addObject(new AnimatedGameObject("sma4:item_coin", "coin (item)", SMA4_ITEMCOIN_1, 4)).add(SMA4_ITEMCOIN_1, 3).add(SMA4_ITEMCOIN_2).flag(GameObject::ITEM)

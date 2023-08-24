@@ -49,7 +49,7 @@ class Mario: public IMario {
                 if (velY > 112) {
                     velY = 112;
                 }
-                audio.playSound(*AudioCache::audio["smas:jump"], getX(), getY());
+                audio.playSound(AudioCache::audio["smas:jump"], getX(), getY());
             } else {
                 velY = -6;
             }
@@ -73,7 +73,7 @@ class Mario: public IMario {
     void powerupTick(IGameLevelZone& zone, int numTicks, AudioManager& audio) {
         if (powerupStart == -1) {
             powerupStart = numTicks;
-            audio.playSound(*AudioCache::audio["smas:Powerup"], getX(), getY());
+            audio.playSound(AudioCache::audio["smas:Powerup"], getX(), getY());
         }
         int ticks = numTicks - powerupStart;
         if (powerupState == SUPER && powerupStatePrev == SMALL) {

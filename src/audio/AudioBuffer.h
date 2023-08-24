@@ -1,107 +1,80 @@
 #pragma once
 
 #include <filesystem>
+#include <string>
 
 #include "ResourceReader.h"
 
 class AudioBuffer {
     private:
-    static const int CHUNK_SIZE = 65536;
+    ALuint bufferId;
 
     std::string id;
-
-    short audioBuffer[CHUNK_SIZE];
-
-    ALuint buffers[2];
-
-    int channels;
-    int sampleRate;
-    int samples;
-    int duration;
-
     stb_vorbis* stream;
-    bool closed = false;
+    stb_vorbis_info info;
 
-    void setupBuffer(stb_vorbis* stream) {
-        stb_vorbis_info info = stb_vorbis_get_info(stream);
-        channels = info.channels;
-        sampleRate = info.sample_rate;
-        samples = stb_vorbis_stream_length_in_samples(stream) * channels;
-        duration = stb_vorbis_stream_length_in_seconds(stream);
-        std::printf("ID: %s, Channels: %d, Sample rate: %d\n", id.c_str(), channels, sampleRate);
+    void loadBuffer(stb_vorbis* stream) {
+        info = stb_vorbis_get_info(stream);
+        unsigned int bufferSize = stb_vorbis_stream_length_in_samples(stream) * info.channels;
+        short* buffer = new short[bufferSize];
+        int amount = stb_vorbis_get_samples_short_interleaved(stream, info.channels, buffer, bufferSize);
+        std::printf("Buffer loaded: (%d of %d shorts)\n", amount * info.channels, bufferSize);
+        alBufferData(bufferId, (info.channels == 2) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, amount * info.channels * sizeof(short), info.sample_rate);
 
-        if (channels > 2) {
-            throw "Too many samples, id: " + id + " (" + std::to_string(channels) + ")";
-        }
-
-        alGenBuffers(channels, buffers);
-
-        restart();
+        delete[] buffer;
     }
 
     public:
-    AudioBuffer(std::string id, std::string fileName): id(id) {
+    AudioBuffer(std::string id, std::string path): id(id) {
         int error;
-        std::string path = ResourceReader::getFullPath(ResourceReader::Audio, fileName);
-        stream = stb_vorbis_open_filename(path.c_str(), &error, NULL);
+        alGetError();
+        alGenBuffers(1, &bufferId);
+        if ((error = alGetError()) != AL_NO_ERROR) {
+            std::fprintf(stderr, "AL Error: %d\n", error);
+            return;
+        }
+
+        std::string fullPath = ResourceReader::getFullPath(ResourceReader::Audio, path);
+        stream = stb_vorbis_open_filename(fullPath.c_str(), &error, NULL);
         if (!stream) {
+            stb_vorbis_close(stream);
+            std::fprintf(stderr, "vorbis error: %d file: %s\n", error, fullPath.c_str());
             throw "Couldn't open file";
         }
 
-        setupBuffer(stream);
+        loadBuffer(stream);
+        stb_vorbis_close(stream);
     }
 
     AudioBuffer(std::string id, std::filesystem::directory_entry dir): id(id) {
         int error;
-        stream = stb_vorbis_open_filename(dir.path().string().c_str(), &error, NULL);
-        if (!stream) {
-            throw "Couldn't open file " + dir.path().string();
-        }
-
-        setupBuffer(stream);
-    }
-
-    int getNumChannels() {
-        return channels;
-    }
-
-    const char* getId() {
-        return id.c_str();
-    }
-    
-    int bufferData() {
-        return stb_vorbis_get_samples_short_interleaved(stream, channels, audioBuffer, CHUNK_SIZE);
-    }
-
-    void storeBufferData(ALuint bufferId, int size) {
-        alBufferData(bufferId, (channels == 2) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, audioBuffer, size, sampleRate);
-    }
-
-    ALuint* getBuffers() {
-        return buffers;
-    } 
-
-    void restart() {
-        stb_vorbis_seek_start(stream);
-
-        int amount;
-        amount = bufferData();
-        storeBufferData(buffers[0], amount * channels * sizeof(short));
-        if (channels == 2) {
-            amount = bufferData();
-            storeBufferData(buffers[1], amount * channels * sizeof(short));
-        }
-    }
-
-    void close() {
-        if (closed) {
+        alGetError();
+        alGenBuffers(1, &bufferId);
+        if ((error = alGetError()) != AL_NO_ERROR) {
+            std::fprintf(stderr, "AL Error: %d\n", error);
             return;
         }
+
+        stream = stb_vorbis_open_filename(dir.path().string().c_str(), &error, NULL);
+        if (!stream) {
+            stb_vorbis_close(stream);
+            std::fprintf(stderr, "vorbis error: %d\n", error);
+            throw "Couldn't open file";
+        }
+
+        loadBuffer(stream);
         stb_vorbis_close(stream);
-        closed = true;
+    }
+
+    std::string getId() {
+        return id;
+    }
+
+    ALuint getBufferId() {
+        return bufferId;
     }
 
     ~AudioBuffer() {
-        close();
+        alDeleteBuffers(1, &bufferId);
     }
 };

@@ -61,22 +61,19 @@ class AudioManager {
         #endif
     }
 
-    void playSound(AudioBuffer& buffer, float pos[3]) {
+    void playSound(AudioBuffer* buffer, float x, float y, float z) {
         #ifndef MUTE
         AudioSource* source = new AudioSource(false, false);
-        source->setMaxDistance(soundMaxDistance);
-        source->setReferenceDistance(referenceDistance);
-        source->setPos(pos);
+        source->setPos(x, y, z);
         source->playBuffer(buffer);
 
         soundSources.insert(source);
-        std::printf("Sound played: %s\n", buffer.getId());
+        std::printf("Sound played: %s\n", buffer->getId().c_str());
         #endif
     }
 
-    void playSound(AudioBuffer& buffer, int x, int y) {
-        float pos[3] = {(float) x, (float) y, 0.0};
-        playSound(buffer, pos);
+    void playSound(AudioBuffer* buffer, int x, int y) {
+        playSound(buffer, x, y, 0.0f);
     }
 
     void update() {
@@ -85,7 +82,7 @@ class AudioManager {
         auto it = soundSources.begin();
         while (it != soundSources.end()) {
             AudioSource* source = *it;
-            source->update();
+            // source->update();
             if (source->isPlaying()) {
                 it++;
             } else {
