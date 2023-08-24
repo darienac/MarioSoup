@@ -8,6 +8,7 @@
 class AudioSource {
     private:
     ALuint sourceId;
+    bool playing = false;
 
     public:
     AudioSource(bool loop, bool relative) {
@@ -27,6 +28,10 @@ class AudioSource {
         alSource3f(sourceId, AL_POSITION, 0.0f, 0.0f, 0.0f);
     }
 
+    void setPos(int x, int y) {
+        setPos(x, y, 0.0f);
+    }
+
     void setVel(float dx, float dy, float dz) {
         alSource3f(sourceId, AL_VELOCITY, dx, dy, dz);
     }
@@ -43,16 +48,31 @@ class AudioSource {
         alSourcef(sourceId, AL_REFERENCE_DISTANCE, value);
     }
 
-    void playBuffer(AudioBuffer* buffer) {
-        stopBuffer();
+    void setBuffer(AudioBuffer* buffer) {
         ALuint bufferId = buffer->getBufferId();
         alSourcei(sourceId, AL_BUFFER, bufferId);
-        alSourcePlay(sourceId);
     }
 
-    void stopBuffer() {
+    void play() {
+        if (playing) {
+            return;
+        }
+        playing = true;
+        alSourcePlay(sourceId);   
+    }
+
+    void play(AudioBuffer* buffer) {
+        stop();
+        setBuffer(buffer);
+        play();
+    }
+
+    void stop() {
+        if (!playing) {
+            return;
+        }
+        playing = false;
         alSourceRewind(sourceId);
-        alSourcei(sourceId, AL_BUFFER, 0);
     }
 
     bool isPlaying() {

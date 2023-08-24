@@ -13,6 +13,7 @@ class IMario: public IEntity {
         SUPER
     };
 
+    virtual bool isSkidding() = 0;
     virtual PowerupState getPowerupState() = 0;
     virtual PlayState getPlayState() = 0;
     virtual void triggerPowerupState(PowerupState state) = 0;

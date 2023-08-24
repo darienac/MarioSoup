@@ -27,6 +27,7 @@ class Mario: public IMario {
 
     bool grounded = true;
     bool crouching = false;
+    bool skidding = false;
     int velX = 0;
     int velY = 0;
     unsigned int numTicks = 0;
@@ -192,7 +193,8 @@ class Mario: public IMario {
             }
         }
 
-        if (!crouching && xDir * velX < 0) {
+        skidding = !crouching && xDir * velX < 0;
+        if (skidding) {
             if (powerupState == SMALL) {
                 gameObject.setLevelTile(MARIO_SKID_SMA4);
             } else {
@@ -317,6 +319,10 @@ class Mario: public IMario {
     // Mario itself is also copied with the level when the level is played
     Mario(): gameObject(*GameObjectCache::objects["player"]) {}
 
+    virtual bool isSkidding() override {
+        return skidding;
+    }
+
     virtual PowerupState getPowerupState() override {
         return powerupState;
     }
@@ -380,6 +386,7 @@ class Mario: public IMario {
 
     virtual void tick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) override {
         numTicks++;
+        skidding = false;
         switch (playState) {
             case POWERUP:
                 powerupTick(zone, numTicks, audio);

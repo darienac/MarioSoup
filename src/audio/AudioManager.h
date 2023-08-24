@@ -65,7 +65,7 @@ class AudioManager {
         #ifndef MUTE
         AudioSource* source = new AudioSource(false, false);
         source->setPos(x, y, z);
-        source->playBuffer(buffer);
+        source->play(buffer);
 
         soundSources.insert(source);
         std::printf("Sound played: %s\n", buffer->getId().c_str());

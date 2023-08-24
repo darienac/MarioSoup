@@ -9,7 +9,10 @@
 class PlayLevelUI: public IUIElement {
     private:
     IPlayLevelScreen* screen;
+
     AudioManager* audio;
+    AudioSource* skidSound;
+
     IControls* controls;
     bool* keys;
 
@@ -51,6 +54,15 @@ class PlayLevelUI: public IUIElement {
         int scrollX = screen->getScrollX();
         int scrollY = screen->getScrollY();
 
+        GameLevelZone* zone = screen->getLevel()->getCurrentZone();
+        Mario* mario = &zone->getMario();
+        if (mario->isSkidding()) {
+            skidSound->setPos(mario->getX(), mario->getY());
+            skidSound->play();
+        } else {
+            skidSound->stop();
+        }
+        
         float pos[3] = {(float) -scrollX + IPlayLevelScreen::WINDOW_WIDTH / 2, (float) -scrollY + IPlayLevelScreen::WINDOW_HEIGHT / 2, 128};
         audio->setPos(pos);
     }
@@ -58,6 +70,9 @@ class PlayLevelUI: public IUIElement {
     public:
     PlayLevelUI(IPlayLevelScreen* screen, AudioManager* audio, bool* keys): screen(screen), audio(audio), keys(keys) {
         controls = new KeyboardControls(keys);
+
+        skidSound = new AudioSource(true, false);
+        skidSound->setBuffer(AudioCache::audio["smas:skid"]);
     }
 
     void loadLevelZone() {
@@ -151,5 +166,7 @@ class PlayLevelUI: public IUIElement {
 
     ~PlayLevelUI() {
         delete controls;
+
+        delete skidSound;
     }
 };
