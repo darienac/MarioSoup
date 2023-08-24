@@ -12,6 +12,7 @@ class IEntity {
     static GameObject* air;
     enum Priority {
         ITEM,
+        ENEMY,
         ITEM_CONTAINER,
         MARIO,
         PARTICLE

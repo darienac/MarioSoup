@@ -1,75 +1,43 @@
 #pragma once
 
-#include "game/entities/IEntity.h"
+#include "game/entities/MovingEntity.h"
 #include "game/entities/IMario.h"
 #include "game/entities/CollisionBox.h"
 #include "game/objects/GameObject.h"
 #include "game/IGameLevelZone.h"
 #include "audio/AudioManager.h"
 
-class Powerup: public IEntity {
+class Powerup: public MovingEntity {
     private:
-    int x;
-    int y;
-    int zoneLayer;
     GameObject* gameObject;
     bool emerge = false;
     int ticks = 0;
-    int velX = 8;
-    int velY = 0;
     bool isDone = false;
 
     CollisionBox collision = CollisionBox(0, 0, 16, 16);
 
     void movement(IGameLevelZone& zone) {
-        IGameLevelRegion* region = zone.getRegions()[zoneLayer];
-        velY -= 6;
-        if (velY < -56) {
-            velY = -56;
+        setVelY(getVelY() - 6);
+        if (getVelY() < -56) {
+            setVelY(-56);
         }
 
-        x += velX;
-        int bX = getX();
-        int bY = getY();
-        if (collision.collideWithBlocksEntitiesX(bX, bY, velX, region, this, nullptr)) {
-            setX(bX);
-            velX = -velX;
+        if (moveZoneX(zone, true)) {
+            setVelX(-getVelX());
         }
 
-        y += velY;
-        bX = getX();
-        bY = getY();
-        if (collision.collideWithBlocksEntitiesY(bX, bY, velY, region, this, nullptr)) {
-            setY(bY);
-            velY = 0;
+        if (moveZoneY(zone, true)) {
+            setVelY(0);
         }
     }
 
     public:
     static GameObject* air;
 
-    Powerup(int x, int y, int zoneLayer, GameObject* object, bool emerge): x(x * 16), y(y * 16), zoneLayer(zoneLayer), gameObject(object), emerge(emerge) {}
+    Powerup(int x, int y, int zoneLayer, GameObject* object, bool emerge): MovingEntity(x, y, 8, 0, zoneLayer), gameObject(object), emerge(emerge) {}
 
-    virtual int getZoneLayer() override {
-        return zoneLayer;
-    }
-    virtual void setZoneLayer(int value) override {
-        zoneLayer = value;
-    }
     virtual int getLayerPriority() const override {
         return IEntity::ITEM;
-    }
-    virtual int getX() override {
-        return div(x, 16);
-    }
-    virtual void setX(int value) override {
-        x = value * 16;
-    }
-    virtual int getY() override {
-        return div(y, 16);
-    }
-    virtual void setY(int value) override {
-        y = value * 16;
     }
     virtual GameObject& getGameObject() override {
         if (ticks < 16) {
@@ -108,7 +76,7 @@ class Powerup: public IEntity {
 
     virtual void onPushed(IEntity& entity, int dx, int dy) {
         if (dy > 0) {
-            velY = 64;
+            setVelY(64);
         }
     }
 
