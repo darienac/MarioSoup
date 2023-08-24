@@ -60,7 +60,8 @@ namespace {
         UI,
         SMA4_TILES,
         SMA4_NPCS_ITEMS,
-        SMA4_BACKGROUNDS
+        SMA4_BACKGROUNDS,
+        SMA4_ENEMIES
     };
 };
 
@@ -187,6 +188,8 @@ namespace Tiles {
 
         SMA4_BRICK_BREAK,
 
+        SMA4_GOOMBA, SMA4_GOOMBA_SQUASH, SMA4_FLYGOOMBA1, SMA4_FLYGOOMBA2, SMA4_REDGOOMBA, MINIGOOMBA,
+
         SMA4_COIN_1, SMA4_COIN_2, SMA4_COIN_3, SMA4_COIN_4,
         SMA4_ITEMCOIN_1, SMA4_ITEMCOIN_2, SMA4_ITEMCOIN_3,
         SMA4_MUSHROOM, SMA4_1UP, SMA4_FLOWER, SMA4_STAR1, SMA4_STAR2, SMA4_STAR3,
@@ -207,6 +210,7 @@ namespace Tiles {
         textures[TextureName::SMA4_TILES] = new Texture("sma4_misc_tileset.png");
         textures[TextureName::SMA4_NPCS_ITEMS] = new Texture("sma4_npc_items.png");
         textures[TextureName::SMA4_BACKGROUNDS] = new Texture("sma4_backgrounds.png");
+        textures[TextureName::SMA4_ENEMIES] = new Texture("sma4_enemies.png");
 
         tiles[AIR] = Tile(HUD, 264, 8, 0, 0);
 
@@ -294,6 +298,11 @@ namespace Tiles {
         initTileGrid(tiles + SMA4_BRICK_1, SMA4_TILES, 182, 146, 16, 16, 2, 2, 4, 4);
 
         tiles[SMA4_BRICK_BREAK] = Tile(SMA4_NPCS_ITEMS, 484, 120, 8, 8).setXCenter(4).setYCenter(4);
+
+        initTileGrid(tiles + SMA4_GOOMBA, SMA4_ENEMIES, 21, 20, 16, 16, 3, 3, 2, 2);
+        recenterTilesX(tiles + SMA4_GOOMBA, 2, 8);
+        initTileGrid(tiles + SMA4_FLYGOOMBA1, SMA4_ENEMIES, 59, 12, 20, 24, 3, 3, 2, 2);
+        recenterTilesX(tiles + SMA4_FLYGOOMBA1, 2, 10);
 
         initTileGrid(tiles + SMA4_COIN_1, SMA4_TILES, 182, 110, 16, 16, 2, 2, 4, 4);
         initTileGrid(tiles + SMA4_ITEMCOIN_1, SMA4_NPCS_ITEMS, 300, 99, 16, 16, 2, 2, 3, 3);

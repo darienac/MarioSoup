@@ -21,6 +21,13 @@
                 "sma4:item_coin",
                 "sma4:item_mushroom"
             ]
+        },
+        {
+            "label": "enemies",
+            "groups": [],
+            "items": [
+                "sma4:goomba"
+            ]
         }
     ]
 }

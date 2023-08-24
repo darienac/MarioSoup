@@ -94,7 +94,7 @@ namespace GameObjectCache {
                 }
                 region.addEntity(new BumpedItemContainer(tileX, tileY, region.getZoneLayer(), newObj));
             });
-        addObject(new GameObject("sma4:brick_break", "brick break", SMA4_BRICK_BREAK));
+        addObject(new AnimatedGameObject("sma4:brick_break", "brick break", SMA4_BRICK_BREAK, 4)).add(false, false).add(true, false).add(false, true).add(true, true);
 
         addObject(new AnimatedGameObject("sma4:coin", "coin", SMA4_COIN_1, 8)).add(SMA4_COIN_1, 4).unflag(GameObject::SOLID)
             .setOnPlayerCollide([](int tileX, int tileY, IMario* mario, IGameLevelRegion& region, AudioManager& audio) {
@@ -110,6 +110,11 @@ namespace GameObjectCache {
         addObject(new GameObject("sma4:item_mushroom", "mushroom", SMA4_MUSHROOM)).flag(GameObject::ITEM)
             .setOnEntityReplace([](int tileX, int tileY, IGameLevelRegion& region) {
                 region.addEntity(new Powerup(tileX * 16, tileY * 16, region.getZoneLayer(), objects["sma4:item_mushroom"], true));
+            });
+
+        addObject(new AnimatedGameObject("sma4:goomba", "goomba", SMA4_GOOMBA, 8)).add(false, false).add(true, false)
+            .setOnEntityReplace([](int tileX, int tileY, IGameLevelRegion& region) {
+                // TODO: Make Goomba
             });
     }
 }

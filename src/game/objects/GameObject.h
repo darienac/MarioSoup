@@ -71,7 +71,7 @@ class GameObject {
         return *this;
     }
 
-    bool isFlippedX() {
+    virtual bool isFlippedX() {
         return flippedX;
     }
 
@@ -80,7 +80,7 @@ class GameObject {
         return *this;
     }
 
-    bool isFlippedY() {
+    virtual bool isFlippedY() {
         return flippedY;
     }
 

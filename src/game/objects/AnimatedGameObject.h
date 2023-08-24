@@ -6,10 +6,19 @@
 
 class AnimatedGameObject: public GameObject {
     private:
+    struct Keyframe {
+        int tile;
+        bool flippedX;
+        bool flippedY;
+    };
     static int tick;
 
     int frameTime;
-    std::vector<int> tiles;
+    std::vector<Keyframe> tiles;
+
+    Keyframe& getCurrentKeyframe() {
+        return tiles.at((tick / frameTime) % tiles.size());
+    }
 
     public:
     AnimatedGameObject(const char* id, const char* name, int tilePreview, int frameTime): GameObject(id, name, tilePreview), frameTime(frameTime) {}
@@ -18,9 +27,17 @@ class AnimatedGameObject: public GameObject {
         tick = value;
     }
 
-    AnimatedGameObject& add(int tile) {
-        tiles.push_back(tile);
+    AnimatedGameObject& add(int tile, bool flippedX, bool flippedY) {
+        tiles.push_back({tile, flippedX, flippedY});
         return *this;
+    }
+
+    AnimatedGameObject& add(bool flippedX, bool flippedY) {
+        return add(GameObject::getLevelTile(), flippedX, flippedY);
+    }
+
+    AnimatedGameObject& add(int tile) {
+        return add(tile, false, false);
     }
 
     AnimatedGameObject& add(int tileStart, int numTiles) {
@@ -35,7 +52,15 @@ class AnimatedGameObject: public GameObject {
     }
 
     virtual int getLevelTile() override {
-        return tiles.at((tick / frameTime) % tiles.size());;
+        return getCurrentKeyframe().tile;
+    }
+
+    virtual bool isFlippedX() override {
+        return getCurrentKeyframe().flippedX;
+    }
+
+    virtual bool isFlippedY() override {
+        return getCurrentKeyframe().flippedY;
     }
 };
 

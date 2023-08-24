@@ -46,7 +46,17 @@ class LevelDrawer {
                 GameObject* down = region->getGridObject(i, j - 1);
                 GameObject* obj = region->getGridObject(i, j);
 
-                drawer->drawTile(obj->getLevelTile(left, right, up, down), x + i * 16, y + j * 16);
+                Tile* tile = &Tiles::getTile(obj->getLevelTile(left, right, up, down));
+                int w = tile->cw;
+                int h = tile->ch;
+                if (obj->isFlippedX()) {
+                    w = -w;
+                }
+                if (obj->isFlippedY()) {
+                    h = -h;
+                }
+
+                drawer->drawTileStretched(*tile, x + i * 16, y + j * 16, w, h);
                 if (isEditor && obj && obj->isFlag(GameObject::CONTAINS_ITEM) && region->getGridData(i, j).containerObject) {
                     drawer->drawTile(UICRATE_CLOSED, x + i * 16, y + j * 16);
                 }
