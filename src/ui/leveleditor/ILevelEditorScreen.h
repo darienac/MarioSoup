@@ -6,7 +6,7 @@
 class ILevelEditorScreen: public IScreen {
     public:
     enum UIState {
-        EDITOR, SAVE_DIALOG, OPEN_DIALOG, INFO_POPUP
+        EDITOR, SAVE_DIALOG, OPEN_DIALOG, INFO_POPUP, RESIZE_DIALOG
     };
 
     virtual UIState getState() = 0;

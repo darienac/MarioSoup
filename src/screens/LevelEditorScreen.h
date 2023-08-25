@@ -12,6 +12,7 @@
 #include "ui/leveleditor/LevelEditorUI.h"
 #include "ui/leveleditor/FilePickerPopup.h"
 #include "ui/leveleditor/InfoPopup.h"
+#include "ui/leveleditor/ResizeDialog.h"
 #include "screens/ScreenManager.h"
 
 class LevelEditorScreen: public ILevelEditorScreen {
@@ -29,6 +30,7 @@ class LevelEditorScreen: public ILevelEditorScreen {
     IPlayLevelScreen* playLevelScreen;
     LevelEditorUI* editorUI;
     FilePickerPopup* filePicker;
+    ResizeDialog* resizeDialog;
     InfoPopup infoPopup = InfoPopup(this);
     GameLevel* level = new GameLevel();
 
@@ -42,6 +44,7 @@ class LevelEditorScreen: public ILevelEditorScreen {
         level->setCurrentZone(levelZone);
         editorUI = new LevelEditorUI(this, WINDOW_WIDTH, WINDOW_HEIGHT, scrollX, scrollY, window.getKeys());
         filePicker = new FilePickerPopup(this);
+        resizeDialog = new ResizeDialog(this);
     }
 
     void enable() {
@@ -97,6 +100,11 @@ class LevelEditorScreen: public ILevelEditorScreen {
             case INFO_POPUP:
                 window->drawer->setZPos(ImageDrawer::ZPOS_UI_DIALOG);
                 window->uiDrawer->drawPopupWindow(infoPopup, WINDOW_WIDTH, WINDOW_HEIGHT);
+                break;
+            case RESIZE_DIALOG:
+                window->drawer->setZPos(ImageDrawer::ZPOS_UI_DIALOG);
+                window->uiDrawer->drawPopupWindow(*resizeDialog, WINDOW_WIDTH, WINDOW_HEIGHT);
+                break;
             default:
                 break;
         };
@@ -128,6 +136,10 @@ class LevelEditorScreen: public ILevelEditorScreen {
                 break;
             case INFO_POPUP:
                 window->uiEventElement = &infoPopup;
+                break;
+            case RESIZE_DIALOG:
+                window->uiEventElement = resizeDialog;
+                resizeDialog->enable();
                 break;
         }
     }
@@ -164,6 +176,7 @@ class LevelEditorScreen: public ILevelEditorScreen {
     ~LevelEditorScreen() {
         delete editorUI;
         delete filePicker;
+        delete resizeDialog;
         delete level;
     }
 };

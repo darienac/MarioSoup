@@ -118,6 +118,14 @@ class TextInput: public IUIElement {
         textLength = 0;
     }
 
+    void clear(std::string newData) {
+        strcpy(textBuffer, newData.c_str());
+        cursorPos = newData.size();
+        textLength = newData.size();
+        scrollX = 0;
+        adjustScroll();
+    }
+
     void charInput(int codepoint) {
         if (!selected) {
             return;

@@ -3,7 +3,7 @@
 #include "ui/ui.h"
 #include "ui/leveleditor/ILevelEditorScreen.h"
 
-class FilePickerPopup : public PopupWindow {
+class FilePickerPopup: public PopupWindow {
     private:
     TextInput* fileInput;
     char fileInputBuffer[256];
@@ -52,7 +52,7 @@ class FilePickerPopup : public PopupWindow {
     IUIElement* filePickerElements[2];
 
     public:
-    FilePickerPopup(ILevelEditorScreen* screen) : PopupWindow("enter filepath", 18, 10, filePickerElements, 2) {
+    FilePickerPopup(ILevelEditorScreen* screen): PopupWindow("enter filepath", 18, 10, filePickerElements, 2) {
         fileInput = new TextInput("file path", 11, 255, fileInputBuffer, nullptr);
 
         fileInput->setPosition(8, 8);

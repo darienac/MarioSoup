@@ -24,9 +24,12 @@ class EditorMenuBar: public MenuBar {
             editorScreen->setState(ILevelEditorScreen::SAVE_DIALOG);
         })
     };
-    MenuListButton buttonsEdit[2] = {
-        MenuListButton("edit 1", UIButtonType::BUTTON, nullptr),
-        MenuListButton("toggle", UIButtonType::RADIO, nullptr)
+    MenuListButton buttonsEdit[1] = {
+        MenuListButton("resize", UIButtonType::BUTTON, [](MenuListButton* button) {
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
+
+            editorScreen->setState(ILevelEditorScreen::RESIZE_DIALOG);
+        })
     };
     MenuListButton buttonsView[1] = {
         MenuListButton("fullscreen", UIButtonType::RADIO, [](MenuListButton* button) {
@@ -44,7 +47,7 @@ class EditorMenuBar: public MenuBar {
     };
     MenuList menuLists[4] = {
         MenuList(buttonsFile, 2, 12),
-        MenuList(buttonsEdit, 2, 12),
+        MenuList(buttonsEdit, 1, 12),
         MenuList(buttonsView, 1, 12),
         MenuList(buttonsRun, 1, 12)
     };
