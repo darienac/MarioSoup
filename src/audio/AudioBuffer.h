@@ -18,7 +18,7 @@ class AudioBuffer {
         unsigned int bufferSize = stb_vorbis_stream_length_in_samples(stream) * info.channels;
         short* buffer = new short[bufferSize];
         int amount = stb_vorbis_get_samples_short_interleaved(stream, info.channels, buffer, bufferSize);
-        std::printf("Buffer loaded: (%d of %d shorts)\n", amount * info.channels, bufferSize);
+        // std::printf("Buffer loaded: (%d of %d shorts)\n", amount * info.channels, bufferSize);
         alBufferData(bufferId, (info.channels == 2) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16, buffer, amount * info.channels * sizeof(short), info.sample_rate);
 
         delete[] buffer;

@@ -13,6 +13,7 @@
 #include "game/entities/Powerup.h"
 #include "game/entities/Particle.h"
 #include "game/entities/CoinItem.h"
+#include "game/entities/Goomba.h"
 
 #include "audio/AudioManager.h"
 
@@ -114,7 +115,8 @@ namespace GameObjectCache {
 
         addObject(new AnimatedGameObject("sma4:goomba", "goomba", SMA4_GOOMBA, 8)).add(false, false).add(true, false)
             .setOnEntityReplace([](int tileX, int tileY, IGameLevelRegion& region) {
-                // TODO: Make Goomba
+                region.addEntity(new Goomba(tileX * 16, tileY * 16, region.getZoneLayer(), objects["sma4:goomba"], objects["sma4:goomba_squash"]));
             });
+        addObject(new GameObject("sma4:goomba_squash", "squashed goomba", SMA4_GOOMBA_SQUASH));
     }
 }
