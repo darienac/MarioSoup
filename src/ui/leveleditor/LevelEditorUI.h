@@ -239,6 +239,16 @@ class LevelEditorUI: public UIBundle {
         }
     }
 
+    void mimickTile() {
+        int layer;
+        GameObject* pickedObject = getCurrentZone()->getUpperGridObject(tileHoverX, tileHoverY, layer);
+        if (pickedObject == GameObjectCache::objects["air"]) {
+            pickedObject = nullptr;
+        }
+
+        picker->setSelectedItem(pickedObject);
+    }
+
     public:
     LevelEditorUI(ILevelEditorScreen* screen, int width, int height, int& scrollX, int& scrollY, bool* keys) : UIBundle(bundleElements, NUM_BUNDLE_ELEMENTS), screen(screen), width(width), height(height), scrollX(&scrollX), scrollY(&scrollY), keys(keys) {
         searchBar = new TextInput("search objects", 16, 30, searchBarBuffer, [](TextInput* input, char* value) {
@@ -390,6 +400,16 @@ class LevelEditorUI: public UIBundle {
 
         isMouseRightDown = false;
         eraseLayer = -1;
+    }
+
+    void clickMiddle() override {
+        UIBundle::clickMiddle();
+
+        if (hoverMode != TILE) {
+            return;
+        }
+
+        mimickTile();
     }
 
     void scroll(double xOff, double yOff) override {

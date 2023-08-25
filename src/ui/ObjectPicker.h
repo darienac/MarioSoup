@@ -360,6 +360,10 @@ class ObjectPicker: public IUIElement {
         return selectedItem;
     }
 
+    void setSelectedItem(GameObject* item) {
+        selectedItem = item;
+    }
+
     ~ObjectPicker() {
         for (int i = 0; i < numGroups; i++) {
             delete groups[i];

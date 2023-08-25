@@ -65,6 +65,12 @@ class GlWindow {
                 } else {
                     glWindow->uiEventElement->clickRight();
                 }
+            } else if (button == GLFW_MOUSE_BUTTON_MIDDLE && action != GLFW_REPEAT) {
+                if (action == GLFW_PRESS) {
+                    glWindow->uiEventElement->mouseMiddleDown();
+                } else {
+                    glWindow->uiEventElement->clickMiddle();
+                }
             }
         });
         glfwSetScrollCallback(window, [](GLFWwindow* window, double xOff, double yOff) {

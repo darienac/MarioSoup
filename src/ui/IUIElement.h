@@ -19,8 +19,10 @@ class IUIElement {
     };
     virtual void mouseDown() {};
     virtual void mouseRightDown() {};
+    virtual void mouseMiddleDown() {};
     virtual void click() {};
     virtual void clickRight() {};
+    virtual void clickMiddle() {};
     virtual void scroll(double xOff, double yOff) {};
     virtual void charInput(int codepoint) {};
     virtual UIElementType getElementType() {
