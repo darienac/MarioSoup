@@ -2,7 +2,7 @@
 
 #include "game/entities/IEntity.h"
 
-class SubPosEntity: public IEntity {
+class SubPosEntity: virtual public IEntity {
     private:
     int xSub;
     int ySub;

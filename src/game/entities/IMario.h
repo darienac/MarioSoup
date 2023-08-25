@@ -2,7 +2,7 @@
 
 #include "game/entities/IEntity.h"
 
-class IMario: public IEntity {
+class IMario: virtual public IEntity {
     public:
     enum PlayState {
         PLAY,
@@ -19,4 +19,7 @@ class IMario: public IEntity {
     virtual void triggerPowerupState(PowerupState state) = 0;
     virtual int getNumCoins() = 0;
     virtual void setNumCoins(int value) = 0;
+
+    virtual int getVelX() = 0;
+    virtual int getVelY() = 0;
 };

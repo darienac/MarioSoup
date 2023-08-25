@@ -29,37 +29,39 @@ class MovingEntity: public SubPosEntity {
         velY = value;
     }
 
-    virtual bool moveZoneX(IGameLevelZone& zone, bool collideBlocksEntities) {
-        IGameLevelRegion* region = zone.getRegions()[getZoneLayer()];
-
+    virtual void moveX() {
         setXSub(getXSub() + velX);
-        if (!collideBlocksEntities) {
-            return false;
-        }
+    }
 
+    virtual bool regionXCollide(IGameLevelRegion& region, CollisionBox& box, CollisionBox::collide_block_callback callback) {
         int bX = getX();
         int bY = getY();
-        if (getCollisionBox().collideWithBlocksEntitiesX(bX, bY, velX, region, this, nullptr)) {
+        if (box.collideWithBlocksEntitiesX(bX, bY, velX, &region, this, nullptr)) {
             setX(bX);
             return true;
         }
         return false;
     }
 
-    virtual bool moveZoneY(IGameLevelZone& zone, bool collideBlocksEntities) {
-        IGameLevelRegion* region = zone.getRegions()[getZoneLayer()];
+    virtual bool regionXCollide(IGameLevelRegion& region, CollisionBox::collide_block_callback callback) {
+        return regionXCollide(region, getCollisionBox(), callback);
+    }
 
+    virtual void moveY() {
         setYSub(getYSub() + velY);
-        if (!collideBlocksEntities) {
-            return false;
-        }
+    }
 
+    virtual bool regionYCollide(IGameLevelRegion& region, CollisionBox& box, CollisionBox::collide_block_callback callback) {
         int bX = getX();
         int bY = getY();
-        if (getCollisionBox().collideWithBlocksEntitiesY(bX, bY, velY, region, this, nullptr)) {
+        if (box.collideWithBlocksEntitiesY(bX, bY, velY, &region, this, nullptr)) {
             setY(bY);
             return true;
         }
         return false;
+    }
+
+    virtual bool regionYCollide(IGameLevelRegion& region, CollisionBox::collide_block_callback callback) {
+        return regionYCollide(region, getCollisionBox(), callback);
     }
 };

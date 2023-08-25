@@ -25,7 +25,7 @@ class ScreenManager {
 
     void run() {
         double lastTime = glfwGetTime();
-        // double lastTickTime = lastTime;
+        double lastTickTime = lastTime;
         int fpsCounter = 0;
         fps = 0;
         int frameNum = 0;
@@ -40,14 +40,14 @@ class ScreenManager {
                 fpsCounter = 0;
             }
 
-            // if (time - lastTickTime >= (1.0 / TICK_RATE)) {
-            //     int ticks = (time - lastTickTime) * TICK_RATE;
-            //     lastTickTime += ticks / TICK_RATE;
-            //     for (int i = 0; i < ticks; i++) {
-            //         tick();
-            //     }
-            // }
-            tick();
+            if (time - lastTickTime >= (1.0 / TICK_RATE)) {
+                int ticks = (time - lastTickTime) * TICK_RATE;
+                lastTickTime += ticks / TICK_RATE;
+                for (int i = 0; i < ticks; i++) {
+                    tick();
+                }
+            }
+            // tick();
 
             // Audio processing
             audio->update();

@@ -16,17 +16,19 @@ class Powerup: public MovingEntity {
 
     CollisionBox collision = CollisionBox(0, 0, 16, 16);
 
-    void movement(IGameLevelZone& zone) {
+    void movement(IGameLevelRegion& region) {
         setVelY(getVelY() - 6);
         if (getVelY() < -56) {
             setVelY(-56);
         }
 
-        if (moveZoneX(zone, true)) {
+        moveX();
+        if (regionXCollide(region, nullptr)) {
             setVelX(-getVelX());
         }
 
-        if (moveZoneY(zone, true)) {
+        moveY();
+        if (regionYCollide(region, nullptr)) {
             setVelY(0);
         }
     }
@@ -56,7 +58,7 @@ class Powerup: public MovingEntity {
                 audio.playSound(AudioCache::audio["smas:ItemSprout"], getX(), getY());
             }
         } else {
-            movement(zone);
+            movement(*zone.getRegions()[getZoneLayer()]);
         }
         ticks++;
     }

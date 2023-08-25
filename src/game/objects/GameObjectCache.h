@@ -79,7 +79,7 @@ namespace GameObjectCache {
                 IGameLevelRegion::ObjectData objData = region.getGridData(tileX, tileY);
                 GameObject* newObj;
                 if (objData.containerObject == nullptr) {
-                    if (hitter->getLayerPriority() == IEntity::MARIO && ((IMario*) hitter)->getPowerupState() != IMario::SMALL) {
+                    if (hitter->getLayerPriority() == IEntity::MARIO && dynamic_cast<IMario*>(hitter)->getPowerupState() != IMario::SMALL) {
                         int x = tileX * 16;
                         int y = tileY * 16;
                         region.addEntity(new Particle(x, y, -20, 40, region.getZoneLayer(), objects["sma4:brick_break"], "smas:BrickShatter"));

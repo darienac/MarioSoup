@@ -35,8 +35,8 @@ class Particle: public MovingEntity {
         //     velY = -56;
         // }
 
-        moveZoneX(zone, false);
-        moveZoneY(zone, false);
+        moveX();
+        moveY();
 
         numTicks++;
     }

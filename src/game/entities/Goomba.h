@@ -31,11 +31,14 @@ class Goomba: public MovingEntity {
             setVelY(-56);
         }
 
-        if (moveZoneX(zone, true)) {
+        IGameLevelRegion* region = zone.getRegions()[getZoneLayer()];
+        moveX();
+        if (regionXCollide(*region, nullptr)) {
             setVelX(-getVelX());
         }
 
-        if (moveZoneY(zone, true)) {
+        moveY();
+        if (regionYCollide(*region, nullptr)) {
             setVelY(0);
         }
     }
@@ -45,5 +48,13 @@ class Goomba: public MovingEntity {
 
     virtual CollisionBox& getCollisionBox() {
         return collision;
+    }
+
+    virtual void onCollideMario(IMario& mario) override {
+        if (mario.getY() > (getY() + 8) && mario.getVelY() < 0) {
+            std::printf("Squashed\n");
+        } else {
+            std::printf("Kill\n");
+        }
     }
 };
