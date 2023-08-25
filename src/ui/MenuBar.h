@@ -64,7 +64,7 @@ class MenuBar : public IUIElement {
             }
             isHovered |= lists[numSelected].hover(x - xMin, y - gameHeight + 16, gameWidth, gameHeight);
         }
-        if (y >= gameHeight - 16 && y < gameHeight) {
+        if (y >= gameHeight - 16 && y <= gameHeight) {
             isHovered = true;
             int xMin = 0;
             for (int i = 0; i < numLabels; i++) {
