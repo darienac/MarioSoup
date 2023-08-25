@@ -36,7 +36,7 @@ class MovingEntity: public SubPosEntity {
     virtual bool regionXCollide(IGameLevelRegion& region, CollisionBox& box, CollisionBox::collide_block_callback callback) {
         int bX = getX();
         int bY = getY();
-        if (box.collideWithBlocksEntitiesX(bX, bY, velX, &region, this, nullptr)) {
+        if (box.collideWithBlocksEntitiesX(bX, bY, velX, &region, this, callback)) {
             setX(bX);
             return true;
         }
@@ -54,7 +54,7 @@ class MovingEntity: public SubPosEntity {
     virtual bool regionYCollide(IGameLevelRegion& region, CollisionBox& box, CollisionBox::collide_block_callback callback) {
         int bX = getX();
         int bY = getY();
-        if (box.collideWithBlocksEntitiesY(bX, bY, velY, &region, this, nullptr)) {
+        if (box.collideWithBlocksEntitiesY(bX, bY, velY, &region, this, callback)) {
             setY(bY);
             return true;
         }
