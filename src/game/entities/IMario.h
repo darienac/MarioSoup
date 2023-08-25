@@ -22,4 +22,6 @@ class IMario: virtual public IEntity {
 
     virtual int getVelX() = 0;
     virtual int getVelY() = 0;
+    virtual void setVelX(int value) = 0;
+    virtual void setVelY(int value) = 0;
 };

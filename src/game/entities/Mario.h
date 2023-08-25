@@ -305,6 +305,14 @@ class Mario: public MovingEntity, public IMario {
         return MovingEntity::getVelY();
     }
 
+    virtual void setVelX(int value) override {
+        MovingEntity::setVelX(value);
+    }
+
+    virtual void setVelY(int value) override {
+        MovingEntity::setVelY(value);
+    }
+
     void resetGameObject() {
         gameObject = *GameObjectCache::objects["player"];
         numTicks = 0;

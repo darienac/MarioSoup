@@ -13,6 +13,8 @@ class Goomba: public MovingEntity {
     GameObject* gameObject;
     GameObject* squashedObject;
     bool isDone = false;
+    bool squashed = false;
+    int framesSquashed = 0;
 
     CollisionBox collision = CollisionBox(0, 0, 16, 16);
 
@@ -23,7 +25,11 @@ class Goomba: public MovingEntity {
         return IEntity::ENEMY;
     }
     virtual GameObject& getGameObject() override {
-        return *gameObject;
+        if (squashed) {
+            return *squashedObject;
+        } else {
+            return *gameObject;
+        }
     }
     virtual void tick(IGameLevelZone& zone, AudioManager& audio, IControls& controls) override {
         setVelY(getVelY() - 6);
@@ -41,9 +47,16 @@ class Goomba: public MovingEntity {
         if (regionYCollide(*region, nullptr)) {
             setVelY(0);
         }
+
+        if (squashed) {
+            if (framesSquashed == 0) {
+                audio.playSound(AudioCache::audio["smas:Stomp"], getX(), getY());
+            }
+            framesSquashed++;
+        }
     }
     virtual bool shouldDelete() {
-        return isDone;
+        return framesSquashed > 16;
     }
 
     virtual CollisionBox& getCollisionBox() {
@@ -51,8 +64,13 @@ class Goomba: public MovingEntity {
     }
 
     virtual void onCollideMario(IMario& mario) override {
+        if (squashed) {
+            return;
+        }
         if (mario.getY() > (getY() + 8) && mario.getVelY() < 0) {
-            std::printf("Squashed\n");
+            squashed = true;
+            mario.setVelY(64);
+            setVelX(0);
         } else {
             std::printf("Kill\n");
         }
