@@ -37,6 +37,7 @@ class GameObject {
     LevelLayer preferredLayer = MIDGROUND;
 
     interact_callback hitUnder = nullptr;
+    interact_callback blockEmerge = nullptr;
     player_interact_callback playerCollide = nullptr;
     gameobj_callback entityReplace = nullptr;
 
@@ -120,6 +121,17 @@ class GameObject {
     void onHitUnder(int tileX, int tileY, IEntity* entity, IGameLevelRegion& region) {
         if (hitUnder != nullptr) {
             hitUnder(tileX, tileY, entity, region);
+        }
+    }
+
+    GameObject& setOnBlockEmerge(interact_callback callback) {
+        blockEmerge = callback;
+        return *this;
+    }
+
+    void onBlockEmerge(int tileX, int tileY, IEntity* entity, IGameLevelRegion& region) {
+        if (blockEmerge != nullptr) {
+            blockEmerge(tileX, tileY, entity, region);
         }
     }
 

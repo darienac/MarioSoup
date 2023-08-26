@@ -68,7 +68,7 @@ namespace GameObjectCache {
                 if (objData.containerObject == nullptr) {
                     return;
                 }
-                objData.containerObject->onEntityReplace(tileX, tileY, region);
+                objData.containerObject->onBlockEmerge(tileX, tileY, hitter, region);
                 region.setGridObject(objects["air"], tileX, tileY);
             });
         addObject(new GameObject("sma4:empty_block", "empty block", SMA4_QBLOCK_EMPTY));
@@ -91,7 +91,7 @@ namespace GameObjectCache {
                     newObj = objects["sma4:brick"];
                 } else {
                     newObj = objects["sma4:empty_block"];
-                    objData.containerObject->onEntityReplace(tileX, tileY, region);
+                    objData.containerObject->onBlockEmerge(tileX, tileY, hitter, region);
                 }
                 region.addEntity(new BumpedItemContainer(tileX, tileY, region.getZoneLayer(), newObj));
             });
@@ -105,13 +105,18 @@ namespace GameObjectCache {
             });
 
         addObject(new AnimatedGameObject("sma4:item_coin", "coin (item)", SMA4_ITEMCOIN_1, 4)).add(SMA4_ITEMCOIN_1, 3).add(SMA4_ITEMCOIN_2).flag(GameObject::ITEM)
-            .setOnEntityReplace([](int tileX, int tileY, IGameLevelRegion& region) {
+            .setOnBlockEmerge([](int tileX, int tileY, IEntity* hitter, IGameLevelRegion& region) {
                 region.addEntity(new CoinItem(tileX * 16, tileY * 16 + 15, region.getZoneLayer(), objects["sma4:item_coin"]));
             });
         addObject(new GameObject("sma4:item_mushroom", "mushroom", SMA4_MUSHROOM)).flag(GameObject::ITEM)
             .setOnEntityReplace([](int tileX, int tileY, IGameLevelRegion& region) {
-                bool emerge = region.getGridObject(tileX, tileY) != objects["air"];
-                region.addEntity(new Powerup(tileX * 16, tileY * 16, region.getZoneLayer(), objects["sma4:item_mushroom"], emerge));
+                region.addEntity(new Powerup(tileX * 16, tileY * 16, region.getZoneLayer(), objects["sma4:item_mushroom"], false));
+            }).setOnBlockEmerge([](int tileX, int tileY, IEntity* hitter, IGameLevelRegion& region) {
+                Powerup* powerup = new Powerup(tileX * 16, tileY * 16, region.getZoneLayer(), objects["sma4:item_mushroom"], true);
+                if (hitter->getX() < tileX * 16) {
+                    powerup->setVelX(-powerup->getVelX());
+                }
+                region.addEntity(powerup);
             });
 
         addObject(new AnimatedGameObject("sma4:goomba", "goomba", SMA4_GOOMBA, 8)).add(false, false).add(true, false)

@@ -31,7 +31,7 @@ class IGameLevelRegion {
     virtual void resizeGrid(int newWidth, int newHeight, int xOff, int yOff) = 0;
     virtual int getZoneLayer() = 0;
 
-    virtual void addEntity(IEntity* entity) = 0;
+    virtual IEntity* addEntity(IEntity* entity) = 0;
     virtual void removeEntity(IEntity* entity) = 0;
     virtual std::set<IEntity*, entityCmp>& getEntities() = 0;
 

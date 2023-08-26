@@ -36,7 +36,7 @@ class Powerup: public MovingEntity {
     public:
     static GameObject* air;
 
-    Powerup(int x, int y, int zoneLayer, GameObject* object, bool emerge): MovingEntity(x, y, 8, 0, zoneLayer), gameObject(object), emerge(emerge) {}
+    Powerup(int x, int y, int zoneLayer, GameObject* object, bool emerge): MovingEntity(x, y, -8, 0, zoneLayer), gameObject(object), emerge(emerge) {}
 
     virtual int getLayerPriority() const override {
         return IEntity::ITEM;

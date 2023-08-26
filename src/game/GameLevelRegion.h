@@ -106,8 +106,9 @@ class GameLevelRegion: public IGameLevelRegion {
         return zoneLayer;
     }
 
-    virtual void addEntity(IEntity* entity) override {
+    virtual IEntity* addEntity(IEntity* entity) override {
         entities.insert(entity);
+        return entity;
     }
 
     virtual void removeEntity(IEntity* entity) override {
