@@ -42,7 +42,7 @@ class Powerup: public MovingEntity {
         return IEntity::ITEM;
     }
     virtual GameObject& getGameObject() override {
-        if (ticks < 16) {
+        if (emerge && ticks < 16) {
             return *IEntity::air;
         } else {
             return *gameObject;

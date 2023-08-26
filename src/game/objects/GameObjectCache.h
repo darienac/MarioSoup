@@ -62,7 +62,6 @@ namespace GameObjectCache {
         
         addObject(new AnimatedGameObject("sma4:qblock", "question block", SMA4_QBLOCK_1, 8)).add(SMA4_QBLOCK_1, 4).flag(GameObject::CONTAINS_ITEM)
             .setOnHitUnder([](int tileX, int tileY, IEntity* hitter, IGameLevelRegion& region) {
-                region.setGridObject(objects["air"], tileX, tileY);
                 region.addEntity(new BumpedItemContainer(tileX, tileY, region.getZoneLayer(), objects["sma4:empty_block"]));
                 
                 IGameLevelRegion::ObjectData objData = region.getGridData(tileX, tileY);
@@ -70,6 +69,7 @@ namespace GameObjectCache {
                     return;
                 }
                 objData.containerObject->onEntityReplace(tileX, tileY, region);
+                region.setGridObject(objects["air"], tileX, tileY);
             });
         addObject(new GameObject("sma4:empty_block", "empty block", SMA4_QBLOCK_EMPTY));
         addObject(new AnimatedGameObject("sma4:brick", "brick block", SMA4_BRICK_1, 8)).add(SMA4_BRICK_1, 4).flag(GameObject::CONTAINS_ITEM)
@@ -110,7 +110,8 @@ namespace GameObjectCache {
             });
         addObject(new GameObject("sma4:item_mushroom", "mushroom", SMA4_MUSHROOM)).flag(GameObject::ITEM)
             .setOnEntityReplace([](int tileX, int tileY, IGameLevelRegion& region) {
-                region.addEntity(new Powerup(tileX * 16, tileY * 16, region.getZoneLayer(), objects["sma4:item_mushroom"], true));
+                bool emerge = region.getGridObject(tileX, tileY) != objects["air"];
+                region.addEntity(new Powerup(tileX * 16, tileY * 16, region.getZoneLayer(), objects["sma4:item_mushroom"], emerge));
             });
 
         addObject(new AnimatedGameObject("sma4:goomba", "goomba", SMA4_GOOMBA, 8)).add(false, false).add(true, false)
