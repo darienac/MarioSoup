@@ -22,7 +22,7 @@ class ObjectPickerGroup: public IUIElement {
     int numFilteredItems = 0;
 
 
-    bool open = false;
+    bool open = true;
     bool isHover = false;
     int hoverX = 0;
     int hoverY = 0;
