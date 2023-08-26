@@ -72,7 +72,7 @@ class Goomba: public MovingEntity {
             mario.setVelY(64);
             setVelX(0);
         } else {
-            std::printf("Kill\n");
+            mario.damage();
         }
     }
 };

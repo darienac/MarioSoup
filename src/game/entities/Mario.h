@@ -73,10 +73,16 @@ class Mario: public MovingEntity, public IMario {
     void powerupTick(IGameLevelZone& zone, int numTicks, AudioManager& audio) {
         if (powerupStart == -1) {
             powerupStart = numTicks;
-            audio.playSound(AudioCache::audio["smas:Powerup"], getX(), getY());
+            if (powerupState == SMALL) {
+                audio.playSound(AudioCache::audio["smas:PowerDown"], getX(), getY());
+            } else {
+                audio.playSound(AudioCache::audio["smas:Powerup"], getX(), getY());
+            }
         }
         int ticks = numTicks - powerupStart;
-        if (powerupState == SUPER && powerupStatePrev == SMALL) {
+        if ((powerupState == SUPER && powerupStatePrev == SMALL) || powerupState == SMALL) {
+            int tileStart = powerupState == SUPER ? SMARIO_STAND_SMA4 : MARIO_STAND_SMA4;
+            int tileEnd = powerupStatePrev == SUPER ? MARIO_STAND_SMA4 : SMARIO_STAND_SMA4;
             if (ticks >= 46) {
                 playState = PLAY;
                 int bX = getX();
@@ -88,9 +94,9 @@ class Mario: public MovingEntity, public IMario {
                 return;
             }
             if (ticks < 28) {
-                gameObject.setLevelTile((ticks / 4) % 2 == 0 ? SMARIO_GROW_SMA4 : MARIO_STAND_SMA4);
+                gameObject.setLevelTile((ticks / 4) % 2 == 0 ? SMARIO_GROW_SMA4 : tileStart);
             } else {
-                gameObject.setLevelTile((ticks / 4) % 2 == 0 ? SMARIO_STAND_SMA4 : SMARIO_GROW_SMA4);
+                gameObject.setLevelTile((ticks / 4) % 2 == 0 ? tileEnd : SMARIO_GROW_SMA4);
             }
         } else {
             playState = PLAY;
@@ -286,6 +292,17 @@ class Mario: public MovingEntity, public IMario {
         powerupState = state;
         playState = POWERUP;
         powerupStart = -1;
+    }
+
+    virtual void damage() override {
+        powerupStatePrev = powerupState;
+        if (powerupState == SMALL) {
+            // time to die
+        } else {
+            powerupState = SMALL;
+            playState = POWERUP;
+            powerupStart = -1;
+        }
     }
 
     virtual int getNumCoins() override {

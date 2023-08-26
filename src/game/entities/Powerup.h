@@ -72,6 +72,9 @@ class Powerup: public MovingEntity {
     }
 
     virtual void onCollideMario(IMario& mario) override {
+        if (emerge) {
+            return;
+        }
         mario.triggerPowerupState(IMario::SUPER);
         isDone = true;
     }
