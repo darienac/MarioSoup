@@ -104,7 +104,7 @@ namespace GameObjectCache {
                 audio.playSound(AudioCache::audio["smas:Coin"], tileX, tileY);
             });
 
-        addObject(new AnimatedGameObject("sma4:item_coin", "coin (item)", SMA4_ITEMCOIN_1, 4)).add(SMA4_ITEMCOIN_1, 3).add(SMA4_ITEMCOIN_2).flag(GameObject::ITEM)
+        addObject(new AnimatedGameObject("sma4:item_coin", "coin (item)", SMA4_ITEMCOIN_1, 4)).add(SMA4_ITEMCOIN_1, 3).add(SMA4_ITEMCOIN_2).flag(GameObject::ITEM).flag(GameObject::ENTITY)
             .setOnBlockEmerge([](int tileX, int tileY, IEntity* hitter, IGameLevelRegion& region) {
                 region.addEntity(new CoinItem(tileX * 16, tileY * 16 + 15, region.getZoneLayer(), objects["sma4:item_coin"]));
             });

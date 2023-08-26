@@ -3,7 +3,7 @@
 #include "render/Texture.h"
 
 namespace Tiles {
-    const std::string textEncoding = " 0123456789abcdefghijklmnopqrstuvwxyz-X!.C/\\()";
+    const std::string textEncoding = " 0123456789abcdefghijklmnopqrstuvwxyz-X!.C/\\()?:";
     Texture* textures[64];
 };
 
@@ -153,7 +153,7 @@ namespace Tiles {
         AIR,
         D0, D1, D2, D3, D4, D5, D6, D7, D8, D9,
         LA, LB, LC, LD, LE, LF, LG, LH, LI, LJ, LK, LL, LM, LN, LO, LP, LQ, LR, LS, LT, LU, LV, LW, LX, LY, LZ,
-        DA, XX, EX, DO, CO, FS, BS, PL, PR,
+        DA, XX, EX, DO, CO, FS, BS, PL, PR, QM, CL,
 
         TEXT_CURSOR,
         MENU_OFF, MENU_ON, MENULIST_OFF, MENULIST_ON, MENULIST_TOP, MENULIST_BOTTOM, RADIO_OFF, RADIO_ON,
@@ -214,7 +214,7 @@ namespace Tiles {
 
         tiles[AIR] = Tile(HUD, 264, 8, 0, 0);
 
-        initTileGrid(tiles + D0, UI, 64, 0, 8, 8, 0, 0, 16, 45);
+        initTileGrid(tiles + D0, UI, 64, 0, 8, 8, 0, 0, 16, 47);
 
         tiles[TEXT_CURSOR] = Tile(UI, 8, 24, 8, 8);
         tiles[MENU_OFF] = Tile(UI, 0, 0, 8, 16);
