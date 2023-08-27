@@ -86,6 +86,9 @@ class GameLevelZone: public IGameLevelZone {
             region->resizeGrid(newWidth, newHeight, xOff, yOff);
         }
 
+        mario.setX(mario.getX() + xOff * 16);
+        mario.setY(mario.getY() + yOff * 16);
+
         boundMario();
     }
 
