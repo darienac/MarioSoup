@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ui/MenuBar.h"
+#include "ui/leveleditor/ConfirmPopup.h"
 #include "ui/leveleditor/ILevelEditorScreen.h"
 
 class EditorMenuBar: public MenuBar {
@@ -12,15 +13,66 @@ class EditorMenuBar: public MenuBar {
         "run"
     };
 
-    MenuListButton buttonsFile[2] = {
+    MenuListButton buttonsFile[4] = {
+        MenuListButton("new", UIButtonType::BUTTON, [](MenuListButton* button) {
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
+            if (editorScreen->getChangesSaved()) {
+                editorScreen->initLevel();
+                editorScreen->setState(ILevelEditorScreen::EDITOR);
+                return;
+            }
+
+            editorScreen->getConfirmPopup()->setMessage("overwrite current level? (changes will not be saved)");
+            editorScreen->getConfirmPopup()->setConfirmCallback([](Button* button, UIButtonValue& value) {
+                ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
+                editorScreen->initLevel();
+                editorScreen->setState(ILevelEditorScreen::EDITOR);
+            });
+            editorScreen->getConfirmPopup()->setCancelCallback([](PopupWindow* popup) {
+                ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) popup->getPointer();
+                editorScreen->setState(ILevelEditorScreen::EDITOR);
+            });
+            editorScreen->setState(ILevelEditorScreen::CONFIRM_DIALOG);
+        }),
         MenuListButton("open", UIButtonType::BUTTON, [](MenuListButton* button) {
             ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
 
-            editorScreen->setState(ILevelEditorScreen::OPEN_DIALOG);
+            if (editorScreen->getChangesSaved()) {
+                editorScreen->setState(ILevelEditorScreen::OPEN_DIALOG);
+                return;
+            }
+            
+            editorScreen->getConfirmPopup()->setMessage("overwrite current level? (changes will not be saved)");
+            editorScreen->getConfirmPopup()->setConfirmCallback([](Button* button, UIButtonValue& value) {
+                ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
+                editorScreen->setState(ILevelEditorScreen::OPEN_DIALOG);
+            });
+            editorScreen->getConfirmPopup()->setCancelCallback([](PopupWindow* popup) {
+                ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) popup->getPointer();
+                editorScreen->setState(ILevelEditorScreen::EDITOR);
+            });
+            editorScreen->setState(ILevelEditorScreen::CONFIRM_DIALOG);
         }),
         MenuListButton("save", UIButtonType::BUTTON, [](MenuListButton* button) {
             ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
 
+            if (editorScreen->getSavePath() == "") {
+                editorScreen->setState(ILevelEditorScreen::SAVE_DIALOG);
+                return;
+            }
+
+            LevelSaver saver = LevelSaver();
+            try {
+                saver.saveLevel(*editorScreen->getLevel(), editorScreen->getSavePath().c_str());
+                editorScreen->setChangesSaved(true);
+            } catch (const char* errorMsg) {
+                std::printf("%s\n", errorMsg);
+                editorScreen->setInfoMessage(errorMsg);
+                editorScreen->setState(ILevelEditorScreen::INFO_POPUP);
+            }
+        }),
+        MenuListButton("save as", UIButtonType::BUTTON, [](MenuListButton* button) {
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
             editorScreen->setState(ILevelEditorScreen::SAVE_DIALOG);
         })
     };
@@ -46,7 +98,7 @@ class EditorMenuBar: public MenuBar {
         })
     };
     MenuList menuLists[4] = {
-        MenuList(buttonsFile, 2, 12),
+        MenuList(buttonsFile, 4, 12),
         MenuList(buttonsEdit, 1, 12),
         MenuList(buttonsView, 1, 12),
         MenuList(buttonsRun, 1, 12)

@@ -13,4 +13,8 @@ class IScreen {
     virtual void disable() {}
     virtual void renderFrame() {}
     virtual void tick() {}
+    virtual bool shouldClose() {
+        return false;
+    }
+    virtual void requestClose() {}
 };

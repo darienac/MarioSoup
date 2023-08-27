@@ -3,17 +3,20 @@
 #include "ui/ui.h"
 
 class Button: public IUIElement {
+    public:
+    typedef void (*button_callback)(Button* button, UIButtonValue& value);
+
     private:
     const char* label;
     int width;
-    void (*callback)(Button* button, UIButtonValue& value);
+    button_callback callback;
     UIButtonValue value = {};
     void* pointer;
 
     bool hovered = false;
 
     public:
-    Button(const char* label, int width, void (*callback)(Button* button, UIButtonValue& value)): label(label), width(width), callback(callback) {}
+    Button(const char* label, int width, button_callback callback): label(label), width(width), callback(callback) {}
 
     bool hover(int x, int y, int gameWidth, int gameHeight) override {
         hovered = !(x < 0 || x >= width * 8 || y < 0 || y >= 16);
@@ -38,6 +41,10 @@ class Button: public IUIElement {
 
     int getWidth() {
         return width;
+    }
+
+    void setCallback(button_callback callback) {
+        this->callback = callback;
     }
 
     bool isHovered() {

@@ -18,6 +18,8 @@ class FilePickerPopup: public PopupWindow {
                 LevelSaver saver = LevelSaver();
                 try {
                     saver.saveLevel(*editorScreen->getLevel(), fileInputBuffer);
+                    editorScreen->setSavePath(std::string(fileInputBuffer));
+                    editorScreen->setChangesSaved(true);
                 } catch (const char* errorMsg) {
                     std::printf("%s\n", errorMsg);
                     editorScreen->setInfoMessage(errorMsg);
@@ -34,6 +36,8 @@ class FilePickerPopup: public PopupWindow {
                 try {
                     loader.loadLevel(*newLevel, fileInputBuffer);
                     editorScreen->setLevel(newLevel);
+                    editorScreen->setSavePath(std::string(fileInputBuffer));
+                    editorScreen->setChangesSaved(true);
                 } catch (const char* errorMsg) {
                     std::printf("%s\n", errorMsg);
                     editorScreen->setInfoMessage(errorMsg);
@@ -62,7 +66,6 @@ class FilePickerPopup: public PopupWindow {
         filePickerElements[0] = fileInput;
         filePickerElements[1] = &confirmFileButton;
 
-        setCanCancel(true);
         setPointer(screen);
         setCancelCallback([](PopupWindow* popup) {
             ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) popup->getPointer();

@@ -12,6 +12,7 @@
 #include "ui/leveleditor/LevelEditorUI.h"
 #include "ui/leveleditor/FilePickerPopup.h"
 #include "ui/leveleditor/InfoPopup.h"
+#include "ui/leveleditor/ConfirmPopup.h"
 #include "ui/leveleditor/ResizeDialog.h"
 #include "screens/ScreenManager.h"
 
@@ -21,6 +22,8 @@ class LevelEditorScreen: public ILevelEditorScreen {
     static const int WINDOW_HEIGHT = 256;
     static const int VIEW_WIDTH = 256;
     static const int VIEW_HEIGHT = 240;
+
+    bool closeScreen = false;
 
     int scrollX = 32;
     int scrollY = 32;
@@ -32,7 +35,9 @@ class LevelEditorScreen: public ILevelEditorScreen {
     FilePickerPopup* filePicker;
     ResizeDialog* resizeDialog;
     InfoPopup infoPopup = InfoPopup(this);
-    GameLevel* level = new GameLevel();
+    ConfirmPopup confirmPopup = ConfirmPopup(this);
+    GameLevel* level = nullptr;
+    std::string savePath;
 
     public:
     LevelEditorScreen(GlWindow& window, ScreenManager& manager, IPlayLevelScreen& playLevelScreen) {
@@ -40,11 +45,21 @@ class LevelEditorScreen: public ILevelEditorScreen {
         this->manager = &manager;
         this->playLevelScreen = &playLevelScreen;
 
-        GameLevelZone* levelZone = level->addZone(8, 8);
-        level->setCurrentZone(levelZone);
+        initLevel();
         editorUI = new LevelEditorUI(this, WINDOW_WIDTH, WINDOW_HEIGHT, scrollX, scrollY, window.getKeys());
         filePicker = new FilePickerPopup(this);
         resizeDialog = new ResizeDialog(this);
+    }
+
+    virtual void initLevel() override {
+        if (level != nullptr) {
+            delete level;
+        }
+        level = new GameLevel();
+        GameLevelZone* levelZone = level->addZone(8, 8);
+        level->setCurrentZone(levelZone);
+        savePath = "";
+        editorUI->setChangesSaved(true);
     }
 
     void enable() {
@@ -52,10 +67,19 @@ class LevelEditorScreen: public ILevelEditorScreen {
         window->stageDrawer->setOffset(WINDOW_WIDTH - VIEW_WIDTH, 0);
         manager->getAudioManager()->cancelMusic();
         setState(EDITOR);
+        closeScreen = false;
     }
 
     virtual void tick() override {
         editorUI->tick();
+    }
+
+    virtual void requestClose() override {
+        editorUI->safeExitWindow();
+    }
+
+    virtual bool shouldClose() override {
+        return closeScreen;
     }
 
     virtual void renderFrame() override {
@@ -105,6 +129,10 @@ class LevelEditorScreen: public ILevelEditorScreen {
                 window->drawer->setZPos(ImageDrawer::ZPOS_UI_DIALOG);
                 window->uiDrawer->drawPopupWindow(*resizeDialog, WINDOW_WIDTH, WINDOW_HEIGHT);
                 break;
+            case CONFIRM_DIALOG:
+                window->drawer->setZPos(ImageDrawer::ZPOS_UI_DIALOG);
+                window->uiDrawer->drawPopupWindow(confirmPopup, WINDOW_WIDTH, WINDOW_HEIGHT);
+                break;
             default:
                 break;
         };
@@ -117,6 +145,22 @@ class LevelEditorScreen: public ILevelEditorScreen {
     virtual void setLevel(GameLevel* level) override {
         delete this->level;
         this->level = level;
+    }
+
+    virtual void setSavePath(std::string path) override {
+        savePath = path;
+    }
+
+    virtual std::string& getSavePath() override {
+        return savePath;
+    }
+
+    virtual void setChangesSaved(bool value) {
+        editorUI->setChangesSaved(value);
+    }
+
+    virtual bool getChangesSaved() {
+        return editorUI->getChangesSaved();
     }
 
     virtual UIState getState() override {
@@ -141,11 +185,18 @@ class LevelEditorScreen: public ILevelEditorScreen {
                 window->uiEventElement = resizeDialog;
                 resizeDialog->enable();
                 break;
+            case CONFIRM_DIALOG:
+                window->uiEventElement = &confirmPopup;
+                break;
         }
     }
 
     virtual char* getFileInputBuffer() override {
         return filePicker->getFileInputBuffer();
+    }
+
+    virtual ConfirmPopup* getConfirmPopup() override {
+        return &confirmPopup;
     }
 
     virtual void setInfoMessage(const char* message) {
@@ -170,7 +221,7 @@ class LevelEditorScreen: public ILevelEditorScreen {
     }
 
     virtual void closeWindow() override {
-        window->exitWindow();
+        closeScreen = true;
     }
 
     ~LevelEditorScreen() {

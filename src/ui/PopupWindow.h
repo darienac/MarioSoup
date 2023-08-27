@@ -31,7 +31,12 @@ class PopupWindow : public IUIElement {
     }
 
     void setCancelCallback(cancel_callback callback) {
+        canCancel = true;
         this->cancelCallback = callback;
+    }
+
+    cancel_callback getCancelCallback() {
+        return cancelCallback;
     }
 
     virtual bool hover(int x, int y, int gameWidth, int gameHeight) override {
@@ -66,7 +71,9 @@ class PopupWindow : public IUIElement {
     }
     virtual void charInput(int codepoint) override {
         if (codepoint == GLFW_KEY_ESCAPE && canCancel) {
-            cancelCallback(this);
+            if (cancelCallback != nullptr) {
+                cancelCallback(this);
+            }
             return;
         }
 

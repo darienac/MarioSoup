@@ -9,13 +9,14 @@
 
 class PlayLevelScreen: public IPlayLevelScreen {
     private:
+    bool closeScreen = false;
+
     int scrollX = 0;
     int scrollY = 0;
 
     GameLevel* level = nullptr;
     PlayLevelUI* levelUI;
     ILevelEditorScreen* editorScreen = nullptr;
-
 
     public:
     PlayLevelScreen(GlWindow& window, ScreenManager& manager) {
@@ -48,6 +49,14 @@ class PlayLevelScreen: public IPlayLevelScreen {
         levelUI->tick();
     }
 
+    virtual bool shouldClose() override {
+        return closeScreen;
+    }
+
+    virtual void requestClose() override {
+        closeScreen = true;
+    }
+
     virtual void renderFrame() override {
         GameLevelZone* zone = level->getCurrentZone();
 
@@ -63,10 +72,11 @@ class PlayLevelScreen: public IPlayLevelScreen {
         window->resize(WINDOW_WIDTH, WINDOW_HEIGHT);
         window->uiEventElement = levelUI;
         manager->getAudioManager()->playMusic(AudioCache::music["sma4:overworld"]);
+        closeScreen = false;
     }
 
     virtual void exitWindow() override {
-        window->exitWindow();
+        closeScreen = true;
     }
 
     virtual void setLevel(GameLevel* level) override {
@@ -84,7 +94,7 @@ class PlayLevelScreen: public IPlayLevelScreen {
 
     virtual void exitToEditor() override {
         if (editorScreen == nullptr) {
-            window->exitWindow();
+            exitWindow();
             return;
         }
         

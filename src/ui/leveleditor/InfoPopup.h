@@ -17,6 +17,12 @@ class InfoPopup: public PopupWindow {
         textRegion.setPosition(8, 48);
         confirmInfoButton.setPosition(104, 8);
         confirmInfoButton.setPointer(screen);
+        setPointer(screen);
+        setCancelCallback([](PopupWindow* popup) {
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) popup->getPointer();
+
+            editorScreen->setState(ILevelEditorScreen::UIState::EDITOR);
+        });
 
         infoElements[0] = &textRegion;
         infoElements[1] = &confirmInfoButton;

@@ -30,7 +30,7 @@ class ScreenManager {
         fps = 0;
         int frameNum = 0;
 
-        while (!glfwWindowShouldClose(window->window)) {
+        while (!screen->shouldClose()) {
             frameNum++;
             double time = glfwGetTime();
             fpsCounter++;
@@ -38,6 +38,11 @@ class ScreenManager {
                 lastTime++;
                 fps = fpsCounter;
                 fpsCounter = 0;
+            }
+
+            if (glfwWindowShouldClose(window->window)) {
+                glfwSetWindowShouldClose(window->window, GLFW_FALSE);
+                screen->requestClose();
             }
 
             if (time - lastTickTime >= (1.0 / TICK_RATE)) {

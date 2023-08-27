@@ -64,6 +64,8 @@ class LevelEditorUI: public UIBundle {
     int marioMouseOffsetX = 0;
     int marioMouseOffsetY = 0;
 
+    bool changesSaved = true;
+
     void placeBlock(GameObject* object, int layer) {
         if (layer == -1) {
             return;
@@ -85,6 +87,7 @@ class LevelEditorUI: public UIBundle {
             } else {
                 region->setGridObject(object, tileHoverX, tileHoverY);
             }
+            changesSaved = false;
         }
     }
 
@@ -162,6 +165,7 @@ class LevelEditorUI: public UIBundle {
         mario->setX(x);
         mario->setY(y);
 
+        changesSaved = false;
         getCurrentZone()->boundMario();
     }
 
@@ -190,11 +194,13 @@ class LevelEditorUI: public UIBundle {
         if (inBoundButton(viewX - 16, viewY)) {
             // Shrink up
             zone->resizeGrid(zoneW, zoneH - 1, 0, 0);
+            changesSaved = false;
             return;
         }
         if (inBoundButton(viewX, viewY)) {
             // Expand up
             zone->resizeGrid(zoneW, zoneH + 1, 0, 0);
+            changesSaved = false;
             return;
         }
 
@@ -203,11 +209,13 @@ class LevelEditorUI: public UIBundle {
         if (inBoundButton(viewX - 16, viewY)) {
             // Shrink down
             zone->resizeGrid(zoneW, zoneH - 1, 0, -1);
+            changesSaved = false;
             return;
         }
         if (inBoundButton(viewX, viewY)) {
             // Expand down
             zone->resizeGrid(zoneW, zoneH + 1, 0, 1);
+            changesSaved = false;
             return;
         }
 
@@ -217,11 +225,13 @@ class LevelEditorUI: public UIBundle {
         if (inBoundButton(viewX, viewY - 16)) {
             // Shrink right
             zone->resizeGrid(zoneW - 1, zoneH, 0, 0);
+            changesSaved = false;
             return;
         }
         if (inBoundButton(viewX, viewY)) {
             // Expand right
             zone->resizeGrid(zoneW + 1, zoneH, 0, 0);
+            changesSaved = false;
             return;
         }
 
@@ -230,11 +240,13 @@ class LevelEditorUI: public UIBundle {
         if (inBoundButton(viewX, viewY - 16)) {
             // Shrink left
             zone->resizeGrid(zoneW - 1, zoneH, -1, 0);
+            changesSaved = false;
             return;
         }
         if (inBoundButton(viewX, viewY)) {
             // Expand left
             zone->resizeGrid(zoneW + 1, zoneH, 1, 0);
+            changesSaved = false;
             return;
         }
     }
@@ -327,6 +339,14 @@ class LevelEditorUI: public UIBundle {
 
     bool isHoverInsertItem() {
         return hoverInsertItem;
+    }
+
+    void setChangesSaved(bool value) {
+        changesSaved = value;
+    }
+
+    bool getChangesSaved() {
+        return changesSaved;
     }
 
     bool hover(int x, int y, int gameWidth, int gameHeight) override {
@@ -433,11 +453,29 @@ class LevelEditorUI: public UIBundle {
         }
     }
 
+    void safeExitWindow() {
+        if (changesSaved) {
+            screen->closeWindow();
+            return;
+        }
+        
+        screen->getConfirmPopup()->setMessage("exit editor? (changes will not be saved)");
+        screen->getConfirmPopup()->setConfirmCallback([](Button* button, UIButtonValue& value) {
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
+            editorScreen->closeWindow();
+        });
+        screen->getConfirmPopup()->setCancelCallback([](PopupWindow* popup) {
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) popup->getPointer();
+            editorScreen->setState(ILevelEditorScreen::EDITOR);
+        });
+        screen->setState(ILevelEditorScreen::CONFIRM_DIALOG);
+    }
+
     virtual void charInput(int codepoint) override {
         UIBundle::charInput(codepoint);
 
         if (codepoint == GLFW_KEY_ESCAPE) {
-            screen->closeWindow();
+            safeExitWindow();
         }
     }
 
