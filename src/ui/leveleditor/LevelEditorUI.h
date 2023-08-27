@@ -284,6 +284,11 @@ class LevelEditorUI: public UIBundle {
 
     // Function should run 60 times per second when active
     void tick() {
+        if (keys[GLFW_KEY_R]) {
+            screen->runLevel();
+            return;
+        }
+
         if (hoverMode == NO_HOVER) {
             return;
         }
@@ -474,8 +479,10 @@ class LevelEditorUI: public UIBundle {
     virtual void charInput(int codepoint) override {
         UIBundle::charInput(codepoint);
 
-        if (codepoint == GLFW_KEY_ESCAPE) {
-            safeExitWindow();
+        switch (codepoint) {
+            case GLFW_KEY_ESCAPE:
+                safeExitWindow();
+                break;
         }
     }
 
