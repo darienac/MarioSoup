@@ -26,7 +26,7 @@ class Mario: public MovingEntity, public IMario {
     bool crouching = false;
     bool skidding = false;
     unsigned int numTicks = 0;
-    bool isJumpHeld = false;
+    bool isJumpHeld = true; // prevents a frame 0 air jump
     int powerupStart;
     PowerupState powerupState = SMALL;
     PowerupState powerupStatePrev;
