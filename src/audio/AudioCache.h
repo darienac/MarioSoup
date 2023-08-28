@@ -12,7 +12,7 @@ namespace fs = std::filesystem;
 namespace AudioCache {
     std::map<std::string, AudioBuffer*> audio;
     std::map<std::string, std::string> music;
-};
+}
 
 #ifndef MUTE
 namespace {

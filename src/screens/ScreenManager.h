@@ -5,6 +5,8 @@
 #include "audio/AudioCache.h"
 #include "screens/IScreen.h"
 #include "game/objects/AnimatedGameObject.h"
+#include "game/objects/GameObjectCache.h"
+#include "game/backgrounds/GameBackgroundCache.h"
 
 class ScreenManager {
     private:
@@ -21,6 +23,9 @@ class ScreenManager {
     public:
     ScreenManager(GlWindow& window): window(&window) {
         audio = new AudioManager();
+        Tiles::initTiles();
+        GameObjectCache::init();
+        GameBackgroundCache::init();
     }
 
     void run() {

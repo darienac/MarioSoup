@@ -19,7 +19,10 @@ class IEntity {
     };
 
     static int mod(int v0, int v1) {
-        return (v0 + 512) % v1;
+        if (v0 < 0) {
+            v0 += -(v0 / v1) * v1 + v1;
+        }
+        return v0 % v1;
     }
 
     static int div(int v0, int v1) {

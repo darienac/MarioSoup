@@ -3,6 +3,7 @@
 #include "render/ImageDrawer.h"
 #include "game/GameLevel.h"
 #include "game/entities/IEntity.h"
+#include "game/backgrounds/GameBackground.h"
 #include "TileMappings.h"
 #include "ui/ui.h"
 #include "ui/leveleditor/LevelEditorUI.h"
@@ -65,7 +66,10 @@ class LevelDrawer {
     }
 
     int mod(int v0, int v1) {
-        return (v0 + 512) % v1;
+        if (v0 < 0) {
+            v0 += -(v0 / v1) * v1 + v1;
+        }
+        return v0 % v1;
     }
 
     int div(int v0, int v1) {
@@ -75,16 +79,22 @@ class LevelDrawer {
     public:
     LevelDrawer(ImageDrawer& drawer): drawer(&drawer) {}
 
-    void drawZoneBackground(GameLevelZone& zone, int xOff, int yOff, int scrollX, int scrollY) {
-        Tile* tile = zone.getBackgroundTile();
+    void drawZoneBackground(GameBackground& background, int xOff, int yOff, int scrollX, int scrollY) {
+        for (GameBackgroundLayer* layer : background.getLayers()) {
+            drawZoneBackgroundLayer(*layer, xOff, yOff, scrollX, scrollY);
+        }
+    }
+
+    void drawZoneBackgroundLayer(GameBackgroundLayer& layer, int xOff, int yOff, int scrollX, int scrollY) {
+        Tile* tile = layer.getTile();
         int w = tile->getWidth();
 
-        int x0 = mod(scrollX / zone.getBackgroundScrollXDiv(), w);
+        int x0 = mod(scrollX * layer.getScrollXMult(), w) + layer.getXOff();
         int y0;
         if (scrollY >= 0) {
-            y0 = 0;
+            y0 = layer.getYOff();
         } else {
-            y0 = scrollY / zone.getBackgroundScrollYDiv();
+            y0 = scrollY * layer.getScrollYMult() + layer.getYOff();
         }
 
         drawer->drawTile(*tile, x0 + xOff, y0 + yOff);
@@ -95,7 +105,7 @@ class LevelDrawer {
 
     void drawLevelZone(GameLevelZone& zone, int xOff, int yOff, int scrollX, int scrollY, bool isEditor) {
         drawer->setZPos(ImageDrawer::ZPOS_BACKGROUND);
-        drawZoneBackground(zone, xOff, yOff, scrollX, scrollY);
+        drawZoneBackground(*zone.getBackground(), xOff, yOff, scrollX, scrollY);
 
         IGameLevelRegion** regions = zone.getRegions();
         for (int i = GameObject::NUM_LAYERS - 1; i >= 0; i--) {

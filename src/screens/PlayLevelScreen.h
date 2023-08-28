@@ -60,7 +60,7 @@ class PlayLevelScreen: public IPlayLevelScreen {
     virtual void renderFrame() override {
         GameLevelZone* zone = level->getCurrentZone();
 
-        unsigned char* clearColor = zone->getBackgroundColor();
+        unsigned char* clearColor = zone->getBackground()->getBgColor();
         glClearColor((float) clearColor[0] / 0xFF, (float) clearColor[1] / 0xFF, (float) clearColor[2] / 0xFF, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

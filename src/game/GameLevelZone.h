@@ -3,16 +3,14 @@
 #include "game/GameLevelRegion.h"
 #include "game/entities/Mario.h"
 #include "game/IGameLevelZone.h"
+#include "game/backgrounds/GameBackgroundCache.h"
 #include "TileMappings.h"
 
 
 // An actual sub area in a level, contains multiple regions for the layers, also zone specific info like its own player object
 class GameLevelZone: public IGameLevelZone {
     private:
-    unsigned char backgroundColor[3] = {0x80, 0xA8, 0xF8};
-    Tile* backgroundTile = &Tiles::getTile(Tiles::BACKGROUND_OVERWORLD1_SMA4);
-    int backgroundScrollXDiv = 2;
-    int backgroundScrollYDiv = 2;
+    GameBackground* background = GameBackgroundCache::backgrounds["sma4:overworld_1"];
 
     Mario mario;
     IGameLevelRegion* regions[GameObject::NUM_LAYERS];
@@ -45,20 +43,8 @@ class GameLevelZone: public IGameLevelZone {
         return air;
     }
 
-    unsigned char* getBackgroundColor() {
-        return backgroundColor;
-    }
-
-    Tile* getBackgroundTile() {
-        return backgroundTile;
-    }
-
-    int getBackgroundScrollXDiv() {
-        return backgroundScrollXDiv;
-    }
-
-    int getBackgroundScrollYDiv() {
-        return backgroundScrollYDiv;
+    GameBackground* getBackground() {
+        return background;
     }
 
     virtual IGameLevelRegion** getRegions() override {
