@@ -163,6 +163,14 @@ class LevelEditorScreen: public ILevelEditorScreen {
         return editorUI->getChangesSaved();
     }
 
+    virtual void setAutosave(bool value) {
+        editorUI->setAutosave(value);
+    }
+
+    virtual void attemptAutosave() {
+        editorUI->attemptAutosave();
+    }
+
     virtual UIState getState() override {
         return uiState;
     }

@@ -21,6 +21,8 @@ class ILevelEditorScreen: public IScreen {
     virtual std::string& getSavePath() = 0;
     virtual void setChangesSaved(bool value) = 0;
     virtual bool getChangesSaved() = 0;
+    virtual void setAutosave(bool value) = 0;
+    virtual void attemptAutosave() = 0;
 
     virtual void setInfoMessage(const char* message) = 0;
     virtual char* getFileInputBuffer() = 0;

@@ -13,9 +13,10 @@ class EditorMenuBar: public MenuBar {
         "run"
     };
 
-    MenuListButton buttonsFile[4] = {
+    MenuListButton buttonsFile[5] = {
         MenuListButton("new", UIButtonType::BUTTON, [](MenuListButton* button) {
             ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
+            editorScreen->attemptAutosave();
             if (editorScreen->getChangesSaved()) {
                 editorScreen->initLevel();
                 editorScreen->setState(ILevelEditorScreen::EDITOR);
@@ -36,6 +37,7 @@ class EditorMenuBar: public MenuBar {
         }),
         MenuListButton("open", UIButtonType::BUTTON, [](MenuListButton* button) {
             ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
+            editorScreen->attemptAutosave();
 
             if (editorScreen->getChangesSaved()) {
                 editorScreen->setState(ILevelEditorScreen::OPEN_DIALOG);
@@ -74,6 +76,10 @@ class EditorMenuBar: public MenuBar {
         MenuListButton("save as", UIButtonType::BUTTON, [](MenuListButton* button) {
             ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
             editorScreen->setState(ILevelEditorScreen::SAVE_DIALOG);
+        }),
+        MenuListButton("autosave", UIButtonType::RADIO, [](MenuListButton* button) {
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
+            editorScreen->setAutosave(button->getValue().toggle);
         })
     };
     MenuListButton buttonsEdit[1] = {
@@ -98,7 +104,7 @@ class EditorMenuBar: public MenuBar {
         })
     };
     MenuList menuLists[4] = {
-        MenuList(buttonsFile, 4, 12),
+        MenuList(buttonsFile, 5, 12),
         MenuList(buttonsEdit, 1, 12),
         MenuList(buttonsView, 1, 12),
         MenuList(buttonsRun, 1, 12)
@@ -112,5 +118,6 @@ class EditorMenuBar: public MenuBar {
 
             button->setToggle(editorScreen->isFullscreen());
         });
+        buttonsFile[4].setToggle(true);
     }
 };

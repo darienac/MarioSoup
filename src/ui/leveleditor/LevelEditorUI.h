@@ -65,6 +65,7 @@ class LevelEditorUI: public UIBundle {
     int marioMouseOffsetY = 0;
 
     bool changesSaved = true;
+    bool autosave = true;
 
     void placeBlock(GameObject* object, int layer) {
         if (layer == -1) {
@@ -354,6 +355,26 @@ class LevelEditorUI: public UIBundle {
         return changesSaved;
     }
 
+    void setAutosave(bool value) {
+        autosave = value;
+    }
+
+    void attemptAutosave() {
+        if (!autosave || changesSaved || screen->getSavePath() == "") {
+            return;
+        }
+
+        LevelSaver saver = LevelSaver();
+        try {
+            saver.saveLevel(*screen->getLevel(), screen->getSavePath().c_str());
+            screen->setChangesSaved(true);
+        } catch (const char* errorMsg) {
+            std::printf("%s\n", errorMsg);
+            screen->setInfoMessage(errorMsg);
+            screen->setState(ILevelEditorScreen::INFO_POPUP);
+        }
+    }
+
     bool hover(int x, int y, int gameWidth, int gameHeight) override {
         if (UIBundle::hover(x, y, gameWidth, gameHeight) || x < 144 || x >= gameWidth || y < 0 || y >= gameHeight - 16) {
             hoverMode = NO_HOVER;
@@ -459,6 +480,7 @@ class LevelEditorUI: public UIBundle {
     }
 
     void safeExitWindow() {
+        attemptAutosave();
         if (changesSaved) {
             screen->closeWindow();
             return;
