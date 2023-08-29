@@ -58,6 +58,10 @@ class GameLevelZone: public IGameLevelZone {
         return background;
     }
 
+    void setBackground(GameBackground* background) {
+        this->background = background;
+    }
+
     virtual IGameLevelRegion** getRegions() override {
         return regions;
     }

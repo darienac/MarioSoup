@@ -3,6 +3,7 @@
 #include "game/LevelSaver.h"
 #include "game/GameLevel.h"
 #include "game/objects/GameObjectCache.h"
+#include "game/backgrounds/GameBackgroundCache.h"
 #include "ResourceReader.h"
 
 class LevelLoader {
@@ -79,8 +80,12 @@ class LevelLoader {
     void loadLevelZone(GameLevel& level, GameObject** objectList, std::istream& stream) {
         int w = readInt(stream);
         int h = readInt(stream);
-
+        
         GameLevelZone* zone = level.addZone(w, h);
+        readString(stream, stringBuffer);
+        zone->setBackground(GameBackgroundCache::backgrounds[std::string(stringBuffer)]);
+        readString(stream, stringBuffer);
+        zone->setMusicPath(std::string(stringBuffer));
 
         loadMario(zone->getMario(), objectList, stream);
 

@@ -62,6 +62,9 @@ class LevelSaver {
     void saveLevelZone(GameLevelZone& zone, std::map<GameObject*, int> objectKey, std::ostream& stream) {
         writeInt(stream, zone.getWidth());
         writeInt(stream, zone.getHeight());
+
+        writeString(stream, zone.getBackground()->getId().c_str());
+        writeString(stream, zone.getMusicPath().c_str());
         
         saveMario(zone.getMario(), stream);
 
