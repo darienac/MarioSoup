@@ -96,6 +96,11 @@ class EditorMenuBar: public MenuBar {
             editorScreen->getTextInputPopup()->setConfirmCallback([](Button* button, UIButtonValue& value) {
                 TextInputPopup* popupWindow = (TextInputPopup*) button->getPointer();
                 ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) popupWindow->getPointer();
+                if (!ResourceReader::resourceExists(ResourceReader::Audio, popupWindow->getTextInput())) {
+                    editorScreen->setInfoMessage("Audio path does not exist");
+                    editorScreen->setState(ILevelEditorScreen::INFO_POPUP);
+                    return;
+                }
                 editorScreen->getLevel()->getCurrentZone()->setMusicPath(popupWindow->getTextInput());
                 editorScreen->setState(ILevelEditorScreen::EDITOR);
                 editorScreen->setChangesSaved(false);

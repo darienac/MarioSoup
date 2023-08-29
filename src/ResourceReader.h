@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <filesystem>
 
 class ResourceReader {
 	private:
@@ -15,6 +16,7 @@ class ResourceReader {
 		UI,
 		Audio
 	};
+
 	const static std::string readResource(ResourceType type, const std::string& path) {
 		std::string fullPath = getFullPath(type, path);
 		std::ifstream file(fullPath);
@@ -22,6 +24,11 @@ class ResourceReader {
 		buffer << file.rdbuf();
 		return buffer.str();
 	}
+
+	const static bool resourceExists(ResourceType type, const std::string& path) {
+		return std::filesystem::exists(getFullPath(type, path));
+	}
+
 	const static std::string getFullPath(ResourceType type, std::string path) {
 		switch (type) {
 		case Shader:
