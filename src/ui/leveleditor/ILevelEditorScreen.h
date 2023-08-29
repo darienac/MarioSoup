@@ -4,11 +4,12 @@
 #include "screens/IScreen.h"
 
 class ConfirmPopup;
+class TextInputPopup;
 
 class ILevelEditorScreen: public IScreen {
     public:
     enum UIState {
-        EDITOR, SAVE_DIALOG, OPEN_DIALOG, INFO_POPUP, CONFIRM_DIALOG, RESIZE_DIALOG
+        EDITOR, SAVE_DIALOG, OPEN_DIALOG, INFO_POPUP, CONFIRM_DIALOG, RESIZE_DIALOG, TEXT_INPUT_DIALOG
     };
 
     virtual void initLevel() = 0;
@@ -27,6 +28,7 @@ class ILevelEditorScreen: public IScreen {
     virtual void setInfoMessage(const char* message) = 0;
     virtual char* getFileInputBuffer() = 0;
     virtual ConfirmPopup* getConfirmPopup() = 0;
+    virtual TextInputPopup* getTextInputPopup() = 0;
 
     virtual bool isFullscreen() = 0;
     virtual void setFullscreen(bool value) = 0;

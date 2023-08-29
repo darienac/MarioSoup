@@ -14,6 +14,7 @@
 #include "ui/leveleditor/InfoPopup.h"
 #include "ui/leveleditor/ConfirmPopup.h"
 #include "ui/leveleditor/ResizeDialog.h"
+#include "ui/leveleditor/TextInputPopup.h"
 #include "screens/ScreenManager.h"
 
 class LevelEditorScreen: public ILevelEditorScreen {
@@ -36,6 +37,7 @@ class LevelEditorScreen: public ILevelEditorScreen {
     ResizeDialog* resizeDialog;
     InfoPopup infoPopup = InfoPopup(this);
     ConfirmPopup confirmPopup = ConfirmPopup(this);
+    TextInputPopup inputPopup = TextInputPopup(this);
     GameLevel* level = nullptr;
     std::string savePath;
 
@@ -45,10 +47,17 @@ class LevelEditorScreen: public ILevelEditorScreen {
         this->manager = &manager;
         this->playLevelScreen = &playLevelScreen;
 
-        initLevel();
         editorUI = new LevelEditorUI(this, WINDOW_WIDTH, WINDOW_HEIGHT, scrollX, scrollY, window.getKeys());
+        initLevel();
         filePicker = new FilePickerPopup(this);
         resizeDialog = new ResizeDialog(this);
+
+        inputPopup.setCancelCallback([](PopupWindow* popup) {
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) popup->getPointer();
+
+            editorScreen->setState(ILevelEditorScreen::UIState::EDITOR);
+        });
+        inputPopup.setPointer(this);
     }
 
     virtual void initLevel() override {
@@ -133,6 +142,9 @@ class LevelEditorScreen: public ILevelEditorScreen {
                 window->drawer->setZPos(ImageDrawer::ZPOS_UI_DIALOG);
                 window->uiDrawer->drawPopupWindow(confirmPopup, WINDOW_WIDTH, WINDOW_HEIGHT);
                 break;
+            case TEXT_INPUT_DIALOG:
+                window->drawer->setZPos(ImageDrawer::ZPOS_UI_DIALOG);
+                window->uiDrawer->drawPopupWindow(inputPopup, WINDOW_WIDTH, WINDOW_HEIGHT);
             default:
                 break;
         };
@@ -196,6 +208,10 @@ class LevelEditorScreen: public ILevelEditorScreen {
             case CONFIRM_DIALOG:
                 window->uiEventElement = &confirmPopup;
                 break;
+            case TEXT_INPUT_DIALOG:
+                window->uiEventElement = &inputPopup;
+                inputPopup.enable();
+                break;
         }
     }
 
@@ -205,6 +221,10 @@ class LevelEditorScreen: public ILevelEditorScreen {
 
     virtual ConfirmPopup* getConfirmPopup() override {
         return &confirmPopup;
+    }
+
+    virtual TextInputPopup* getTextInputPopup() override {
+        return &inputPopup;
     }
 
     virtual void setInfoMessage(const char* message) {

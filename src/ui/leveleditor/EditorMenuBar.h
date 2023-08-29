@@ -2,6 +2,7 @@
 
 #include "ui/MenuBar.h"
 #include "ui/leveleditor/ConfirmPopup.h"
+#include "ui/leveleditor/TextInputPopup.h"
 #include "ui/leveleditor/ILevelEditorScreen.h"
 
 class EditorMenuBar: public MenuBar {
@@ -82,11 +83,24 @@ class EditorMenuBar: public MenuBar {
             editorScreen->setAutosave(button->getValue().toggle);
         })
     };
-    MenuListButton buttonsEdit[1] = {
+    MenuListButton buttonsEdit[2] = {
         MenuListButton("resize", UIButtonType::BUTTON, [](MenuListButton* button) {
             ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
 
             editorScreen->setState(ILevelEditorScreen::RESIZE_DIALOG);
+        }),
+        MenuListButton("set music", UIButtonType::BUTTON, [](MenuListButton* button) {
+            ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) button->getPointer();
+
+            editorScreen->getTextInputPopup()->setMessage("enter music path, blank for none (in audio folder)");
+            editorScreen->getTextInputPopup()->setConfirmCallback([](Button* button, UIButtonValue& value) {
+                TextInputPopup* popupWindow = (TextInputPopup*) button->getPointer();
+                ILevelEditorScreen* editorScreen = (ILevelEditorScreen*) popupWindow->getPointer();
+                editorScreen->getLevel()->getCurrentZone()->setMusicPath(popupWindow->getTextInput());
+                editorScreen->setState(ILevelEditorScreen::EDITOR);
+                editorScreen->setChangesSaved(false);
+            });
+            editorScreen->setState(ILevelEditorScreen::TEXT_INPUT_DIALOG);
         })
     };
     MenuListButton buttonsView[1] = {
@@ -105,7 +119,7 @@ class EditorMenuBar: public MenuBar {
     };
     MenuList menuLists[4] = {
         MenuList(buttonsFile, 5, 12),
-        MenuList(buttonsEdit, 1, 12),
+        MenuList(buttonsEdit, 2, 12),
         MenuList(buttonsView, 1, 12),
         MenuList(buttonsRun, 1, 12)
     };

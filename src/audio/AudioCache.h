@@ -36,7 +36,7 @@ namespace AudioCache {
     void init() {
         #ifndef MUTE
         addMusic("testsong", "testsong.ogg");
-        addMusic("sma4:overworld", "sma4_overworld.ogg");
+        addMusic("sma4:overworld", "music/sma4_overworld.ogg");
 
         addAudioBatch("smas", "smas:");
         addAudio(new AudioBuffer("smb3:jump", "smb3_jump.ogg"));

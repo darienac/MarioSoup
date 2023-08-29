@@ -8,6 +8,7 @@ class GameBackground {
     private:
     std::vector<GameBackgroundLayer*> layers;
     std::string id;
+    std::string preferredMusic = AudioCache::music["sma4:overworld"];
     unsigned char bgColor[3] = {0, 0, 0};
 
     public:
@@ -24,6 +25,15 @@ class GameBackground {
 
     std::string& getId() {
         return id;
+    }
+
+    GameBackground& setPreferredMusic(std::string path) {
+        preferredMusic = path;
+        return *this;
+    }
+
+    std::string getPreferredMusic() {
+        return preferredMusic;
     }
 
     GameBackground& setBgColor(unsigned char r, unsigned char g, unsigned char b) {

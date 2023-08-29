@@ -71,8 +71,11 @@ class PlayLevelScreen: public IPlayLevelScreen {
     virtual void enable() override {
         window->resize(WINDOW_WIDTH, WINDOW_HEIGHT);
         window->uiEventElement = levelUI;
-        manager->getAudioManager()->playMusic(AudioCache::music["sma4:overworld"]);
         closeScreen = false;
+        if (level != nullptr && level->getCurrentZone()->getMusicPath() != "") {
+            manager->getAudioManager()->playMusic(level->getCurrentZone()->getMusicPath());
+        }
+        
     }
 
     virtual void exitWindow() override {

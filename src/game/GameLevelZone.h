@@ -11,6 +11,7 @@
 class GameLevelZone: public IGameLevelZone {
     private:
     GameBackground* background = GameBackgroundCache::backgrounds["sma4:overworld_1"];
+    std::string musicPath = background->getPreferredMusic();
 
     Mario mario;
     IGameLevelRegion* regions[GameObject::NUM_LAYERS];
@@ -28,6 +29,8 @@ class GameLevelZone: public IGameLevelZone {
         regions[0] = new GameLevelRegion(*origRegions[0]);
         regions[1] = new GameLevelRegion(*origRegions[1]);
         regions[2] = new GameLevelRegion(*origRegions[2]);
+        background = orig.getBackground();
+        musicPath = orig.getMusicPath();
     }
 
     GameObject* getUpperGridObject(int x, int y, int& layer) {
@@ -41,6 +44,14 @@ class GameLevelZone: public IGameLevelZone {
         }
         layer = -1;
         return air;
+    }
+
+    std::string getMusicPath() {
+        return musicPath;
+    }
+
+    void setMusicPath(std::string value) {
+        musicPath = value;
     }
 
     GameBackground* getBackground() {

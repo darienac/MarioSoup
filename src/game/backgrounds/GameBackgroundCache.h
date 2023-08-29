@@ -17,7 +17,7 @@ namespace {
 
 namespace GameBackgroundCache {
     void init() {
-        addBackground(new GameBackground("sma4:overworld_1")).setBgColor(0x80, 0xA8, 0xF8)
+        addBackground(new GameBackground("sma4:overworld_1")).setBgColor(0x80, 0xA8, 0xF8).setPreferredMusic(AudioCache::music["sma4:overworld"])
             .addLayer(new GameBackgroundLayer(Tiles::BACKGROUND_OVERWORLD1_SMA4, 0.5, 0.5, 0.0, 0.0))
             .addLayer(new GameBackgroundLayer(Tiles::BACKGROUND_CLOUDS1_SMA4, 0.75, 0.75, 0.0, 160.0));
     }
